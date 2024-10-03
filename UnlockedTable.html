@@ -29,8 +29,8 @@
 </head>
 <body>
     <h1>Data Grouping Tool</h1>
-    <textarea id="dataInput" rows="10" style="width: 100%;" placeholder="Paste your data here"></textarea>
-    <button onclick="processData()">Process Data</button>
+    <textarea id="dataInput" rows="10" style="width: 100%;" placeholder="Paste your data here" oninput="processData()"></textarea>
+    <button onclick="copyData()">Copy Data</button>
     <table id="resultTable">
         <thead>
             <tr>
@@ -69,6 +69,17 @@
                 </tr>`;
                 tbody.innerHTML += row;
             });
+        }
+
+        function copyData() {
+            const table = document.getElementById('resultTable');
+            const range = document.createRange();
+            range.selectNode(table);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            alert('Table data copied to clipboard!');
         }
     </script>
 </body>
