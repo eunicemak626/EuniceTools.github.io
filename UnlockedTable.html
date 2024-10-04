@@ -3,67 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Grouping Tool</title>
+    <title>Unlocked Table Generator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
-
         th {
             background-color: #f2f2f2;
+        }
+        button {
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Data Grouping Tool</h1>
-    <textarea id="dataInput" rows="10" style="width: 100%;" placeholder="Paste your data here" oninput="processData()"></textarea>
-    <button onclick="copyData()">Copy Data</button>
-    <table id="resultTable">
+    <h1>Unlocked Table Generator</h1>
+    <textarea id="dataInput" rows="10" style="width: 100%;" placeholder="Paste your data here"></textarea>
+    <button onclick="copyTable()">Copy Table</button>
+    <table>
         <thead>
             <tr>
                 <th>UNLOCKED N/A</th>
-                <th>CAP</th>
-                <th>QTY</th>
+                <th>Capacity</th>
+                <th>Quantity</th>
             </tr>
         </thead>
-        <tbody>
-            <!-- Results will be inserted here -->
+        <tbody id="dataTable">
+            <!-- Data will be inserted here -->
         </tbody>
     </table>
 
     <script>
+        document.getElementById('dataInput').addEventListener('input', processData);
+
         function processData() {
             const data = document.getElementById('dataInput').value.trim().split('\n');
             const result = {};
+
             data.forEach(line => {
-                const parts = line.match(/(?:IPHONE|iPhone) \d+(?:\s*\w*\s*)*\s+(\d+(?:GB|TB))\s+(\w+)/i);
+                const parts = line.match(/(.+)\s(\d+(?:GB|TB))\s+(\w+)$/i);
                 if (parts) {
-                    const [_, capacity, color] = parts;
-                    const model = line.replace(/\s+(\d+(?:GB|TB))\s+(\w+)/i, '').trim();
+                    const [_, model, capacity, color] = parts;
                     const key = `${model} ${color} | ${capacity}`;
                     result[key] = (result[key] || 0) + 1;
                 }
             });
 
-            const tbody = document.querySelector('#resultTable tbody');
+            const tbody = document.getElementById('dataTable');
             tbody.innerHTML = '';
+
             Object.entries(result).forEach(([key, qty]) => {
-                const [model, capacity] = key.split(' | ');
+                const [modelColor, capacity] = key.split(' | ');
                 const row = `<tr>
-                    <td>${model}</td>
+                    <td>${modelColor}</td>
                     <td>${capacity}</td>
                     <td>${qty}</td>
                 </tr>`;
@@ -71,15 +74,16 @@
             });
         }
 
-        function copyData() {
-            const table = document.getElementById('resultTable');
+        function copyTable() {
+            const table = document.querySelector('table');
             const range = document.createRange();
             range.selectNode(table);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
             document.execCommand('copy');
-            window.getSelection().removeAllRanges();
-            alert('Table data copied to clipboard!');
+            selection.removeAllRanges();
+            alert('Table data copied to clipboard');
         }
     </script>
 </body>
