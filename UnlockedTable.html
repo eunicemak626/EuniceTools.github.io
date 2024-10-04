@@ -42,6 +42,12 @@
         <tbody id="dataTable">
             <!-- Data will be inserted here -->
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">Total</td>
+                <td id="totalQuantity">0</td>
+            </tr>
+        </tfoot>
     </table>
 
     <script>
@@ -50,6 +56,7 @@
         function processData() {
             const data = document.getElementById('dataInput').value.trim().split('\n');
             const result = {};
+            let total = 0;
 
             data.forEach(line => {
                 const parts = line.match(/(.+)\s(\d+(?:GB|TB))\s+(\w+)$/i);
@@ -65,6 +72,7 @@
 
             Object.entries(result).forEach(([key, qty]) => {
                 const [modelColor, capacity] = key.split(' | ');
+                total += qty;
                 const row = `<tr>
                     <td>${modelColor}</td>
                     <td>${capacity}</td>
@@ -72,6 +80,8 @@
                 </tr>`;
                 tbody.innerHTML += row;
             });
+
+            document.getElementById('totalQuantity').textContent = total;
         }
 
         function copyTable() {
