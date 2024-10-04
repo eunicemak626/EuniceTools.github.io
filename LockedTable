@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unlocked Table Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Unlocked Table Generator</h1>
+    <textarea id="dataInput" rows="10" style="width: 100%;" placeholder="Paste your data here"></textarea>
+    <button onclick="copyTable()">Copy Table</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Model</th>
+                <th>Capacity</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody id="dataTable">
+            <!-- Data will be inserted here -->
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">Total</td>
+                <td id="totalQuantity">0</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script>
+        document.getElementById('dataInput').addEventListener('input', processData);
+
+        function processData() {
+            const data = document.getElementById('dataInput').value.trim().split('\n');
+            const result = {};
+            let total = 0;
+
+            data.forEach(line => {
+                const parts = line.match(/(.+)\s(\d+(?:GB|TB))/i);
+                if (parts) {
+                    const [_, model, capacity] = parts;
+                    const key = `${model} | ${capacity}`;
+                    result[key] = (result[key] || 0) + 1;
+                }
+            });
+
+            const tbody = document.getElementById('dataTable');
+            tbody.innerHTML = '';
+
+            Object.entries(result).forEach(([key, qty]) => {
+                const [model, capacity] = key.split(' | ');
+                total += qty;
+                const row = `<tr>
+                    <td>${model}</td>
+                    <td>${capacity}</td>
+                    <td>${qty}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+
+            document.getElementById('totalQuantity').textContent = total;
+        }
+
+        function copyTable() {
+            const table = document.querySelector('table');
+            const range = document.createRange();
+            range.selectNode(table);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            document.execCommand('copy');
+            selection.removeAllRanges();
+            alert('Table data copied to clipboard');
+        }
+    </script>
+</body>
+</html>
