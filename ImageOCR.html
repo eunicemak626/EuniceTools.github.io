@@ -1,0 +1,471 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; font-src 'self' https://fonts.gstatic.com;">
+    <title>Text Vision - Advanced OCR Technology</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600&amp;display=swap">
+    <script defer="" src="https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js"></script>
+    <style>
+        :root {
+            --system-background: #ffffff;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-blue: #0066cc;
+            --accent-gray: #f5f5f7;
+            --border-color: #d2d2d7;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background-color: var(--system-background);
+            color: var(--text-primary);
+            line-height: 1.47059;
+            font-weight: 400;
+            letter-spacing: -.022em;
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            line-height: 1.08349;
+            font-weight: 600;
+            letter-spacing: -.003em;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 21px;
+            line-height: 1.381;
+            font-weight: 400;
+            letter-spacing: .011em;
+            color: var(--text-secondary);
+        }
+
+        .upload-section {
+            background: var(--accent-gray);
+            border-radius: 18px;
+            padding: 50px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        #drop-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 14px;
+            padding: 40px;
+            background: var(--system-background);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        #drop-area:hover {
+            border-color: var(--accent-blue);
+            background: rgba(0, 102, 204, 0.05);
+        }
+
+        #drop-area.highlight {
+            border-color: var(--accent-blue);
+            background: rgba(0, 102, 204, 0.1);
+        }
+
+        .apple-button {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 980px;
+            font-size: 17px;
+            line-height: 1.17648;
+            font-weight: 400;
+            letter-spacing: -.022em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+            margin: 10px;
+        }
+
+        .apple-button:hover {
+            background: #0077ed;
+        }
+
+        .apple-button:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        #file-list {
+            list-style: none;
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 0;
+        }
+
+        .file-preview {
+            background: var(--system-background);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .file-preview:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .file-preview img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .file-info {
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-name {
+            font-size: 14px;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .remove-image {
+            color: #ff3b30;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 20px;
+        }
+
+        #progress-container {
+            margin: 30px 0;
+            display: none;
+        }
+
+        #progress-bar {
+            height: 6px;
+            background: var(--accent-gray);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        #progress {
+            width: 0%;
+            height: 100%;
+            background: var(--accent-blue);
+            transition: width 0.3s ease;
+        }
+
+        #status {
+            margin-top: 12px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            min-height: 20px;
+        }
+
+        #output-area {
+            background: var(--system-background);
+            border-radius: 18px;
+            padding: 30px;
+            margin-top: 30px;
+            display: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .output-text {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 15px;
+            line-height: 1.4;
+            resize: vertical;
+            margin: 20px 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 734px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .header p {
+                font-size: 17px;
+            }
+
+            .upload-section {
+                padding: 20px;
+            }
+
+            #drop-area {
+                padding: 20px;
+            }
+
+            .file-preview {
+                margin: 10px 0;
+            }
+
+            .apple-button {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Text Vision</h1>
+            <p>Transform your images into editable text with precision</p>
+        </header>
+
+        <div class="upload-section">
+            <div id="drop-area">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <p style="margin-top: 12px;">Drop files here or click to upload</p>
+                <input type="file" id="fileInput" multiple="" accept="image/*" style="display: none;">
+            </div>
+
+            <ul id="file-list"></ul>
+            
+            <div id="progress-container">
+                <div id="progress-bar">
+                    <div id="progress"></div>
+                </div>
+                <div id="status"></div>
+            </div>
+
+            <button id="submit-button" class="apple-button" disabled="">Extract Text</button>
+
+            <div id="output-area">
+                <h3>Extracted Text</h3>
+                <textarea class="output-text" readonly="" placeholder="Your text will appear here..."></textarea>
+                <div class="action-buttons">
+                    <button class="apple-button" onclick="copyText()">Copy</button>
+                    <button class="apple-button" onclick="downloadText()">Download</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropArea = document.getElementById('drop-area');
+            const fileInput = document.getElementById('fileInput');
+            const fileList = document.getElementById('file-list');
+            const submitButton = document.getElementById('submit-button');
+            const outputArea = document.getElementById('output-area');
+            const progressContainer = document.getElementById('progress-container');
+            const progress = document.getElementById('progress');
+            const status = document.getElementById('status');
+            let tesseractWorker = null;
+
+            // 初始化 Tesseract
+            async function initTesseract() {
+                try {
+                    const worker = await Tesseract.createWorker();
+                    await worker.loadLanguage('eng');
+                    await worker.initialize('eng');
+                    submitButton.disabled = false;
+                    return worker;
+                } catch (error) {
+                    showStatus('Initialization failed: ' + error.message, true);
+                    return null;
+                }
+            }
+
+            // 初始化 OCR worker
+            initTesseract().then(worker => {
+                tesseractWorker = worker;
+            });
+
+            // 顯示狀態信息
+            function showStatus(message, isError = false) {
+                status.textContent = message;
+                status.style.color = isError ? '#ff3b30' : '#86868b';
+            }
+
+            // 防止默認拖放行為
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            // 高亮拖放區域
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                dropArea.classList.add('highlight');
+            }
+
+            function unhighlight(e) {
+                dropArea.classList.remove('highlight');
+            }
+
+            // 處理拖放
+            dropArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+
+            // 處理點擊上傳
+            dropArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', function(e) {
+                handleFiles(this.files);
+            });
+
+            // 處理文件
+            function handleFiles(files) {
+                const validFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+                
+                validFiles.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'file-preview';
+                        listItem.innerHTML = `
+                            <img src="${e.target.result}" alt="${file.name}">
+                            <div class="file-info">
+                                <span class="file-name">${file.name}</span>
+                                <span class="remove-image" onclick="this.closest('.file-preview').remove()">×</span>
+                            </div>
+                        `;
+                        fileList.appendChild(listItem);
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                if (validFiles.length === 0) {
+                    showStatus('Please select image files only', true);
+                }
+            }
+
+            // 處理文本提取
+            submitButton.addEventListener('click', async () => {
+                const images = document.querySelectorAll('#file-list img');
+                
+                if (images.length === 0) {
+                    showStatus('Please upload at least one image', true);
+                    return;
+                }
+
+                if (!tesseractWorker) {
+                    showStatus('OCR engine not ready. Please try again.', true);
+                    return;
+                }
+
+                submitButton.disabled = true;
+                progressContainer.style.display = 'block';
+                outputArea.style.display = 'block';
+                const outputText = document.querySelector('.output-text');
+                outputText.value = '';
+
+                try {
+                    for (let i = 0; i < images.length; i++) {
+                        const img = images[i];
+                        showStatus(`Processing image ${i + 1} of ${images.length}`);
+
+                        const result = await tesseractWorker.recognize(img.src);
+                        outputText.value += `=== ${img.alt} ===\n${result.data.text}\n\n`;
+                        progress.style.width = `${((i + 1) / images.length) * 100}%`;
+                    }
+
+                    showStatus('Processing complete!');
+                    progress.style.width = '100%';
+                } catch (error) {
+                    showStatus('Processing failed: ' + error.message, true);
+                } finally {
+                    submitButton.disabled = false;
+                }
+            });
+
+            // 複製文本功能
+            window.copyText = function() {
+                const outputText = document.querySelector('.output-text');
+                outputText.select();
+                document.execCommand('copy');
+                showStatus('Text copied to clipboard!');
+            };
+
+            // 下載文本功能
+            window.downloadText = function() {
+                const outputText = document.querySelector('.output-text').value;
+                if (!outputText.trim()) {
+                    showStatus('No text to download', true);
+                    return;
+                }
+
+                const blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'extracted-text.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                showStatus('Text downloaded!');
+            };
+        });
+    </script>
+
+
+</body></html>
