@@ -1,99 +1,176 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unlocked Vz IPad Table Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        .container {
             margin: 20px;
+            font-family: Arial, sans-serif;
         }
-        table {
-            width: 100%;
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        #hot-table {
+            margin-bottom: 20px;
+        }
+        .copy-button {
+            padding: 8px 16px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .copy-button:hover {
+            background-color: #f0f0f0;
+        }
+        .summary-table {
             border-collapse: collapse;
+            width: 100%;
+            max-width: 800px;
             margin-top: 20px;
         }
-        th, td {
+        .summary-table th, .summary-table td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
-        th {
-            background-color: #f2f2f2;
+        .summary-table th {
+            background-color: #f8f8f8;
+            font-weight: bold;
         }
-        button {
-            margin-top: 10px;
+        .summary-table tr:last-child {
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Unlocked Vz IPad Table Generator</h1>
-    <textarea id="dataInput" rows="10" style="width: 100%;" placeholder="Paste your data here"></textarea>
-    <button onclick="copyTable()">Copy Table</button>
-    <table>
-        <thead>
-            <tr>
-                <th>UNLOCKED N/A</th>
-                <th>Capacity</th>
-                <th>Quantity</th>
-            </tr>
-        </thead>
-        <tbody id="dataTable">
-            <!-- Data will be inserted here -->
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="2">Total</td>
-                <td id="totalQuantity">0</td>
-            </tr>
-        </tfoot>
-    </table>
+    <div class="container">
+        <h1>Unlocked Vz IPad Table Generator</h1>
+        <div id="hot-table"></div>
+        <button class="copy-button" onclick="copyTable()">Copy Table</button>
+        
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>UNLOCKED N/A</th>
+                    <th>Capacity</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody id="summary-body">
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>Total</td>
+                    <td></td>
+                    <td id="total-quantity">0</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
     <script>
-        document.getElementById('dataInput').addEventListener('input', processData);
+        const container = document.getElementById('hot-table');
+        const hot = new Handsontable(container, {
+            data: [
+                ['350118659695429', '', 'IPHONE 13 128GB PINK'],
+                ['', '', '']
+            ],
+            width: '100%',
+            height: 500,
+            colHeaders: ['A', 'B', 'C'],
+            rowHeaders: true,
+            licenseKey: 'non-commercial-and-evaluation',
+            contextMenu: true,
+            minSpareRows: 1,
+            afterChange: function(changes) {
+                if (changes) {
+                    updateSummaryTable();
+                }
+            }
+        });
 
-        function processData() {
-            const data = document.getElementById('dataInput').value.trim().split('\n');
-            const result = {};
+        function parseModelInfo(description) {
+            if (!description) return null;
+            
+            const parts = description.split(' ');
+            if (parts.length < 3) return null;
+
+            const capacityIndex = parts.findIndex(part => part.includes('GB') || part.includes('TB'));
+            if (capacityIndex === -1) return null;
+
+            const model = parts.slice(0, capacityIndex).join(' ');
+            const capacity = parts[capacityIndex];
+            const color = parts.slice(capacityIndex + 1).join(' ');
+
+            return {
+                model: model + ' ' + color,
+                capacity: capacity
+            };
+        }
+
+        function updateSummaryTable() {
+            const data = hot.getData();
+            const modelCounts = {};
             let total = 0;
 
-            data.forEach(line => {
-                const parts = line.match(/(.+)\s(\d+(?:GB|TB))\s+(\w+)$/i);
-                if (parts) {
-                    const [_, model, capacity, color] = parts;
-                    const key = `${model} ${color} | ${capacity}`;
-                    result[key] = (result[key] || 0) + 1;
+            // Count models
+            data.forEach(row => {
+                if (row[2]) {  // Check column C
+                    const info = parseModelInfo(row[2]);
+                    if (info) {
+                        const key = `${info.model}|${info.capacity}`;
+                        modelCounts[key] = (modelCounts[key] || 0) + 1;
+                    }
                 }
             });
 
-            const tbody = document.getElementById('dataTable');
-            tbody.innerHTML = '';
+            // Update summary table
+            const summaryBody = document.getElementById('summary-body');
+            summaryBody.innerHTML = '';
 
-            Object.entries(result).forEach(([key, qty]) => {
-                const [modelColor, capacity] = key.split(' | ');
-                total += qty;
-                const row = `<tr>
-                    <td>${modelColor}</td>
-                    <td>${capacity}</td>
-                    <td>${qty}</td>
-                </tr>`;
-                tbody.innerHTML += row;
+            Object.entries(modelCounts).forEach(([key, count]) => {
+                const [model, capacity] = key.split('|');
+                if (model && capacity) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${model}</td>
+                        <td>${capacity}</td>
+                        <td>${count}</td>
+                    `;
+                    summaryBody.appendChild(tr);
+                    total += count;
+                }
             });
 
-            document.getElementById('totalQuantity').textContent = total;
+            document.getElementById('total-quantity').textContent = total;
         }
 
         function copyTable() {
-            const table = document.querySelector('table');
-            const range = document.createRange();
-            range.selectNode(table);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            document.execCommand('copy');
-            selection.removeAllRanges();
+            const summaryTable = document.querySelector('.summary-table');
+            let textToCopy = '';
+            
+            const rows = summaryTable.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('th, td');
+                const rowData = Array.from(cells).map(cell => cell.textContent);
+                textToCopy += rowData.join('\t') + '\n';
+            });
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('Table copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy table:', err);
+            });
         }
+
+        // Initial update
+        updateSummaryTable();
     </script>
 </body>
 </html>
