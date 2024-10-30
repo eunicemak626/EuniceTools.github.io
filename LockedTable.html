@@ -157,16 +157,13 @@
             const tbody = document.getElementById('dataTable');
             tbody.innerHTML = '';
 
-            // 自定義排序函數
             function customSort(a, b) {
                 const [modelA, capacityA] = a[0].split(' | ');
                 const [modelB, capacityB] = b[0].split(' | ');
                 
-                // 先按型號排序
                 const modelCompare = modelA.localeCompare(modelB);
                 if (modelCompare !== 0) return modelCompare;
 
-                // 如果是同一型號，按容量排序
                 const capacityOrder = {
                     '128GB': 1,
                     '256GB': 2,
@@ -194,33 +191,29 @@
             document.getElementById('totalQuantity').textContent = total;
         }
 
-function copyTable() {
-    const tbody = document.getElementById('dataTable');
-    const rows = tbody.getElementsByTagName('tr');
-    let copyText = '';
-    
-    // 遍歷所有數據行
-    for (let i = 0; i < rows.length; i++) {
-        const cells = rows[i].getElementsByTagName('td');
-        const rowData = [];
-        
-        // 獲取每個單元格的文本
-        for (let j = 0; j < cells.length; j++) {
-            rowData.push(cells[j].textContent.trim());
+        function copyTable() {
+            const tbody = document.getElementById('dataTable');
+            const rows = tbody.getElementsByTagName('tr');
+            let copyText = '';
+            
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                const rowData = [];
+                
+                for (let j = 0; j < cells.length; j++) {
+                    rowData.push(cells[j].textContent.trim());
+                }
+                
+                copyText += rowData.join('\t') + '\n';
+            }
+            
+            const textarea = document.createElement('textarea');
+            textarea.value = copyText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
         }
-        
-        // 用製表符連接單元格數據，並添加換行符
-        copyText += rowData.join('\t') + '\n';
-    }
-    
-    // 創建臨時textarea來執行複製操作
-    const textarea = document.createElement('textarea');
-    textarea.value = copyText;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
-}
     </script>
 </body>
 </html>
