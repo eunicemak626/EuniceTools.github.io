@@ -1,98 +1,226 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unlocked Table Generator</title>
+    <title>Locked Table Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f7;
+        }
+        .container {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        #hot-table {
+            height: 400px;
+            overflow: auto;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e5e5;
+        }
+        .copy-button {
+            padding: 8px 16px;
+            background-color: white;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: normal;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .copy-button:hover {
+            background-color: #f5f5f5;
+            border-color: #999;
         }
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e5e5;
         }
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px 15px;
             text-align: left;
+            border-bottom: 1px solid #e5e5e5;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #f8f8f8;
+            font-weight: 600;
+            color: #1d1d1f;
+            font-size: 14px;
         }
-        button {
-            margin-top: 10px;
+        td {
+            color: #484848;
+            font-size: 14px;
+        }
+        tbody tr:hover {
+            background-color: #f8f8f8;
+        }
+        tfoot tr td {
+            background-color: #f8f8f8;
+            font-weight: 600;
+            border-bottom: none;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
         }
     </style>
 </head>
 <body>
-    <h1>Unlocked Table Generator</h1>
-    <textarea id="dataInput" rows="10" style="width: 100%;" placeholder="Paste your data here"></textarea>
-    <button onclick="copyTable()">Copy Table</button>
-    <table>
-        <thead>
-            <tr>
-                <th>Model</th>
-                <th>Capacity</th>
-                <th>Quantity</th>
-            </tr>
-        </thead>
-        <tbody id="dataTable">
-            <!-- Data will be inserted here -->
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="2">Total</td>
-                <td id="totalQuantity">0</td>
-            </tr>
-        </tfoot>
-    </table>
+    <div class="container">
+        <div id="hot-table"></div>
+        <button class="copy-button" onclick="copyTable()">Copy Table</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Capacity</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody id="dataTable">
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2">Total</td>
+                    <td id="totalQuantity">0</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
     <script>
-        document.getElementById('dataInput').addEventListener('input', processData);
+        let hot;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('#hot-table');
+            hot = new Handsontable(container, {
+                data: [['', '', '']], 
+                colHeaders: ['IMEI', 'Serial', 'Model'],
+                rowHeaders: true,
+                width: '100%',
+                autoRowSize: true,
+                minSpareRows: 1,
+                stretchH: 'all',
+                fixedRowsTop: 0,
+                licenseKey: 'non-commercial-and-evaluation',
+                afterChange: function(changes) {
+                    if (changes) {
+                        updateSummary();
+                    }
+                }
+            });
+        });
 
-        function processData() {
-            const data = document.getElementById('dataInput').value.trim().split('\n');
+        function updateSummary() {
+            const data = hot.getData();
             const result = {};
             let total = 0;
 
-            data.forEach(line => {
-                const parts = line.match(/(.+)\s(\d+(?:GB|TB))/i);
-                if (parts) {
-                    const [_, model, capacity] = parts;
-                    const key = `${model} | ${capacity}`;
-                    result[key] = (result[key] || 0) + 1;
+            data.forEach(row => {
+                const model = row[2];
+                if (model) {
+                    const parts = model.trim().match(/(.+)\s(\d+(?:GB|TB))/i);
+                    if (parts) {
+                        const [_, model, capacity] = parts;
+                        const key = `${model} | ${capacity}`;
+                        result[key] = (result[key] || 0) + 1;
+                    }
                 }
             });
 
             const tbody = document.getElementById('dataTable');
             tbody.innerHTML = '';
 
-            Object.entries(result).forEach(([key, qty]) => {
-                const [model, capacity] = key.split(' | ');
-                total += qty;
-                const row = `<tr>
-                    <td>${model}</td>
-                    <td>${capacity}</td>
-                    <td>${qty}</td>
-                </tr>`;
-                tbody.innerHTML += row;
-            });
+            // 自定義排序函數
+            function customSort(a, b) {
+                const [modelA, capacityA] = a[0].split(' | ');
+                const [modelB, capacityB] = b[0].split(' | ');
+                
+                // 先按型號排序
+                const modelCompare = modelA.localeCompare(modelB);
+                if (modelCompare !== 0) return modelCompare;
+
+                // 如果是同一型號，按容量排序
+                const capacityOrder = {
+                    '128GB': 1,
+                    '256GB': 2,
+                    '512GB': 3,
+                    '1TB': 4
+                };
+
+                return capacityOrder[capacityA] - capacityOrder[capacityB];
+            }
+            
+            Object.entries(result)
+                .sort(customSort)
+                .forEach(([key, qty]) => {
+                    const [model, capacity] = key.split(' | ');
+                    total += qty;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${model}</td>
+                        <td>${capacity}</td>
+                        <td>${qty}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
 
             document.getElementById('totalQuantity').textContent = total;
         }
 
         function copyTable() {
-            const table = document.querySelector('table');
-            const range = document.createRange();
-            range.selectNode(table);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
+            const tbody = document.getElementById('dataTable');
+            const rows = tbody.getElementsByTagName('tr');
+            let copyText = '';
+            
+            // 遍歷所有數據行
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                const rowData = [];
+                
+                // 獲取每個單元格的文本
+                for (let j = 0; j < cells.length; j++) {
+                    rowData.push(cells[j].textContent.trim());
+                }
+                
+                // 用製表符連接單元格數據，並添加換行符
+                copyText += rowData.join('\t') + '\n';
+            }
+            
+            // 創建臨時textarea來執行複製操作
+            const textarea = document.createElement('textarea');
+            textarea.value = copyText;
+            document.body.appendChild(textarea);
+            textarea.select();
             document.execCommand('copy');
-            selection.removeAllRanges();
+            document.body.removeChild(textarea);
+            
             alert('Table data copied to clipboard');
         }
     </script>
