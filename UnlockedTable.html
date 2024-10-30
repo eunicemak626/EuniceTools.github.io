@@ -5,46 +5,99 @@
     <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
     <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f7;
+        }
         .container {
-            margin: 20px;
-            font-family: Arial, sans-serif;
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         h1 {
-            font-size: 32px;
+            font-size: 24px;
             margin-bottom: 20px;
+            color: #1d1d1f;
         }
         #hot-table {
+            height: 400px;
+            overflow: auto;
             margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e5e5;
         }
         .copy-button {
             padding: 8px 16px;
-            font-size: 16px;
-            border-radius: 5px;
+            background-color: white;
+            color: #333;
             border: 1px solid #ccc;
-            background-color: #fff;
+            border-radius: 4px;
             cursor: pointer;
-            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: normal;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         .copy-button:hover {
-            background-color: #f0f0f0;
+            background-color: #f5f5f5;
+            border-color: #999;
         }
         .summary-table {
-            border-collapse: collapse;
             width: 100%;
-            max-width: 800px;
+            border-collapse: separate;
+            border-spacing: 0;
             margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e5e5;
         }
-        .summary-table th, .summary-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
+        .summary-table th, 
+        .summary-table td {
+            padding: 12px 15px;
             text-align: left;
+            border-bottom: 1px solid #e5e5e5;
+            font-size: 14px;
         }
         .summary-table th {
             background-color: #f8f8f8;
-            font-weight: bold;
+            font-weight: 600;
+            color: #1d1d1f;
         }
-        .summary-table tr:last-child {
-            font-weight: bold;
+        .summary-table td {
+            color: #484848;
+        }
+        .summary-table tbody tr:hover {
+            background-color: #f8f8f8;
+        }
+        .summary-table tfoot tr td {
+            background-color: #f8f8f8;
+            font-weight: 600;
+            border-bottom: none;
+        }
+        #copyArea {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
         }
     </style>
 </head>
@@ -72,6 +125,7 @@
                 </tr>
             </tfoot>
         </table>
+        <textarea id="copyArea" readonly></textarea>
     </div>
 
     <script>
@@ -119,9 +173,8 @@
             const modelCounts = {};
             let total = 0;
 
-            // Count models
             data.forEach(row => {
-                if (row[2]) {  // Check column C
+                if (row[2]) {
                     const info = parseModelInfo(row[2]);
                     if (info) {
                         const key = `${info.model}|${info.capacity}`;
@@ -130,7 +183,6 @@
                 }
             });
 
-            // Update summary table
             const summaryBody = document.getElementById('summary-body');
             summaryBody.innerHTML = '';
 
@@ -152,24 +204,29 @@
         }
 
         function copyTable() {
-            const summaryTable = document.querySelector('.summary-table');
+            const tbody = document.getElementById('summary-body');
+            const copyArea = document.getElementById('copyArea');
             let textToCopy = '';
             
-            const rows = summaryTable.querySelectorAll('tr');
+            const rows = tbody.querySelectorAll('tr');
             rows.forEach(row => {
-                const cells = row.querySelectorAll('th, td');
-                const rowData = Array.from(cells).map(cell => cell.textContent);
+                const cells = row.querySelectorAll('td');
+                const rowData = Array.from(cells).map(cell => cell.textContent.trim());
                 textToCopy += rowData.join('\t') + '\n';
             });
             
-            navigator.clipboard.writeText(textToCopy).then(() => {
+            copyArea.value = textToCopy;
+            copyArea.select();
+            
+            try {
+                document.execCommand('copy');
                 alert('Table copied to clipboard!');
-            }).catch(err => {
+            } catch (err) {
                 console.error('Failed to copy table:', err);
-            });
+                alert('Failed to copy. Please try selecting and copying manually.');
+            }
         }
 
-        // Initial update
         updateSummaryTable();
     </script>
 </body>
