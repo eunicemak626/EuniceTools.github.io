@@ -137,98 +137,125 @@
     </div>
 
     <script>
-        const container = document.getElementById('hot-table');
-        const hot = new Handsontable(container, {
-            data: [
-                ['350118659695429', '', 'IPHONE 13 128GB PINK'],
-                ['', '', '']
-            ],
-            width: '100%',
-            height: 500,
-            colHeaders: ['A', 'B', 'C'],
-            rowHeaders: true,
-            licenseKey: 'non-commercial-and-evaluation',
-            contextMenu: true,
-            minSpareRows: 1,
-            afterChange: function(changes) {
-                if (changes) {
-                    updateSummaryTable();
-                }
-            }
-        });
-
-        function parseModelInfo(description) {
-            if (!description) return null;
-            
-            const parts = description.split(' ');
-            if (parts.length < 3) return null;
-
-            const capacityIndex = parts.findIndex(part => part.includes('GB') || part.includes('TB'));
-            if (capacityIndex === -1) return null;
-
-            const model = parts.slice(0, capacityIndex).join(' ');
-            const capacity = parts[capacityIndex];
-            const color = parts.slice(capacityIndex + 1).join(' ');
-
-            return {
-                model: model + ' ' + color,
-                capacity: capacity
-            };
-        }
-
-        function updateSummaryTable() {
-            const data = hot.getData();
-            const modelCounts = {};
-            let total = 0;
-
-            data.forEach(row => {
-                if (row[2]) {
-                    const info = parseModelInfo(row[2]);
-                    if (info) {
-                        const key = `${info.model}|${info.capacity}`;
-                        modelCounts[key] = (modelCounts[key] || 0) + 1;
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('hot-table');
+            const hot = new Handsontable(container, {
+                data: [['', '', '']], 
+                colHeaders: ['IMEI', 'Serial', 'Model'],
+                rowHeaders: true,
+                width: '100%',
+                autoRowSize: true,
+                minSpareRows: 1,
+                stretchH: 'all',
+                fixedRowsTop: 0,
+                height: 400,
+                licenseKey: 'non-commercial-and-evaluation',
+                contextMenu: true,
+                afterChange: function(changes) {
+                    if (changes) {
+                        updateSummaryTable();
                     }
                 }
             });
 
-            const summaryBody = document.getElementById('summary-body');
-            summaryBody.innerHTML = '';
+            function parseModelInfo(description) {
+                if (!description) return null;
+                
+                const parts = description.split(' ');
+                if (parts.length < 3) return null;
 
-            Object.entries(modelCounts).forEach(([key, count]) => {
-                const [model, capacity] = key.split('|');
-                if (model && capacity) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${model}</td>
-                        <td>${capacity}</td>
-                        <td>${count}</td>
-                    `;
-                    summaryBody.appendChild(tr);
-                    total += count;
-                }
-            });
+                const capacityIndex = parts.findIndex(part => part.includes('GB') || part.includes('TB'));
+                if (capacityIndex === -1) return null;
 
-            document.getElementById('total-quantity').textContent = total;
-        }
+                const model = parts.slice(0, capacityIndex).join(' ');
+                const capacity = parts[capacityIndex];
+                const color = parts.slice(capacityIndex + 1).join(' ');
 
-        function copyTable() {
-            const tbody = document.getElementById('summary-body');
-            const copyArea = document.getElementById('copyArea');
-            let textToCopy = '';
-            
-            const rows = tbody.querySelectorAll('tr');
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                const rowData = Array.from(cells).map(cell => cell.textContent.trim());
-                textToCopy += rowData.join('\t') + '\n';
-            });
-            
-            copyArea.value = textToCopy;
-            copyArea.select();
-            document.execCommand('copy');
-        }
+                return {
+                    model: model + ' ' + color,
+                    capacity: capacity
+                };
+            }
 
-        updateSummaryTable();
+            function updateSummaryTable() {
+                const data = hot.getData();
+                const modelCounts = {};
+                let total = 0;
+
+                data.forEach(row => {
+                    if (row[2]) {
+                        const info = parseModelInfo(row[2]);
+                        if (info) {
+                            const key = `${info.model}|${info.capacity}`;
+                            modelCounts[key] = (modelCounts[key] || 0) + 1;
+                        }
+                    }
+                });
+
+                const summaryBody = document.getElementById('summary-body');
+                summaryBody.innerHTML = '';
+
+                // Sort the entries
+                const sortedEntries = Object.entries(modelCounts).sort((a, b) => {
+                    const [modelA, capacityA] = a[0].split('|');
+                    const [modelB, capacityB] = b[0].split('|');
+                    
+                    // First sort by model
+                    if (modelA < modelB) return -1;
+                    if (modelA > modelB) return 1;
+                    
+                    // Then sort by capacity
+                    const capacityOrder = {
+                        '128GB': 1,
+                        '256GB': 2,
+                        '512GB': 3,
+                        '1TB': 4
+                    };
+                    
+                    return (capacityOrder[capacityA] || 0) - (capacityOrder[capacityB] || 0);
+                });
+
+                sortedEntries.forEach(([key, count]) => {
+                    const [model, capacity] = key.split('|');
+                    if (model && capacity) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${model}</td>
+                            <td>${capacity}</td>
+                            <td>${count}</td>
+                        `;
+                        summaryBody.appendChild(tr);
+                        total += count;
+                    }
+                });
+
+                document.getElementById('total-quantity').textContent = total;
+            }
+
+            function copyTable() {
+                const tbody = document.getElementById('summary-body');
+                const copyArea = document.getElementById('copyArea');
+                let textToCopy = '';
+                
+                const rows = tbody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    const rowData = Array.from(cells).map(cell => cell.textContent.trim());
+                    textToCopy += rowData.join('\t') + '\n';
+                });
+                
+                copyArea.value = textToCopy;
+                copyArea.select();
+                document.execCommand('copy');
+            }
+
+            // Make functions globally accessible
+            window.copyTable = copyTable;
+            window.updateSummaryTable = updateSummaryTable;
+
+            // Initial update
+            updateSummaryTable();
+        });
     </script>
 </body>
 </html>
