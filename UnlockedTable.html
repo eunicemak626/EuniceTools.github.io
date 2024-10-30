@@ -158,6 +158,38 @@
                 }
             });
 
+            const modelPriority = {
+                'IPAD 9': 1,
+                'IPAD 10': 2,
+                'IPAD MINI 6': 3,
+                'IPAD AIR 5': 4,
+                'IPAD PRO 11 4': 5,
+                'IPAD PRO 12.9 6': 6
+            };
+
+            const colorPriority = {
+                // Standard Colors
+                'SPACE GRAY': 1,
+                'SILVER': 2,
+                'PINK': 3,
+                'PURPLE': 4,
+                'BLUE': 5,
+                'STARLIGHT': 6,
+                
+                // Pro Colors
+                'PRO_SPACE GRAY': 1,
+                'PRO_SILVER': 2
+            };
+
+            const capacityPriority = {
+                '64GB': 1,
+                '128GB': 2,
+                '256GB': 3,
+                '512GB': 4,
+                '1TB': 5,
+                '2TB': 6
+            };
+
             function parseModelInfo(description) {
                 if (!description) return null;
                 
@@ -192,28 +224,51 @@
                     }
                 });
 
+                const sortedEntries = Object.entries(modelCounts).sort((a, b) => {
+                    const [modelStrA, capacityA] = a[0].split('|');
+                    const [modelStrB, capacityB] = b[0].split('|');
+
+                    // Get base model
+                    const baseModelA = Object.keys(modelPriority).find(model => modelStrA.includes(model));
+                    const baseModelB = Object.keys(modelPriority).find(model => modelStrB.includes(model));
+
+                    // Compare base models
+                    if (modelPriority[baseModelA] !== modelPriority[baseModelB]) {
+                        return modelPriority[baseModelA] - modelPriority[baseModelB];
+                    }
+
+                    // Get color (last word before capacity)
+                    const getColor = (str) => {
+                        const parts = str.split(' ');
+                        const capacityIndex = parts.findIndex(part => part.includes('GB') || part.includes('TB'));
+                        return parts.slice(capacityIndex + 1).join(' ');
+                    };
+
+                    const colorA = getColor(modelStrA);
+                    const colorB = getColor(modelStrB);
+
+                    // Add prefix for Pro models
+                    const getColorWithPrefix = (modelStr, color) => {
+                        if (modelStr.includes('PRO')) return `PRO_${color}`;
+                        return color;
+                    };
+
+                    const colorKeyA = getColorWithPrefix(modelStrA, colorA);
+                    const colorKeyB = getColorWithPrefix(modelStrB, colorB);
+
+                    const colorPriorityA = colorPriority[colorKeyA] || 999;
+                    const colorPriorityB = colorPriority[colorKeyB] || 999;
+
+                    if (colorPriorityA !== colorPriorityB) {
+                        return colorPriorityA - colorPriorityB;
+                    }
+
+                    // Compare capacities
+                    return capacityPriority[capacityA] - capacityPriority[capacityB];
+                });
+
                 const summaryBody = document.getElementById('summary-body');
                 summaryBody.innerHTML = '';
-
-                // Sort the entries
-                const sortedEntries = Object.entries(modelCounts).sort((a, b) => {
-                    const [modelA, capacityA] = a[0].split('|');
-                    const [modelB, capacityB] = b[0].split('|');
-                    
-                    // First sort by model
-                    if (modelA < modelB) return -1;
-                    if (modelA > modelB) return 1;
-                    
-                    // Then sort by capacity
-                    const capacityOrder = {
-                        '128GB': 1,
-                        '256GB': 2,
-                        '512GB': 3,
-                        '1TB': 4
-                    };
-                    
-                    return (capacityOrder[capacityA] || 0) - (capacityOrder[capacityB] || 0);
-                });
 
                 sortedEntries.forEach(([key, count]) => {
                     const [model, capacity] = key.split('|');
