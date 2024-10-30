@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-HK">
 <head>
+    <meta charset="UTF-8">
     <title>Unlocked Vz IPad Table Generator</title>
     <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
@@ -8,7 +9,6 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
             margin: 0;
-            padding: 20px;
             background-color: #f5f5f7;
         }
         .container {
@@ -17,7 +17,7 @@
             margin: 0 auto;
             background-color: white;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         h1 {
             font-size: 24px;
@@ -25,26 +25,29 @@
             color: #1d1d1f;
         }
         #hot-table {
-            height: 400px;
-            overflow: auto;
             margin-bottom: 20px;
-            border-radius: 8px;
+            height: 500px;
             border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
         }
         .copy-button {
             padding: 8px 16px;
             background-color: white;
             color: #333;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             font-weight: normal;
             transition: all 0.2s;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             text-decoration: none;
-            display: inline-block;
-            margin-right: 10px;
         }
         .copy-button:hover {
             background-color: #f5f5f5;
@@ -80,7 +83,6 @@
         .summary-table tfoot tr td {
             background-color: #f8f8f8;
             font-weight: 600;
-            border-bottom: none;
         }
         #copyArea {
             position: absolute;
@@ -106,19 +108,17 @@
 </head>
 <body>
     <div class="container">
-        <h1>
-            <span id="titleText">Unlocked Vz IPad Table Generator</span>
-        </h1>
+        <h1>Unlocked Vz IPad Table Generator</h1>
         <div id="hot-table"></div>
         <div class="button-group">
             <button class="copy-button" onclick="copyTable()">Copy Table</button>
             <a href="https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html" class="copy-button">→ Switch Mode</a>
         </div>
-        
+
         <table class="summary-table">
             <thead>
                 <tr>
-                    <th><span id="headerText">UNLOCKED N/A</span></th>
+                    <th>UNLOCKED N/A</th>
                     <th>Capacity</th>
                     <th>Quantity</th>
                 </tr>
@@ -133,127 +133,71 @@
                 </tr>
             </tfoot>
         </table>
-        <textarea id="copyArea" readonly></textarea>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const container = document.getElementById('hot-table');
-            const hot = new Handsontable(container, {
-                data: [['', '', '']], 
-                colHeaders: ['IMEI', 'Serial', 'Model'],
-                rowHeaders: true,
-                width: '100%',
-                autoRowSize: true,
-                minSpareRows: 1,
-                stretchH: 'all',
-                height: 400,
-                licenseKey: 'non-commercial-and-evaluation',
-                contextMenu: true,
-                afterChange: function(changes) {
-                    if (changes) {
-                        updateSummaryTable();
+        const container = document.getElementById('hot-table');
+        const hot = new Handsontable(container, {
+            data: [
+                ['350118659695429', '', 'IPHONE 13 128GB PINK'],
+                ['', '', '']
+            ],
+            width: '100%',
+            height: 500,
+            colHeaders: ['A', 'B', 'C'],
+            rowHeaders: true,
+            licenseKey: 'non-commercial-and-evaluation',
+            contextMenu: true,
+            minSpareRows: 1,
+            afterChange: function(changes) {
+                if (changes) {
+                    updateSummaryTable();
+                }
+            }
+        });
+
+        function parseModelInfo(description) {
+            if (!description) return null;
+            
+            const parts = description.split(' ');
+            if (parts.length < 3) return null;
+
+            const capacityIndex = parts.findIndex(part => part.includes('GB') || part.includes('TB'));
+            if (capacityIndex === -1) return null;
+
+            const model = parts.slice(0, capacityIndex).join(' ');
+            const capacity = parts[capacityIndex];
+            const color = parts.slice(capacityIndex + 1).join(' ');
+
+            return {
+                model: model + ' ' + color,
+                capacity: capacity
+            };
+        }
+
+        function updateSummaryTable() {
+            const data = hot.getData();
+            const modelCounts = {};
+            let total = 0;
+
+            // Count models
+            data.forEach(row => {
+                if (row[2]) {  // Check column C
+                    const info = parseModelInfo(row[2]);
+                    if (info) {
+                        const key = `${info.model}|${info.capacity}`;
+                        modelCounts[key] = (modelCounts[key] || 0) + 1;
                     }
                 }
             });
 
-            const modelPriority = {
-                'IPHONE 14 PLUS': 1.5, // Added IPHONE 14 PLUS with priority between 14 and 15
-                'IPHONE 14': 1,
-                'IPHONE 15': 2,
-                'IPHONE 15 PLUS': 3,
-                'IPHONE 15 PRO': 4,
-                'IPHONE 15 PRO MAX': 5,
-                'IPHONE 16': 6,
-                'IPHONE 16 PLUS': 7,
-                'IPHONE 16 PRO': 8,
-                'IPHONE 16 PRO MAX': 9
-            };
+            // Update summary table
+            const summaryBody = document.getElementById('summary-body');
+            summaryBody.innerHTML = '';
 
-            const colorPriority = {
-                'BLACK': 1,
-                'WHITE': 2,
-                'NATURAL': 3,
-                'DESERT': 4,
-                'BLUE': 5,
-                'ULTRAMARINE': 6,
-                'PINK': 7,
-                'TEAL': 8
-            };
-
-            const capacityPriority = {
-                '128GB': 1,
-                '256GB': 2,
-                '512GB': 3,
-                '1TB': 4
-            };
-
-            function parseModelInfo(description) {
-                if (!description) return null;
-                
-                const parts = description.trim().split(' ');
-                const capacityIndex = parts.findIndex(part => part.includes('GB') || part.includes('TB'));
-                if (capacityIndex === -1) return null;
-
-                const capacity = parts[capacityIndex];
-                const color = parts.slice(capacityIndex + 1).join(' ');
-                
-                // Try to match the longest possible model name
-                let bestMatch = '';
-                Object.keys(modelPriority).forEach(model => {
-                    const modelWords = model.split(' ');
-                    const descriptionStart = parts.slice(0, modelWords.length).join(' ');
-                    if (model === descriptionStart && descriptionStart.length > bestMatch.length) {
-                        bestMatch = descriptionStart;
-                    }
-                });
-
-                if (!bestMatch) return null;
-
-                return {
-                    fullModel: bestMatch + ' ' + color,
-                    baseModel: bestMatch,
-                    capacity: capacity,
-                    color: color
-                };
-            }
-
-            function updateSummaryTable() {
-                const data = hot.getData();
-                const modelCounts = {};
-                let total = 0;
-
-                data.forEach(row => {
-                    if (row[2]) {
-                        const info = parseModelInfo(row[2]);
-                        if (info) {
-                            const key = `${info.fullModel}|${info.capacity}`;
-                            modelCounts[key] = (modelCounts[key] || 0) + 1;
-                        }
-                    }
-                });
-
-                const sortedEntries = Object.entries(modelCounts).sort((a, b) => {
-                    const [modelStrA, capacityA] = a[0].split('|');
-                    const [modelStrB, capacityB] = b[0].split('|');
-
-                    const infoA = parseModelInfo(modelStrA + ' ' + capacityA);
-                    const infoB = parseModelInfo(modelStrB + ' ' + capacityB);
-
-                    const modelCompare = modelPriority[infoA.baseModel] - modelPriority[infoB.baseModel];
-                    if (modelCompare !== 0) return modelCompare;
-
-                    const capacityCompare = capacityPriority[capacityA] - capacityPriority[capacityB];
-                    if (capacityCompare !== 0) return capacityCompare;
-
-                    return (colorPriority[infoA.color] || 999) - (colorPriority[infoB.color] || 999);
-                });
-
-                const summaryBody = document.getElementById('summary-body');
-                summaryBody.innerHTML = '';
-
-                sortedEntries.forEach(([key, count]) => {
-                    const [model, capacity] = key.split('|');
+            Object.entries(modelCounts).forEach(([key, count]) => {
+                const [model, capacity] = key.split('|');
+                if (model && capacity) {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${model}</td>
@@ -262,35 +206,32 @@
                     `;
                     summaryBody.appendChild(tr);
                     total += count;
-                });
+                }
+            });
 
-                document.getElementById('total-quantity').textContent = total;
-            }
+            document.getElementById('total-quantity').textContent = total;
+        }
 
-            function copyTable() {
-                const tbody = document.getElementById('summary-body');
-                const copyArea = document.getElementById('copyArea');
-                let textToCopy = '';
-                
-                const rows = tbody.querySelectorAll('tr');
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    const rowData = Array.from(cells).map(cell => cell.textContent.trim());
-                    textToCopy += rowData.join('\t') + '\n';
-                });
-                
-                copyArea.value = textToCopy;
-                copyArea.select();
-                document.execCommand('copy');
-            }
+        function copyTable() {
+            const summaryTable = document.querySelector('.summary-table');
+            let textToCopy = '';
+            
+            const rows = summaryTable.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('th, td');
+                const rowData = Array.from(cells).map(cell => cell.textContent);
+                textToCopy += rowData.join('\t') + '\n';
+            });
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('Table copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy table:', err);
+            });
+        }
 
-            // Make functions globally accessible
-            window.copyTable = copyTable;
-            window.updateSummaryTable = updateSummaryTable;
-
-            // Initial update
-            updateSummaryTable();
-        });
+        // Initial update
+        updateSummaryTable();
     </script>
 </body>
 </html>
