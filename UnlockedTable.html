@@ -147,7 +147,6 @@
                 autoRowSize: true,
                 minSpareRows: 1,
                 stretchH: 'all',
-                fixedRowsTop: 0,
                 height: 400,
                 licenseKey: 'non-commercial-and-evaluation',
                 contextMenu: true,
@@ -159,53 +158,63 @@
             });
 
             const modelPriority = {
-                'IPAD 9': 1,
-                'IPAD 10': 2,
-                'IPAD MINI 6': 3,
-                'IPAD AIR 5': 4,
-                'IPAD PRO 11 4': 5,
-                'IPAD PRO 12.9 6': 6
+                'IPHONE 14 PLUS': 1.5, // Added IPHONE 14 PLUS with priority between 14 and 15
+                'IPHONE 14': 1,
+                'IPHONE 15': 2,
+                'IPHONE 15 PLUS': 3,
+                'IPHONE 15 PRO': 4,
+                'IPHONE 15 PRO MAX': 5,
+                'IPHONE 16': 6,
+                'IPHONE 16 PLUS': 7,
+                'IPHONE 16 PRO': 8,
+                'IPHONE 16 PRO MAX': 9
             };
 
             const colorPriority = {
-                // Standard Colors
-                'SPACE GRAY': 1,
-                'SILVER': 2,
-                'PINK': 3,
-                'PURPLE': 4,
+                'BLACK': 1,
+                'WHITE': 2,
+                'NATURAL': 3,
+                'DESERT': 4,
                 'BLUE': 5,
-                'STARLIGHT': 6,
-                
-                // Pro Colors
-                'PRO_SPACE GRAY': 1,
-                'PRO_SILVER': 2
+                'ULTRAMARINE': 6,
+                'PINK': 7,
+                'TEAL': 8
             };
 
             const capacityPriority = {
-                '64GB': 1,
-                '128GB': 2,
-                '256GB': 3,
-                '512GB': 4,
-                '1TB': 5,
-                '2TB': 6
+                '128GB': 1,
+                '256GB': 2,
+                '512GB': 3,
+                '1TB': 4
             };
 
             function parseModelInfo(description) {
                 if (!description) return null;
                 
-                const parts = description.split(' ');
-                if (parts.length < 3) return null;
-
+                const parts = description.trim().split(' ');
                 const capacityIndex = parts.findIndex(part => part.includes('GB') || part.includes('TB'));
                 if (capacityIndex === -1) return null;
 
-                const model = parts.slice(0, capacityIndex).join(' ');
                 const capacity = parts[capacityIndex];
                 const color = parts.slice(capacityIndex + 1).join(' ');
+                
+                // Try to match the longest possible model name
+                let bestMatch = '';
+                Object.keys(modelPriority).forEach(model => {
+                    const modelWords = model.split(' ');
+                    const descriptionStart = parts.slice(0, modelWords.length).join(' ');
+                    if (model === descriptionStart && descriptionStart.length > bestMatch.length) {
+                        bestMatch = descriptionStart;
+                    }
+                });
+
+                if (!bestMatch) return null;
 
                 return {
-                    model: model + ' ' + color,
-                    capacity: capacity
+                    fullModel: bestMatch + ' ' + color,
+                    baseModel: bestMatch,
+                    capacity: capacity,
+                    color: color
                 };
             }
 
@@ -218,7 +227,7 @@
                     if (row[2]) {
                         const info = parseModelInfo(row[2]);
                         if (info) {
-                            const key = `${info.model}|${info.capacity}`;
+                            const key = `${info.fullModel}|${info.capacity}`;
                             modelCounts[key] = (modelCounts[key] || 0) + 1;
                         }
                     }
@@ -228,43 +237,16 @@
                     const [modelStrA, capacityA] = a[0].split('|');
                     const [modelStrB, capacityB] = b[0].split('|');
 
-                    // Get base model
-                    const baseModelA = Object.keys(modelPriority).find(model => modelStrA.includes(model));
-                    const baseModelB = Object.keys(modelPriority).find(model => modelStrB.includes(model));
+                    const infoA = parseModelInfo(modelStrA + ' ' + capacityA);
+                    const infoB = parseModelInfo(modelStrB + ' ' + capacityB);
 
-                    // Compare base models
-                    if (modelPriority[baseModelA] !== modelPriority[baseModelB]) {
-                        return modelPriority[baseModelA] - modelPriority[baseModelB];
-                    }
+                    const modelCompare = modelPriority[infoA.baseModel] - modelPriority[infoB.baseModel];
+                    if (modelCompare !== 0) return modelCompare;
 
-                    // Get color (last word before capacity)
-                    const getColor = (str) => {
-                        const parts = str.split(' ');
-                        const capacityIndex = parts.findIndex(part => part.includes('GB') || part.includes('TB'));
-                        return parts.slice(capacityIndex + 1).join(' ');
-                    };
+                    const capacityCompare = capacityPriority[capacityA] - capacityPriority[capacityB];
+                    if (capacityCompare !== 0) return capacityCompare;
 
-                    const colorA = getColor(modelStrA);
-                    const colorB = getColor(modelStrB);
-
-                    // Add prefix for Pro models
-                    const getColorWithPrefix = (modelStr, color) => {
-                        if (modelStr.includes('PRO')) return `PRO_${color}`;
-                        return color;
-                    };
-
-                    const colorKeyA = getColorWithPrefix(modelStrA, colorA);
-                    const colorKeyB = getColorWithPrefix(modelStrB, colorB);
-
-                    const colorPriorityA = colorPriority[colorKeyA] || 999;
-                    const colorPriorityB = colorPriority[colorKeyB] || 999;
-
-                    if (colorPriorityA !== colorPriorityB) {
-                        return colorPriorityA - colorPriorityB;
-                    }
-
-                    // Compare capacities
-                    return capacityPriority[capacityA] - capacityPriority[capacityB];
+                    return (colorPriority[infoA.color] || 999) - (colorPriority[infoB.color] || 999);
                 });
 
                 const summaryBody = document.getElementById('summary-body');
@@ -272,16 +254,14 @@
 
                 sortedEntries.forEach(([key, count]) => {
                     const [model, capacity] = key.split('|');
-                    if (model && capacity) {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${model}</td>
-                            <td>${capacity}</td>
-                            <td>${count}</td>
-                        `;
-                        summaryBody.appendChild(tr);
-                        total += count;
-                    }
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${model}</td>
+                        <td>${capacity}</td>
+                        <td>${count}</td>
+                    `;
+                    summaryBody.appendChild(tr);
+                    total += count;
                 });
 
                 document.getElementById('total-quantity').textContent = total;
