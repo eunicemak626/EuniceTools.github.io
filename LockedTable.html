@@ -194,35 +194,35 @@
             document.getElementById('totalQuantity').textContent = total;
         }
 
-        function copyTable() {
-            const tbody = document.getElementById('dataTable');
-            const rows = tbody.getElementsByTagName('tr');
-            let copyText = '';
-            
-            // 遍歷所有數據行
-            for (let i = 0; i < rows.length; i++) {
-                const cells = rows[i].getElementsByTagName('td');
-                const rowData = [];
-                
-                // 獲取每個單元格的文本
-                for (let j = 0; j < cells.length; j++) {
-                    rowData.push(cells[j].textContent.trim());
-                }
-                
-                // 用製表符連接單元格數據，並添加換行符
-                copyText += rowData.join('\t') + '\n';
-            }
-            
-            // 創建臨時textarea來執行複製操作
-            const textarea = document.createElement('textarea');
-            textarea.value = copyText;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            
-            alert('Table data copied to clipboard');
+function copyTable() {
+    const tbody = document.getElementById('dataTable');
+    const rows = tbody.getElementsByTagName('tr');
+    let copyText = '';
+    
+    // 遍歷所有數據行
+    for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        const rowData = [];
+        
+        // 獲取每個單元格的文本
+        for (let j = 0; j < cells.length; j++) {
+            rowData.push(cells[j].textContent.trim());
         }
+        
+        // 用製表符連接單元格數據，並添加換行符
+        copyText += rowData.join('\t') + '\n';
+    }
+    
+    // 創建臨時textarea來執行複製操作
+    const textarea = document.createElement('textarea');
+    textarea.value = copyText;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    // 刪除以下這行
+    // alert('Table data copied to clipboard');
+}
     </script>
 </body>
 </html>
