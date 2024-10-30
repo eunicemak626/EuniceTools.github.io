@@ -217,14 +217,7 @@
             
             copyArea.value = textToCopy;
             copyArea.select();
-            
-            try {
-                document.execCommand('copy');
-                alert('Table copied to clipboard!');
-            } catch (err) {
-                console.error('Failed to copy table:', err);
-                alert('Failed to copy. Please try selecting and copying manually.');
-            }
+            document.execCommand('copy');
         }
 
         updateSummaryTable();
