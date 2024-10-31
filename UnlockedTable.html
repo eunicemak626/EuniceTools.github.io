@@ -227,24 +227,32 @@
             document.getElementById('total-quantity').textContent = total;
         }
 
-        function copyTable() {
-            const summaryTable = document.querySelector('.summary-table');
-            let textToCopy = '';
-            
-            const rows = summaryTable.querySelectorAll('tr');
-            rows.forEach(row => {
-                const cells = row.querySelectorAll('th, td');
-                const rowData = Array.from(cells).map(cell => cell.textContent);
-                textToCopy += rowData.join('\t') + '\n';
-            });
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                alert('Table copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy table:', err);
-            });
+function copyTable() {
+    const tbody = document.getElementById('dataTable');
+    const rows = tbody.getElementsByTagName('tr');
+    let copyText = '';
+    
+    // 遍歷每一行，並提取單元格數據
+    for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        const rowData = [];
+        
+        for (let j = 0; j < cells.length; j++) {
+            rowData.push(cells[j].textContent.trim());
         }
-
+        
+        // 使用制表符（tab）連接每行的數據，並在每行結尾添加換行符
+        copyText += rowData.join('\t') + '\n';
+    }
+    
+    // 使用現代的 Clipboard API 將文本複製到剪貼板
+    navigator.clipboard.writeText(copyText).then(() => {
+        console.log('表格已成功複製到剪貼板！');
+        // 不再顯示 alert，僅在控制台中記錄消息
+    }).catch(err => {
+        console.error('複製表格失敗:', err);
+    });
+}
         // Initial update
         updateSummaryTable();
     </script>
