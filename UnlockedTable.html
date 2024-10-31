@@ -228,12 +228,12 @@
         }
 
         function copyTable() {
-            const summaryTable = document.querySelector('.summary-table');
+            const summaryBody = document.querySelector('#summary-body');
             let textToCopy = '';
             
-            const rows = summaryTable.querySelectorAll('tr');
+            const rows = summaryBody.querySelectorAll('tr');
             rows.forEach(row => {
-                const cells = row.querySelectorAll('th, td');
+                const cells = row.querySelectorAll('td');
                 const rowData = Array.from(cells).map(cell => cell.textContent);
                 textToCopy += rowData.join('\t') + '\n';
             });
