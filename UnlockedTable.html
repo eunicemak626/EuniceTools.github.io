@@ -31,6 +31,10 @@
             border: 1px solid #e5e5e5;
             border-radius: 8px;
             overflow: hidden;
+            width: 100%; /* 讓表格寬度自適應 */
+        }
+        .handsontable .ht_master .wtHolder {
+            overflow: hidden !important; /* 禁止表格內部的滾動條 */
         }
         .button-group {
             display: flex;
@@ -59,8 +63,7 @@
         }
         .summary-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
+            border-collapse: collapse;
             margin-top: 20px;
             border-radius: 8px;
             overflow: hidden;
@@ -72,6 +75,7 @@
             text-align: left;
             border-bottom: 1px solid #e5e5e5;
             font-size: 14px;
+            vertical-align: middle; /* 垂直居中對齊 */
         }
         .summary-table th {
             background-color: #f8f8f8;
@@ -152,10 +156,11 @@
                 ['350118659695429', '', 'IPHONE 13 128GB PINK'],
                 ['', '', '']
             ],
-            width: '100%',
+            width: '100%',  // 表格寬度設為100%
             height: 500,
             colHeaders: ['A', 'B', 'C'],
             rowHeaders: true,
+            stretchH: 'all',  // 讓所有列均勻分佈
             licenseKey: 'non-commercial-and-evaluation',
             contextMenu: true,
             minSpareRows: 1,
