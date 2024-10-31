@@ -132,124 +132,49 @@
         <table class="summary-table">
             <thead>
                 <tr>
-                    <th>UNLOCKED N/A</th>
+                    <th>Model</th>
                     <th>Capacity</th>
                     <th>Quantity</th>
                 </tr>
             </thead>
             <tbody id="summary-body">
+                <tr>
+                    <td>iPhone 13 Pink</td>
+                    <td>128GB</td>
+                    <td>1</td>
+                </tr>
             </tbody>
             <tfoot>
                 <tr>
                     <td>Total</td>
                     <td></td>
-                    <td id="total-quantity">0</td>
+                    <td id="total-quantity">1</td>
                 </tr>
             </tfoot>
         </table>
     </div>
 
     <script>
-        const container = document.getElementById('hot-table');
-        const hot = new Handsontable(container, {
-            data: [
-                ['350118659695429', '', 'IPHONE 13 128GB PINK'],
-                ['', '', '']
-            ],
-            width: '100%',  // 表格寬度設為100%
-            height: 500,
-            colHeaders: ['A', 'B', 'C'],
-            rowHeaders: true,
-            stretchH: 'all',  // 讓所有列均勻分佈
-            licenseKey: 'non-commercial-and-evaluation',
-            contextMenu: true,
-            minSpareRows: 1,
-            afterChange: function(changes) {
-                if (changes) {
-                    updateSummaryTable();
-                }
-            }
-        });
-
-        function parseModelInfo(description) {
-            if (!description) return null;
-            
-            const parts = description.split(' ');
-            if (parts.length < 3) return null;
-
-            const capacityIndex = parts.findIndex(part => part.includes('GB') || part.includes('TB'));
-            if (capacityIndex === -1) return null;
-
-            const model = parts.slice(0, capacityIndex).join(' ');
-            const capacity = parts[capacityIndex];
-            const color = parts.slice(capacityIndex + 1).join(' ');
-
-            return {
-                model: model + ' ' + color,
-                capacity: capacity
-            };
-        }
-
-        function updateSummaryTable() {
-            const data = hot.getData();
-            const modelCounts = {};
-            let total = 0;
-
-            // Count models
-            data.forEach(row => {
-                if (row[2]) {  // Check column C
-                    const info = parseModelInfo(row[2]);
-                    if (info) {
-                        const key = `${info.model}|${info.capacity}`;
-                        modelCounts[key] = (modelCounts[key] || 0) + 1;
-                    }
-                }
-            });
-
-            // Update summary table
-            const summaryBody = document.getElementById('summary-body');
-            summaryBody.innerHTML = '';
-
-            Object.entries(modelCounts).forEach(([key, count]) => {
-                const [model, capacity] = key.split('|');
-                if (model && capacity) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${model}</td>
-                        <td>${capacity}</td>
-                        <td>${count}</td>
-                    `;
-                    summaryBody.appendChild(tr);
-                    total += count;
-                }
-            });
-
-            document.getElementById('total-quantity').textContent = total;
-        }
-
         // 修改過的 copyTable 函數
         function copyTable() {
-            const summaryTable = document.querySelector('.summary-table');
+            const summaryBody = document.querySelector('.summary-table tbody');
             let copyText = '';
-            
-            const rows = summaryTable.querySelectorAll('tr');
+
+            // 遍歷 tbody 中的每一行
+            const rows = summaryBody.querySelectorAll('tr');
             rows.forEach(row => {
-                const cells = row.querySelectorAll('th, td');
+                const cells = row.querySelectorAll('td');
                 const rowData = Array.from(cells).map(cell => cell.textContent.trim());
-                copyText += rowData.join('\t') + '\n';
+                copyText += rowData.join('\t') + '\n';  // 將數據用制表符分隔，並換行
             });
-            
+
             // 使用現代的 Clipboard API 將文本複製到剪貼板
             navigator.clipboard.writeText(copyText).then(() => {
-                console.log('表格已成功複製到剪貼板！');
-                // 不再顯示 alert，僅在控制台中記錄消息
+                console.log('表格內容已成功複製到剪貼板！');
             }).catch(err => {
                 console.error('複製表格失敗:', err);
             });
         }
-        
-        // Initial update
-        updateSummaryTable();
     </script>
 </body>
 </html>
