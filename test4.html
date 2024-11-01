@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iPhone Price Table - Tesseract.js</title>
+    <title>iPhone Price Table</title>
     <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.3/dist/tesseract.min.js"></script>
+    <script src='https://unpkg.com/tesseract.js@4.1.1/dist/tesseract.min.js'></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -132,8 +132,6 @@
 
                 try {
                     const ocrText = await this.getOCRTextFromImage(file);
-                    if (!ocrText) throw new Error("No text found in image.");
-
                     const tableDataA = this.generateTableDataA(ocrText);
                     this.createTableA(tableDataA);
 
@@ -149,7 +147,7 @@
 
             async getOCRTextFromImage(file) {
                 const worker = Tesseract.createWorker({
-                    logger: info => console.log(info) // 添加日誌以調試 Tesseract.js 運行過程
+                    logger: info => console.log(info) // 日誌輸出幫助調試
                 });
 
                 try {
@@ -166,27 +164,19 @@
             }
 
             generateTableDataA(ocrText) {
-                const rows = ocrText.split('\n').filter(row => row);
+                const rows = ocrText.split("\n").filter(row => row.trim() !== "");
                 const tableData = [];
-
-                // 假設每行至少有5列，對應 LOCKED, SELLING, HKD, CUSTOMER, 1TB
                 rows.forEach(row => {
                     const columns = row.split(/\s+/);
                     if (columns.length >= 4) {
-                        const model = columns[0] + ' ' + columns[1];
-                        // 添加日誌來檢查處理的行
-                        console.log("Processing row:", row);
-
-                        tableData.push([
-                            model.toUpperCase(),
-                            0, // SELLING
-                            0, // HKD
-                            0, // CUSTOMER
-                            columns[5] ? 0 : null // 1TB, 如果沒有該欄位則為 null
-                        ]);
+                        const model = `${columns[0]} ${columns[1]}`.toUpperCase();
+                        const selling = parseInt(columns[2]) || 0;
+                        const hkd = parseInt(columns[3]) || 0;
+                        const customer = parseInt(columns[4]) || 0;
+                        const tb = columns.length >= 6 ? parseInt(columns[5]) || null : null;
+                        tableData.push([model, selling, hkd, customer, tb]);
                     }
                 });
-
                 return tableData;
             }
 
