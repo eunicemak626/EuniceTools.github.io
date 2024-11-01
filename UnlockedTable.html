@@ -129,7 +129,7 @@
         }
         .home-button {
             text-decoration: none;
-            color: #007aff;
+            color: #000; /* 文字顏色改為黑色 */
             font-size: 14px;
         }
         .home-button:hover {
@@ -163,7 +163,8 @@
         <div id="hot-table"></div>
         <div class="button-group">
             <button class="copy-button" onclick="copyTable()">Copy Table</button>
-            <button class="switch-button" id="switchModeButton">→ Right Click Switch</button>
+            <button class="clear-button" onclick="clearTable()">Clear Table</button>
+            <button class="switch-button" id="switchModeButton">→ Switch Mode</button>
             <a href="https://eunicemak626.github.io/EuniceTools.github.io/RenameDescri.html" class="copy-button">Description Rename</a>
         </div>
 
@@ -193,7 +194,7 @@
         </div>
 
         <div class="home-button-container">
-            <a href="/" class="home-button">HOME</a>
+            <a href="/" class="home-button">HOME</a> <!-- 字體顏色已改為黑色 -->
         </div>
     </div>
 
@@ -291,11 +292,16 @@
             });
         }
 
+        // 清除表格數據
+        function clearTable() {
+            hot.loadData([['', '', '', '', '']]);  // 清空表格
+            updateSummaryTable();  // 清空 Summary Table
+        }
+
         // Context menu for switch button
         const switchModeButton = document.getElementById('switchModeButton');
         const contextMenu = document.getElementById('contextMenu');
 
-        // 禁止默認的右鍵菜單行為
         switchModeButton.addEventListener('contextmenu', function(event) {
             event.preventDefault(); // 阻止默認的右鍵菜單
 
@@ -319,7 +325,7 @@
             if (page === 'locked') {
                 window.location.href = 'https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html';
             } else if (page === 'macbook') {
-                window.location.href = 'https://eunicemak626.github.io/EuniceTools.github.io/MacbookTable.html';
+                window.location.href = 'https://eunicemak626.github.io/EuniceTools.github.io/macbookwatchtable.html';
             }
         }
 
