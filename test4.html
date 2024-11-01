@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iPhone Price Table</title>
+    <title>iPhone Price Table - Tesseract.js</title>
     <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.3/dist/tesseract.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -47,14 +48,9 @@
         input[type="file"] {
             display: none;
         }
-        .tables-container {
-            display: flex;
-            gap: 30px;
-            overflow: auto;
-        }
-        #tableContainer, #priceListContainer {
+        #tableContainerA, #tableContainerB {
             margin-top: 20px;
-            width: 50%;
+            overflow: auto;
         }
         .status {
             text-align: center;
@@ -75,19 +71,10 @@
             background-color: #f8d7da;
             color: #721c24;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #f8f9fa;
-            font-weight: bold;
+        .tables-container {
+            display: flex;
+            gap: 30px;
+            overflow: auto;
         }
     </style>
 </head>
@@ -107,71 +94,11 @@
         </div>
 
         <div class="tables-container">
-            <div id="tableContainer"></div>
-            <div id="priceListContainer">
-                <table id="priceListTable">
-                    <thead>
-                        <tr>
-                            <th>Model</th>
-                            <th>Storage</th>
-                            <th>Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>iPhone 15</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone 15</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone 15</td><td>512GB</td><td></td></tr>
-                        <tr><td>iPhone 15 Plus</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone 15 Plus</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone 15 Plus</td><td>512GB</td><td></td></tr>
-                        <tr><td>iPhone 15 Pro</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone 15 Pro</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone 15 Pro</td><td>512GB</td><td></td></tr>
-                        <tr><td>iPhone 15 Pro</td><td>1TB</td><td></td></tr>
-                        <tr><td>iPhone 15 Pro Max</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone 15 Pro Max</td><td>512GB</td><td></td></tr>
-                        <tr><td>iPhone 15 Pro Max</td><td>1TB</td><td></td></tr>
-                        <tr><td>iPhone 14</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone 14</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone 14</td><td>512GB</td><td></td></tr>
-                        <tr><td>iPhone 14 Plus</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone 14 Plus</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone 14 Plus</td><td>512GB</td><td></td></tr>
-                        <tr><td>iPhone 14 Pro</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone 14 Pro</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone 14 Pro</td><td>512GB</td><td></td></tr>
-                        <tr><td>iPhone 14 Pro</td><td>1TB</td><td></td></tr>
-                        <tr><td>iPhone 14 Pro Max</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone 14 Pro Max</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone 14 Pro Max</td><td>512GB</td><td></td></tr>
-                        <tr><td>iPhone 14 Pro Max</td><td>1TB</td><td></td></tr>
-                        <tr><td>iPhone 13 Mini</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone 13 Mini</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone 13 Mini</td><td>512GB</td><td></td></tr>
-                        <tr><td>iPhone 13</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone 13</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone 13</td><td>512GB</td><td></td></tr>
-                        <tr><td>iPhone 13 Pro</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone 13 Pro</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone 13 Pro</td><td>512GB</td><td></td></tr>
-                        <tr><td>iPhone 13 Pro</td><td>1TB</td><td></td></tr>
-                        <tr><td>iPhone 13 Pro Max</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone 13 Pro Max</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone 13 Pro Max</td><td>512GB</td><td></td></tr>
-                        <tr><td>iPhone 13 Pro Max</td><td>1TB</td><td></td></tr>
-                        <tr><td>iPhone 12</td><td>64GB</td><td></td></tr>
-                        <tr><td>iPhone 12</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone 12</td><td>256GB</td><td></td></tr>
-                        <tr><td>iPhone SE 3rd Gen</td><td>64GB</td><td></td></tr>
-                        <tr><td>iPhone SE 3rd Gen</td><td>128GB</td><td></td></tr>
-                        <tr><td>iPhone SE 3rd Gen</td><td>256GB</td><td></td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <div id="tableContainerA"></div>
+            <div id="tableContainerB"></div>
         </div>
     </div>
 
-    <script src='https://unpkg.com/tesseract.js@4.1.1/dist/tesseract.min.js'></script>
     <script>
         class PriceTableProcessor {
             constructor() {
@@ -179,8 +106,8 @@
                 this.loadingStatus = document.getElementById('loadingStatus');
                 this.successStatus = document.getElementById('successStatus');
                 this.errorStatus = document.getElementById('errorStatus');
-                this.tableContainer = document.getElementById('tableContainer');
-                this.priceListTable = document.getElementById('priceListTable');
+                this.tableContainerA = document.getElementById('tableContainerA');
+                this.tableContainerB = document.getElementById('tableContainerB');
                 this.setupEventListeners();
             }
 
@@ -200,50 +127,58 @@
                 if (!file) return;
 
                 this.showStatus(this.loadingStatus);
-                this.tableContainer.innerHTML = '';
+                this.tableContainerA.innerHTML = '';
+                this.tableContainerB.innerHTML = '';
 
                 try {
-                    const { data: { text } } = await Tesseract.recognize(
-                        file,
-                        'eng',
-                        { logger: m => console.log(m) }
-                    );
-                    
-                    const tableData = this.processOCRText(text);
-                    this.createTable(tableData);
-                    this.fillPriceList(tableData);
-                    
+                    const ocrText = await this.getOCRTextFromImage(file);
+                    const tableDataA = this.generateTableDataA(ocrText);
+                    this.createTableA(tableDataA);
+
+                    const tableDataB = this.generateTableDataB(tableDataA);
+                    this.createTableB(tableDataB);
+
                     this.showStatus(this.successStatus);
-                    setTimeout(() => this.successStatus.style.display = 'none', 3000);
                 } catch (error) {
-                    console.error('OCR Error:', error);
+                    console.error('Error during OCR processing:', error);
                     this.showStatus(this.errorStatus);
-                    setTimeout(() => this.errorStatus.style.display = 'none', 3000);
                 }
             }
 
-            processOCRText(text) {
-                const rows = text.split('\n').map(row => row.trim()).filter(row => row);
+            async getOCRTextFromImage(file) {
+                const worker = Tesseract.createWorker();
+                await worker.load();
+                await worker.loadLanguage('eng');
+                await worker.initialize('eng');
+                const { data: { text } } = await worker.recognize(file);
+                await worker.terminate();
+                return text;
+            }
+
+            generateTableDataA(ocrText) {
+                const rows = ocrText.split('\n').filter(row => row);
                 const tableData = [];
 
+                // 假設每行至少有5列，對應 LOCKED, SELLING, HKD, CUSTOMER, 1TB
                 rows.forEach(row => {
-                    const columns = row.split(/\s+/); // 分割行為不同欄位
+                    const columns = row.split(/\s+/);
                     if (columns.length >= 4) {
-                        const model = columns[0] + ' ' + columns[1]; // 型號
-                        const selling = parseInt(columns[2]); // SELLING
-                        const hkd = parseInt(columns[3]); // HKD
-                        const customer = parseInt(columns[4]); // CUSTOMER
-                        const tb = columns[5] ? parseInt(columns[5]) : null; // 1TB (如果有)
-
-                        tableData.push([model.toUpperCase(), selling, hkd, customer, tb]);
+                        const model = columns[0] + ' ' + columns[1];
+                        tableData.push([
+                            model.toUpperCase(),
+                            0, // SELLING
+                            0, // HKD
+                            0, // CUSTOMER
+                            columns[5] ? 0 : null // 1TB, 如果沒有該欄位則為 null
+                        ]);
                     }
                 });
 
                 return tableData;
             }
 
-            createTable(data) {
-                const hot = new Handsontable(this.tableContainer, {
+            createTableA(data) {
+                new Handsontable(this.tableContainerA, {
                     data: data,
                     colHeaders: ['LOCKED', 'SELLING', 'HKD', 'CUSTOMER', '1TB'],
                     rowHeaders: true,
@@ -254,41 +189,64 @@
                     licenseKey: 'non-commercial-and-evaluation',
                     stretchH: 'all',
                     className: 'htCenter',
-                    readOnly: true,
                     columns: [
                         { type: 'text' },
                         { type: 'numeric', format: '0,0' },
                         { type: 'numeric', format: '0,0' },
                         { type: 'numeric', format: '0,0' },
                         { type: 'numeric', format: '0,0' }
-                    ],
-                    afterRender: () => {
-                        const headers = this.tableContainer.querySelectorAll('.ht_clone_top th');
-                        headers.forEach(header => {
-                            header.style.backgroundColor = '#f8f9fa';
-                            header.style.fontWeight = 'bold';
+                    ]
+                });
+            }
+
+            generateTableDataB(dataA) {
+                const modelStorageMap = {
+                    'IPHONE 15': ['128GB', '256GB', '512GB'],
+                    'IPHONE 15 PLUS': ['128GB', '256GB', '512GB'],
+                    'IPHONE 15 PRO': ['128GB', '256GB', '512GB', '1TB'],
+                    'IPHONE 15 PRO MAX': ['256GB', '512GB', '1TB'],
+                    'IPHONE 14': ['128GB', '256GB', '512GB'],
+                    'IPHONE 14 PLUS': ['128GB', '256GB', '512GB'],
+                    'IPHONE 14 PRO': ['128GB', '256GB', '512GB', '1TB'],
+                    'IPHONE 14 PRO MAX': ['128GB', '256GB', '512GB', '1TB'],
+                    'IPHONE 13 MINI': ['128GB', '256GB', '512GB'],
+                    'IPHONE 13': ['128GB', '256GB', '512GB'],
+                    'IPHONE 12': ['64GB', '128GB', '256GB'],
+                    'IPHONE SE 3RD GEN': ['64GB', '128GB', '256GB']
+                };
+
+                const tableDataB = [];
+
+                dataA.forEach(row => {
+                    const model = row[0];
+                    const storages = modelStorageMap[model.toUpperCase()];
+                    if (storages) {
+                        storages.forEach(storage => {
+                            tableDataB.push([model, storage, '']);
                         });
                     }
                 });
 
-                window.addEventListener('resize', () => {
-                    hot.render();
-                });
+                return tableDataB;
             }
 
-            fillPriceList(tableData) {
-                const rows = this.priceListTable.querySelectorAll('tbody tr');
-                rows.forEach(row => {
-                    const model = row.cells[0].innerText.trim().toUpperCase();
-                    const storage = row.cells[1].innerText.trim().replace('GB', '').replace('TB', '1024');
-
-                    const match = tableData.find(item => item[0].includes(model));
-                    if (match) {
-                        const price = match[1]; // 使用 SELLING 作為價格
-                        row.cells[2].innerText = price;
-                    } else {
-                        row.cells[2].innerText = '-';
-                    }
+            createTableB(data) {
+                new Handsontable(this.tableContainerB, {
+                    data: data,
+                    colHeaders: ['Model', 'Storage', 'Price'],
+                    rowHeaders: true,
+                    height: 'auto',
+                    width: 'auto',
+                    filters: true,
+                    dropdownMenu: true,
+                    licenseKey: 'non-commercial-and-evaluation',
+                    stretchH: 'all',
+                    className: 'htCenter',
+                    columns: [
+                        { type: 'text' },
+                        { type: 'text' },
+                        { type: 'numeric', format: '0,0' }
+                    ]
                 });
             }
         }
