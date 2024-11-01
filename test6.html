@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPhone Price Table</title>
+    <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.3/dist/tesseract.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .upload-section {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+        }
+        .custom-file-upload {
+            display: inline-block;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .custom-file-upload:hover {
+            background-color: #0056b3;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        #tableContainerA, #tableContainerB {
+            margin-top: 20px;
+            overflow: auto;
+            min-height: 300px; /* 增加最小高度 */
+            border: 1px solid #ccc; /* 添加邊框來確認容器是否存在 */
+        }
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .loading {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .tables-container {
+            display: flex;
+            gap: 30px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>iPhone Price Table</h1>
+        </div>
+        <div class="upload-section">
+            <label class="custom-file-upload">
+                <input type="file" id="imageInput" accept="image/*">
+                Upload Price Table Image
+            </label>
+            <div id="loadingStatus" class="status loading">Processing image...</div>
+            <div id="successStatus" class="status success">Table generated successfully!</div>
+            <div id="errorStatus" class="status error">Error processing image. Please try again.</div>
+        </div>
+
+        <div class="tables-container">
+            <div id="tableContainerA"></div>
+            <div id="tableContainerB"></div>
+        </div>
+    </div>
+
+    <script>
+        class PriceTableProcessor {
+            constructor() {
+                this.imageInput = document.getElementById('imageInput');
+                this.loadingStatus = document.getElementById('loadingStatus');
+                this.successStatus = document.getElementById('successStatus');
+                this.errorStatus = document.getElementById('errorStatus');
+                this.tableContainerA = document.getElementById('tableContainerA');
+                this.tableContainerB = document.getElementById('tableContainerB');
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                this.imageInput.addEventListener('change', (e) => this.handleImageUpload(e));
+            }
+
+            showStatus(element) {
+                [this.loadingStatus, this.successStatus, this.errorStatus].forEach(status => {
+                    status.style.display = 'none';
+                });
+                element.style.display = 'block';
+            }
+
+            async handleImageUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                this.showStatus(this.loadingStatus);
+                this.tableContainerA.innerHTML = '';
+                this.tableContainerB.innerHTML = '';
+
+                try {
+                    const ocrText = await this.getOCRTextFromImage(file);
+                    console.log("Extracted text:", ocrText); // 調試輸出
+                    if (!ocrText) throw new Error("No text extracted from image.");
+
+                    const tableDataA = this.generateTableDataA(ocrText);
+                    console.log("Table Data A:", tableDataA); // 調試輸出
+
+                    this.createTableA(tableDataA);
+
+                    const tableDataB = this.generateTableDataB(tableDataA);
+                    console.log("Table Data B:", tableDataB); // 調試輸出
+                    this.createTableB(tableDataB);
+
+                    this.showStatus(this.successStatus);
+                } catch (error) {
+                    console.error('Error during OCR processing:', error);
+                    this.showStatus(this.errorStatus);
+                }
+            }
+
+            async getOCRTextFromImage(file) {
+                try {
+                    const { data: { text } } = await Tesseract.recognize(file, 'eng', {
+                        logger: info => console.log(info) // 日誌輸出幫助調試
+                    });
+                    return text;
+                } catch (error) {
+                    console.error("Tesseract.js failed to process the image:", error);
+                    return null;
+                }
+            }
+
+            generateTableDataA(ocrText) {
+                const rows = ocrText.split("\n").filter(row => row.trim() !== "");
+                const tableData = [];
+                rows.forEach(row => {
+                    const columns = row.split(/\s+/);
+                    if (columns.length >= 4) {
+                        const model = `${columns[0]} ${columns[1]}`.toUpperCase();
+                        const selling = parseInt(columns[2]) || 0;
+                        const hkd = parseInt(columns[3]) || 0;
+                        const customer = parseInt(columns[4]) || 0;
+                        const tb = columns.length >= 6 ? parseInt(columns[5]) || null : null;
+                        tableData.push([model, selling, hkd, customer, tb]);
+                    }
+                });
+                return tableData;
+            }
+
+            createTableA(data) {
+                if (data.length === 0) {
+                    console.warn("Table A data is empty.");
+                    return;
+                }
+
+                new Handsontable(this.tableContainerA, {
+                    data: data,
+                    colHeaders: ['LOCKED', 'SELLING', 'HKD', 'CUSTOMER', '1TB'],
+                    rowHeaders: true,
+                    height: 'auto',
+                    width: 'auto',
+                    filters: true,
+                    dropdownMenu: true,
+                    licenseKey: 'non-commercial-and-evaluation',
+                    stretchH: 'all',
+                    className: 'htCenter',
+                    columns: [
+                        { type: 'text' },
+                        { type: 'numeric', format: '0,0' },
+                        { type: 'numeric', format: '0,0' },
+                        { type: 'numeric', format: '0,0' },
+                        { type: 'numeric', format: '0,0' }
+                    ]
+                });
+            }
+
+            generateTableDataB(dataA) {
+                const modelStorageMap = {
+                    'IPHONE 15': ['128GB', '256GB', '512GB'],
+                    'IPHONE 15 PLUS': ['128GB', '256GB', '512GB'],
+                    'IPHONE 15 PRO': ['128GB', '256GB', '512GB', '1TB'],
+                    'IPHONE 15 PRO MAX': ['256GB', '512GB', '1TB'],
+                    'IPHONE 14': ['128GB', '256GB', '512GB'],
+                    'IPHONE 14 PLUS': ['128GB', '256GB', '512GB'],
+                    'IPHONE 14 PRO': ['128GB', '256GB', '512GB', '1TB'],
+                    'IPHONE 14 PRO MAX': ['128GB', '256GB', '512GB', '1TB'],
+                    'IPHONE 13 MINI': ['128GB', '256GB', '512GB'],
+                    'IPHONE 13': ['128GB', '256GB', '512GB'],
+                    'IPHONE 12': ['64GB', '128GB', '256GB'],
+                    'IPHONE SE 3RD GEN': ['64GB', '128GB', '256GB']
+                };
+
+                const tableDataB = [];
+
+                dataA.forEach(row => {
+                    const model = row[0];
+                    const storages = modelStorageMap[model.toUpperCase()];
+                    if (storages) {
+                        storages.forEach(storage => {
+                            tableDataB.push([model, storage, '']);
+                        });
+                    }
+                });
+
+                return tableDataB;
+            }
+
+            createTableB(data) {
+                if (data.length === 0) {
+                    console.warn("Table B data is empty.");
+                    return;
+                }
+
+                new Handsontable(this.tableContainerB, {
+                    data: data,
+                    colHeaders: ['Model', 'Storage', 'Price'],
+                    rowHeaders: true,
+                    height: 'auto',
+                    width: 'auto',
+                    filters: true,
+                    dropdownMenu: true,
+                    licenseKey: 'non-commercial-and-evaluation',
+                    stretchH: 'all',
+                    className: 'htCenter',
+                    columns: [
+                        { type: 'text' },
+                        { type: 'text' },
+                        { type: 'numeric', format: '0,0' }
+                    ]
+                });
+            }
+        }
+
+        // Initialize the processor
+        new PriceTableProcessor();
+
+        // 為 Focus Catcher 手動添加 id 和 name 以消除警告
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('input.htFocusCatcher').forEach((input, index) => {
+                input.id = 'htFocusCatcher_' + index;
+                input.name = 'htFocusCatcher_' + index;
+            });
+        });
+    </script>
+</body>
+</html>
