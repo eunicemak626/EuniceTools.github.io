@@ -83,73 +83,56 @@
         const successMessage = document.getElementById('successMessage');
         const tableContainer = document.getElementById('tableContainer');
 
-        function cleanModelName(modelName) {
-            // 定義iPhone型號的標準名稱
-            const standardModels = [
-                'IPHONE 16',
-                'IPHONE 16 PLUS',
-                'IPHONE 16 PRO',
-                'IPHONE 16 PRO MAX',
-                'IPHONE 15',
-                'IPHONE 15 PLUS',
-                'IPHONE 15 PRO',
-                'IPHONE 15 PRO MAX',
-                'IPHONE 14',
-                'IPHONE 14 PLUS',
-                'IPHONE 14 PRO',
-                'IPHONE 14 PRO MAX',
-                'IPHONE 13 MINI',
-                'IPHONE 13',
-                'IPHONE 12',
-                'IPHONE SE 3'
-            ];
-
-            // 尋找最匹配的標準型號名稱
-            for (let standardModel of standardModels) {
-                if (modelName.startsWith(standardModel)) {
-                    return standardModel;
-                }
-            }
-            return modelName;
-        }
+        // 預定義的模型數據結構
+        const modelStructure = [
+            { model: 'IPHONE 16', prices: 3 },
+            { model: 'IPHONE 16 PLUS', prices: 3 },
+            { model: 'IPHONE 16 PRO', prices: 4 },
+            { model: 'IPHONE 16 PRO MAX', prices: 4 },
+            { model: 'IPHONE 15', prices: 3 },
+            { model: 'IPHONE 15 PLUS', prices: 3 },
+            { model: 'IPHONE 15 PRO', prices: 4 },
+            { model: 'IPHONE 15 PRO MAX', prices: 3 },
+            { model: 'IPHONE 14', prices: 3 },
+            { model: 'IPHONE 14 PLUS', prices: 3 },
+            { model: 'IPHONE 14 PRO', prices: 4 },
+            { model: 'IPHONE 14 PRO MAX', prices: 4 },
+            { model: 'IPHONE 13 MINI', prices: 3 },
+            { model: 'IPHONE 13', prices: 3 },
+            { model: 'IPHONE 12', prices: 3 },
+            { model: 'IPHONE SE 3', prices: 3 }
+        ];
 
         function parseOCRResult(text) {
-            const rows = [];
             const lines = text.split('\n');
-            
+            let currentData = new Map();
+
+            // 首先收集所有價格數據
             for (let line of lines) {
                 if (line.includes('IPHONE')) {
-                    const parts = line.trim().split(/\s+/);
-                    let modelName = '';
-                    let numbers = [];
-                    
-                    // 從後往前找數字
-                    for (let i = parts.length - 1; i >= 0; i--) {
-                        if (!isNaN(parts[i]) && numbers.length < 3) {
-                            numbers.unshift(parseInt(parts[i]));
-                        } else {
-                            modelName = parts.slice(0, i + 1).join(' ');
-                            break;
-                        }
-                    }
-
-                    if (numbers.length === 3) {
-                        rows.push([
-                            cleanModelName(modelName.trim()),
-                            numbers[0],
-                            numbers[1],
-                            numbers[2]
-                        ]);
+                    const numbers = line.match(/\d+/g);
+                    if (numbers && numbers.length >= 3) {
+                        let modelName = line.split(/\d+/)[0].trim();
+                        // 移除任何trailing數字
+                        modelName = modelName.replace(/\s+\d+$/, '');
+                        
+                        const prices = numbers.slice(-3).map(n => parseInt(n));
+                        currentData.set(modelName, prices);
                     }
                 }
             }
-            return rows;
+
+            // 根據預定義結構創建最終數據
+            return modelStructure.map(model => {
+                const prices = currentData.get(model.model) || Array(model.prices).fill(0);
+                return [model.model, ...prices];
+            });
         }
 
         function createHandsontable(data) {
             const hot = new Handsontable(tableContainer, {
                 data: data,
-                colHeaders: ['LOCKED', 'SELLING', 'HKD', 'CUSTOMER'],
+                colHeaders: ['LOCKED', 'SELLING', 'HKD', 'CUSTOMER', '1TB'],
                 rowHeaders: true,
                 height: 'auto',
                 width: 'auto',
@@ -161,6 +144,7 @@
                 readOnly: true,
                 columns: [
                     { type: 'text' },
+                    { type: 'numeric', format: '0,0' },
                     { type: 'numeric', format: '0,0' },
                     { type: 'numeric', format: '0,0' },
                     { type: 'numeric', format: '0,0' }
