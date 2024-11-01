@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPhone Price Tables</title>
+    <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            margin-bottom: 40px;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        #priceTableContainer, #modelTableContainer {
+            margin-bottom: 30px;
+            overflow: hidden;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .upload-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+        #uploadButton {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #uploadButton:hover {
+            background-color: #45a049;
+        }
+        #progressBar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+        #progressBar div {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease-in-out;
+        }
+        #status {
+            margin-top: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>iPhone Price List</h1>
+        </div>
+
+        <div class="upload-section">
+            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+            <button id="uploadButton">Upload Price List Image</button>
+            <div id="progressBar"><div></div></div>
+            <div id="status"></div>
+        </div>
+
+        <div id="priceTableContainer"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h2>iPhone Model Configurations</h2>
+        </div>
+        <div id="modelTableContainer"></div>
+    </div>
+
+    <script>
+        // ... (previous code remains the same until here)
+
+        // OCR Processing Functions
+        async function processImage(file) {
+            const status = document.getElementById('status');
+            const progressBar = document.getElementById('progressBar');
+            const progressBarFill = progressBar.querySelector('div');
+            
+            try {
+                progressBar.style.display = 'block';
+                status.textContent = 'Processing image...';
+
+                const worker = await Tesseract.createWorker({
+                    logger: progress => {
+                        if (progress.status === 'recognizing text') {
+                            const percent = Math.round(progress.progress * 100);
+                            progressBarFill.style.width = `${percent}%`;
+                        }
+                    }
+                });
+
+                await worker.loadLanguage('eng');
+                await worker.initialize('eng');
+                
+                const { data: { text } } = await worker.recognize(file);
+                await worker.terminate();
+
+                status.textContent = 'Processing complete!';
+                progressBar.style.display = 'none';
+
+                // Process the extracted text
+                processExtractedText(text);
+
+            } catch (error) {
+                console.error('OCR Error:', error);
+                status.textContent = 'Error processing image: ' + error.message;
+                progressBar.style.display = 'none';
+            }
+        }
+
+        function processExtractedText(text) {
+            // Split text into lines and process each line
+            const lines = text.split('\n');
+            const newPriceData = [];
+
+            lines.forEach(line => {
+                // Process each line and extract model and price information
+                const priceMatch = line.match(/(\w+)\s+(\d+)/);
+                if (priceMatch) {
+                    const [_, model, price] = priceMatch;
+                    // Add to price data array
+                    newPriceData.push([model, parseInt(price), '', '', '']);
+                }
+            });
+
+            // Update the price table with new data
+            if (newPriceData.length > 0) {
+                priceTable.loadData(newPriceData);
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('uploadButton').addEventListener('click', () => {
+            document.getElementById('imageUpload').click();
+        });
+
+        document.getElementById('imageUpload').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                processImage(file);
+            }
+        });
+
+        // Initialize tables (previous code remains the same)
+        const priceTable = new Handsontable(document.getElementById('priceTableContainer'), {
+            // ... (previous price table configuration)
+        });
+
+        const modelTable = new Handsontable(document.getElementById('modelTableContainer'), {
+            // ... (previous model table configuration)
+        });
+    </script>
+</body>
+</html>
