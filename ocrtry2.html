@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 100px;
+        }
+        #imagePreview {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+        .loading {
+            display: none;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>OCR 文字辨識工具</h2>
+        <input type="file" id="imageInput" accept="image/*">
+        <div id="imagePreview"></div>
+        <div class="loading" id="loading">處理中...</div>
+        <h3>辨識結果：</h3>
+        <div id="result"></div>
+    </div>
+
+    <script src='https://unpkg.com/tesseract.js@4.1.1/dist/tesseract.min.js'></script>
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const result = document.getElementById('result');
+        const loading = document.getElementById('loading');
+
+        imageInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // 顯示圖片預覽
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                imagePreview.innerHTML = '';
+                imagePreview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+
+            // 開始OCR處理
+            loading.style.display = 'block';
+            result.textContent = '處理中...';
+
+            try {
+                const { data: { text } } = await Tesseract.recognize(
+                    file,
+                    'chi_tra+eng',
+                    {
+                        logger: m => console.log(m)
+                    }
+                );
+                result.textContent = text;
+            } catch (error) {
+                result.textContent = '發生錯誤：' + error.message;
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
