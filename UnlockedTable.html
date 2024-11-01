@@ -31,18 +31,18 @@
             border: 1px solid #e5e5e5;
             border-radius: 8px;
             overflow: hidden;
-            width: 100%; /* 讓表格寬度自適應 */
+            width: 100%;
         }
         .handsontable .ht_master .wtHolder {
-            overflow: hidden !important; /* 禁止表格內部的滾動條 */
+            overflow: hidden !important;
         }
         .button-group {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
-            flex-wrap: wrap; /* 允許按鈕在小螢幕上換行 */
+            flex-wrap: wrap;
         }
-        .copy-button {
+        .copy-button, .home-button, .clear-button, .switch-button {
             padding: 8px 16px;
             background-color: white;
             color: #333;
@@ -54,10 +54,10 @@
             transition: all 0.2s;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
             text-decoration: none;
-            flex: 1; /* 讓按鈕在小螢幕上自適應寬度 */
+            flex: 1;
             text-align: center;
         }
-        .copy-button:hover {
+        .copy-button:hover, .home-button:hover, .clear-button:hover, .switch-button:hover {
             background-color: #f5f5f5;
             border-color: #999;
         }
@@ -75,7 +75,7 @@
             text-align: left;
             border-bottom: 1px solid #e5e5e5;
             font-size: 14px;
-            vertical-align: middle; /* 垂直居中對齊 */
+            vertical-align: middle;
         }
         .summary-table th {
             background-color: #f8f8f8;
@@ -97,7 +97,44 @@
             left: -9999px;
             top: 0;
         }
-        /* 手機響應式設計 */
+        /* 自定義選項彈窗樣式 */
+        .context-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 10px;
+        }
+        .context-menu button {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin: 0;
+            background-color: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            color: #333;
+            font-size: 14px;
+        }
+        .context-menu button:hover {
+            background-color: #f5f5f5;
+        }
+        .home-button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .home-button {
+            text-decoration: none;
+            color: #007aff;
+            font-size: 14px;
+        }
+        .home-button:hover {
+            text-decoration: underline;
+        }
         @media (max-width: 600px) {
             .container {
                 padding: 16px;
@@ -105,7 +142,7 @@
             h1 {
                 font-size: 20px;
             }
-            .copy-button {
+            .copy-button, .home-button, .clear-button, .switch-button {
                 font-size: 12px;
                 padding: 6px 12px;
             }
@@ -115,7 +152,7 @@
                 font-size: 12px;
             }
             #hot-table {
-                height: 400px; /* 在手機上降低表格高度 */
+                height: 400px;
             }
         }
     </style>
@@ -126,7 +163,7 @@
         <div id="hot-table"></div>
         <div class="button-group">
             <button class="copy-button" onclick="copyTable()">Copy Table</button>
-            <a href="https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html" class="copy-button">→ Switch Mode</a>
+            <button class="switch-button" id="switchModeButton">→ Right Click Switch</button>
             <a href="https://eunicemak626.github.io/EuniceTools.github.io/RenameDescri.html" class="copy-button">Description Rename</a>
         </div>
 
@@ -148,6 +185,16 @@
                 </tr>
             </tfoot>
         </table>
+
+        <!-- 彈出選項對話框 -->
+        <div class="context-menu" id="contextMenu">
+            <button onclick="navigateTo('locked')">Locked Table</button>
+            <button onclick="navigateTo('macbook')">MacBook Table</button>
+        </div>
+
+        <div class="home-button-container">
+            <a href="/" class="home-button">HOME</a>
+        </div>
     </div>
 
     <script>
@@ -157,11 +204,11 @@
                 ['350118659695429', '', 'IPHONE 13 128GB PINK'],
                 ['', '', '']
             ],
-            width: '100%',  // 表格寬度設為100%
+            width: '100%',
             height: 500,
             colHeaders: ['A', 'B', 'C'],
             rowHeaders: true,
-            stretchH: 'all',  // 讓所有列均勻分佈
+            stretchH: 'all',
             licenseKey: 'non-commercial-and-evaluation',
             contextMenu: true,
             minSpareRows: 1,
@@ -174,7 +221,7 @@
 
         function parseModelInfo(description) {
             if (!description) return null;
-            
+
             const parts = description.split(' ');
             if (parts.length < 3) return null;
 
@@ -196,7 +243,6 @@
             const modelCounts = {};
             let total = 0;
 
-            // Count models
             data.forEach(row => {
                 if (row[2]) {  // Check column C
                     const info = parseModelInfo(row[2]);
@@ -207,7 +253,6 @@
                 }
             });
 
-            // Update summary table
             const summaryBody = document.getElementById('summary-body');
             summaryBody.innerHTML = '';
 
@@ -231,19 +276,51 @@
         function copyTable() {
             const summaryBody = document.querySelector('#summary-body');
             let textToCopy = '';
-            
+
             const rows = summaryBody.querySelectorAll('tr');
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
                 const rowData = Array.from(cells).map(cell => cell.textContent);
                 textToCopy += rowData.join('\t') + '\n';
             });
-            
+
             navigator.clipboard.writeText(textToCopy).then(() => {
-                // alert('Table copied to clipboard!'); // 移除彈出提示
+                console.log('Table copied to clipboard!');
             }).catch(err => {
                 console.error('Failed to copy table:', err);
             });
+        }
+
+        // Context menu for switch button
+        const switchModeButton = document.getElementById('switchModeButton');
+        const contextMenu = document.getElementById('contextMenu');
+
+        // 禁止默認的右鍵菜單行為
+        switchModeButton.addEventListener('contextmenu', function(event) {
+            event.preventDefault(); // 阻止默認的右鍵菜單
+
+            // 顯示自定義的選項對話框
+            const contextMenuX = event.pageX;
+            const contextMenuY = event.pageY;
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${contextMenuX}px`;
+            contextMenu.style.top = `${contextMenuY}px`;
+        });
+
+        // 當點擊其他地方時，關閉選項彈窗
+        document.addEventListener('click', function(event) {
+            if (!contextMenu.contains(event.target)) {
+                contextMenu.style.display = 'none';
+            }
+        });
+
+        // 跳轉到指定頁面
+        function navigateTo(page) {
+            if (page === 'locked') {
+                window.location.href = 'https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html';
+            } else if (page === 'macbook') {
+                window.location.href = 'https://eunicemak626.github.io/EuniceTools.github.io/MacbookTable.html';
+            }
         }
 
         // Initial update
