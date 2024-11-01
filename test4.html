@@ -132,6 +132,8 @@
 
                 try {
                     const ocrText = await this.getOCRTextFromImage(file);
+                    if (!ocrText) throw new Error("No text found in image.");
+
                     const tableDataA = this.generateTableDataA(ocrText);
                     this.createTableA(tableDataA);
 
@@ -146,13 +148,21 @@
             }
 
             async getOCRTextFromImage(file) {
-                const worker = Tesseract.createWorker();
-                await worker.load();
-                await worker.loadLanguage('eng');
-                await worker.initialize('eng');
-                const { data: { text } } = await worker.recognize(file);
-                await worker.terminate();
-                return text;
+                const worker = Tesseract.createWorker({
+                    logger: info => console.log(info) // 添加日誌以調試 Tesseract.js 運行過程
+                });
+
+                try {
+                    await worker.load();
+                    await worker.loadLanguage('eng');
+                    await worker.initialize('eng');
+                    const { data: { text } } = await worker.recognize(file);
+                    await worker.terminate();
+                    return text;
+                } catch (error) {
+                    console.error("Tesseract.js failed to process the image:", error);
+                    return null;
+                }
             }
 
             generateTableDataA(ocrText) {
@@ -164,6 +174,9 @@
                     const columns = row.split(/\s+/);
                     if (columns.length >= 4) {
                         const model = columns[0] + ' ' + columns[1];
+                        // 添加日誌來檢查處理的行
+                        console.log("Processing row:", row);
+
                         tableData.push([
                             model.toUpperCase(),
                             0, // SELLING
