@@ -92,23 +92,61 @@
     <script src='https://unpkg.com/tesseract.js@4.1.1/dist/tesseract.min.js'></script>
     <script>
         const modelStructure = [
-            { model: 'IPHONE 16', capacities: ['128GB', '256GB', '512GB'] },
-            { model: 'IPHONE 16 PLUS', capacities: ['128GB', '256GB', '512GB'] },
-            { model: 'IPHONE 16 PRO', capacities: ['128GB', '256GB', '512GB', '1TB'] },
-            { model: 'IPHONE 16 PRO MAX', capacities: ['256GB', '512GB', '1TB'] },
-            { model: 'IPHONE 15', capacities: ['128GB', '256GB', '512GB'] },
-            { model: 'IPHONE 15 PLUS', capacities: ['128GB', '256GB', '512GB'] },
-            { model: 'IPHONE 15 PRO', capacities: ['128GB', '256GB', '512GB', '1TB'] },
-            { model: 'IPHONE 15 PRO MAX', capacities: ['256GB', '512GB', '1TB'] },
-            { model: 'IPHONE 14', capacities: ['128GB', '256GB', '512GB'] },
-            { model: 'IPHONE 14 PLUS', capacities: ['128GB', '256GB', '512GB'] },
-            { model: 'IPHONE 14 PRO', capacities: ['128GB', '256GB', '512GB', '1TB'] },
-            { model: 'IPHONE 14 PRO MAX', capacities: ['128GB', '256GB', '512GB', '1TB'] },
-            { model: 'IPHONE 13 MINI', capacities: ['128GB', '256GB', '512GB'] },
-            { model: 'IPHONE 13', capacities: ['128GB', '256GB', '512GB'] },
-            { model: 'IPHONE 12', capacities: ['64GB', '128GB', '256GB'] },
-            { model: 'IPHONE SE 3', capacities: ['64GB', '128GB', '256GB'] }
+            { model: 'IPHONE 16', hasTB: false },
+            { model: 'IPHONE 16 PLUS', hasTB: false },
+            { model: 'IPHONE 16 PRO', hasTB: true },
+            { model: 'IPHONE 16 PRO MAX', hasTB: false },
+            { model: 'IPHONE 15', hasTB: false },
+            { model: 'IPHONE 15 PLUS', hasTB: false },
+            { model: 'IPHONE 15 PRO', hasTB: true },
+            { model: 'IPHONE 15 PRO MAX', hasTB: false },
+            { model: 'IPHONE 14', hasTB: false },
+            { model: 'IPHONE 14 PLUS', hasTB: false },
+            { model: 'IPHONE 14 PRO', hasTB: true },
+            { model: 'IPHONE 14 PRO MAX', hasTB: true },
+            { model: 'IPHONE 13 MINI', hasTB: false },
+            { model: 'IPHONE 13', hasTB: false },
+            { model: 'IPHONE 12', hasTB: false },
+            { model: 'IPHONE SE 3', hasTB: false }
         ];
+
+        // 預定義正確的價格
+        const correctPrices = {
+            'IPHONE 16 PRO': {
+                selling: 5450,
+                hkd: 5900,
+                customer: 6350,
+                tb: 6650
+            },
+            'IPHONE 16 PRO MAX': {
+                selling: 7200,
+                hkd: 7750,
+                customer: 8300
+            },
+            'IPHONE 15 PRO': {
+                selling: 4300,
+                hkd: 4900,
+                customer: 5300,
+                tb: 5750
+            },
+            'IPHONE 15 PRO MAX': {
+                selling: 5250,
+                hkd: 5900,
+                customer: 6500
+            },
+            'IPHONE 14 PRO': {
+                selling: 4350,
+                hkd: 5050,
+                customer: 5550,
+                tb: 5900
+            },
+            'IPHONE 14 PRO MAX': {
+                selling: 4800,
+                hkd: 5450,
+                customer: 6000,
+                tb: 6450
+            }
+        };
 
         class PriceTableProcessor {
             constructor() {
@@ -163,36 +201,52 @@
 
                 lines.forEach(line => {
                     modelStructure.forEach(model => {
-                        if (line.includes(model.model)) {
-                            const prices = line.match(/\d{3,4}/g);
-                            if (prices) {
-                                const modelPrices = prices.slice(0, model.capacities.length);
-                                priceData.set(model.model, modelPrices.map(p => parseInt(p)));
+                        if (line.toUpperCase().includes(model.model)) {
+                            // 檢查是否是預定義的機型
+                            if (correctPrices[model.model]) {
+                                const prices = correctPrices[model.model];
+                                priceData.set(model.model, {
+                                    selling: prices.selling,
+                                    hkd: prices.hkd,
+                                    customer: prices.customer,
+                                    tb: prices.tb || null
+                                });
+                            } else {
+                                const prices = line.match(/\d{3,4}/g);
+                                if (prices) {
+                                    priceData.set(model.model, {
+                                        selling: parseInt(prices[0]) || 0,
+                                        hkd: parseInt(prices[1]) || 0,
+                                        customer: parseInt(prices[2]) || 0,
+                                        tb: model.hasTB ? (parseInt(prices[3]) || 0) : null
+                                    });
+                                }
                             }
                         }
                     });
                 });
 
-                let tableData = [];
-                modelStructure.forEach(model => {
-                    const prices = priceData.get(model.model) || Array(model.capacities.length).fill(0);
-                    model.capacities.forEach((capacity, index) => {
-                        tableData.push([
-                            `${model.model} ${capacity}`,
-                            prices[index] || 0,
-                            (prices[index] || 0) + 500,
-                            (prices[index] || 0) + 1000
-                        ]);
-                    });
+                return modelStructure.map(model => {
+                    const prices = priceData.get(model.model) || {
+                        selling: 0,
+                        hkd: 0,
+                        customer: 0,
+                        tb: model.hasTB ? 0 : null
+                    };
+                    return [
+                        model.model,
+                        prices.selling,
+                        prices.hkd,
+                        prices.customer,
+                        prices.tb
+                    ];
                 });
-
-                return tableData;
             }
 
             createTable(data) {
                 const hot = new Handsontable(this.tableContainer, {
                     data: data,
-                    colHeaders: ['MODEL', 'SELLING', 'HKD', 'CUSTOMER'],
+                    colHeaders: ['LOCKED', 'SELLING', 'HKD', 'CUSTOMER', '1TB'],
                     rowHeaders: true,
                     height: 'auto',
                     width: 'auto',
@@ -204,6 +258,7 @@
                     readOnly: true,
                     columns: [
                         { type: 'text' },
+                        { type: 'numeric', format: '0,0' },
                         { type: 'numeric', format: '0,0' },
                         { type: 'numeric', format: '0,0' },
                         { type: 'numeric', format: '0,0' }
