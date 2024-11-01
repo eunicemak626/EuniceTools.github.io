@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCR Tool</title>
+    <title>Locked Price Table</title>
+    <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -16,70 +18,140 @@
             padding: 20px;
             text-align: center;
             margin-bottom: 20px;
+            background-color: #f9f9f9;
         }
         #result {
             margin-top: 20px;
             padding: 10px;
-            border: 1px solid #ccc;
-            min-height: 100px;
-        }
-        #imagePreview {
-            max-width: 100%;
-            margin-top: 10px;
         }
         .loading {
             display: none;
             margin: 10px 0;
+            color: #666;
+        }
+        .success-message {
+            color: #4CAF50;
+            font-weight: bold;
+            margin: 10px 0;
+            display: none;
+        }
+        .custom-file-upload {
+            border: 2px solid #4CAF50;
+            display: inline-block;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: white;
+            color: #4CAF50;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        .custom-file-upload:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        #tableContainer {
+            margin-top: 20px;
+            height: 600px;
+            width: 100%;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>OCR 文字辨識工具</h2>
-        <input type="file" id="imageInput" accept="image/*">
-        <div id="imagePreview"></div>
-        <div class="loading" id="loading">處理中...</div>
-        <h3>辨識結果：</h3>
-        <div id="result"></div>
+        <h2>Locked Price Table</h2>
+        <label class="custom-file-upload">
+            <input type="file" id="imageInput" accept="image/*">
+            Choose File
+        </label>
+        <div class="loading" id="loading">Processing...</div>
+        <div class="success-message" id="successMessage">Upload Success!</div>
+        <h3>Result:</h3>
+        <div id="tableContainer"></div>
     </div>
 
     <script src='https://unpkg.com/tesseract.js@4.1.1/dist/tesseract.min.js'></script>
     <script>
         const imageInput = document.getElementById('imageInput');
-        const imagePreview = document.getElementById('imagePreview');
-        const result = document.getElementById('result');
         const loading = document.getElementById('loading');
+        const successMessage = document.getElementById('successMessage');
+        const tableContainer = document.getElementById('tableContainer');
+
+        function parseOCRResult(text) {
+            const rows = [];
+            const lines = text.split('\n');
+            let currentRow = [];
+            
+            for (let line of lines) {
+                if (line.includes('IPHONE')) {
+                    const parts = line.split(/\s+/);
+                    const model = parts.slice(0, parts.length-3).join(' ');
+                    const numbers = parts.slice(-3);
+                    if (numbers.length === 3) {
+                        rows.push([
+                            model.trim(),
+                            parseInt(numbers[0]) || 0,
+                            parseInt(numbers[1]) || 0,
+                            parseInt(numbers[2]) || 0
+                        ]);
+                    }
+                }
+            }
+            return rows;
+        }
+
+        function createHandsontable(data) {
+            const hot = new Handsontable(tableContainer, {
+                data: data,
+                colHeaders: ['LOCKED', 'SELLING', 'HKD', 'CUSTOMER'],
+                rowHeaders: true,
+                height: 'auto',
+                width: 'auto',
+                filters: true,
+                dropdownMenu: true,
+                licenseKey: 'non-commercial-and-evaluation',
+                stretchH: 'all',
+                className: 'htCenter',
+                readOnly: true,
+                columns: [
+                    { type: 'text' },
+                    { type: 'numeric', format: '0,0' },
+                    { type: 'numeric', format: '0,0' },
+                    { type: 'numeric', format: '0,0' }
+                ]
+            });
+        }
 
         imageInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // 顯示圖片預覽
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                imagePreview.innerHTML = '';
-                imagePreview.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-
-            // 開始OCR處理
             loading.style.display = 'block';
-            result.textContent = '處理中...';
+            successMessage.style.display = 'none';
+            tableContainer.innerHTML = '';
 
             try {
                 const { data: { text } } = await Tesseract.recognize(
                     file,
-                    'chi_tra+eng',
+                    'eng',
                     {
                         logger: m => console.log(m)
                     }
                 );
-                result.textContent = text;
+                
+                const tableData = parseOCRResult(text);
+                createHandsontable(tableData);
+                
+                successMessage.style.display = 'block';
+                loading.style.display = 'none';
             } catch (error) {
-                result.textContent = '發生錯誤：' + error.message;
-            } finally {
+                console.error('OCR Error:', error);
                 loading.style.display = 'none';
             }
         });
