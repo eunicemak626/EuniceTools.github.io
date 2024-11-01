@@ -42,7 +42,7 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
-        .copy-button {
+        .copy-button, .clear-button {
             padding: 8px 16px;
             background-color: white;
             color: #333;
@@ -57,7 +57,7 @@
             flex: 1;
             text-align: center;
         }
-        .copy-button:hover {
+        .copy-button:hover, .clear-button:hover {
             background-color: #f5f5f5;
             border-color: #999;
         }
@@ -104,7 +104,7 @@
             h1 {
                 font-size: 20px;
             }
-            .copy-button {
+            .copy-button, .clear-button {
                 font-size: 12px;
                 padding: 6px 12px;
             }
@@ -125,6 +125,7 @@
         <div id="hot-table"></div>
         <div class="button-group">
             <button class="copy-button" onclick="copyTable()">Copy Table</button>
+            <button class="clear-button" onclick="clearTable()">Clear Table</button>
             <a href="https://eunicemak626.github.io/EuniceTools.github.io/makeexcelL.html" class="copy-button">→ Switch Mode</a>
         </div>
 
@@ -132,7 +133,7 @@
             <thead>
                 <tr>
                     <th>Model</th>
-                    <th>Capacity</th>
+                    <th>Capacity/Size</th>
                     <th>Quantity</th>
                     <th>Price</th>
                 </tr>
@@ -154,7 +155,11 @@
         const container = document.getElementById('hot-table');
         const hot = new Handsontable(container, {
             data: [
-                ['350118659695429', '', 'IPHONE 13 128GB PINK', '380'],
+                ['SM7WCYVH2MP', '', 'MACBOOK PRO MTL73LL', '1000'],
+                ['SDF9XT6DMVP', '', 'MACBOOK PRO MTL83LL 16GB RAM', '1205'],
+                ['SC4YY9JM7XN', '', 'MACBOOK PRO MRX63LL', '1310'],
+                ['SFH07T72YD1', '', 'MACBOOK PRO MRX43LL', '1645'],
+                ['SFGVQY6TD4N', '', 'MACBOOK PRO MRX43LL', '1645'],
                 ['', '', '', '']
             ],
             width: '100%',
@@ -172,9 +177,33 @@
             }
         });
 
+        // Extract specific information based on model description
         function parseModelInfo(description) {
             if (!description) return null;
-            
+
+            // Check if it's a MacBook entry
+            if (description.toUpperCase().includes('MACBOOK')) {
+                const macbookMatch = description.match(/MACBOOK PRO\s*(.*)\s(M\w+)/i); // Extract MacBook model and M-model number
+                if (macbookMatch) {
+                    const modelDesc = macbookMatch[1].trim() ? `MACBOOK PRO ${macbookMatch[1].trim()}` : 'MACBOOK PRO';
+                    return {
+                        model: modelDesc,  // Keep "MACBOOK PRO" or "MACBOOK PRO <extra details>"
+                        capacity: macbookMatch[2]  // Extract the M-model number
+                    };
+                }
+            }
+            // Check if it's an Apple Watch entry and extract the size
+            else if (description.toUpperCase().includes('APPLE WATCH')) {
+                const watchSizeMatch = description.match(/\b(42MM|46MM|49MM|40MM|36MM|37MM|38MM|39MM|41MM|43MM|44MM|45MM|47MM|48MM)\b/i);
+                if (watchSizeMatch) {
+                    return {
+                        model: description.replace(watchSizeMatch[1], watchSizeMatch[1]),
+                        capacity: watchSizeMatch[1]
+                    };
+                }
+            }
+
+            // Default case for other models (iPhone, iPad, etc.)
             const parts = description.split(' ');
             if (parts.length < 3) return null;
 
@@ -191,6 +220,7 @@
             };
         }
 
+        // Update the summary table based on the parsed data
         function updateSummaryTable() {
             const data = hot.getData();
             const modelCounts = {};
@@ -215,7 +245,7 @@
 
             Object.entries(modelCounts).forEach(([key, count]) => {
                 const [model, capacity, price] = key.split('|');
-                if (model && capacity && price) {
+                if (model && capacity !== undefined && price) {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${model}</td>
@@ -233,6 +263,7 @@
             document.getElementById('total-price').textContent = totalPrice.toFixed(2);
         }
 
+        // Function to copy the summary table to the clipboard
         function copyTable() {
             const summaryBody = document.querySelector('#summary-body');
             let textToCopy = '';
@@ -249,6 +280,20 @@
             }).catch(err => {
                 console.error('Failed to copy table:', err);
             });
+        }
+
+        // Function to clear the table data
+        function clearTable() {
+            // Clear Handsontable data
+            hot.loadData([['', '', '', '']]);
+
+            // Clear the summary table
+            const summaryBody = document.getElementById('summary-body');
+            summaryBody.innerHTML = '';
+
+            // Reset total quantity and price
+            document.getElementById('total-quantity').textContent = '0';
+            document.getElementById('total-price').textContent = '0';
         }
 
         // Initial update
