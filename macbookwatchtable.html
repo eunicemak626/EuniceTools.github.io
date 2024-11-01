@@ -42,7 +42,7 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
-        .copy-button, .clear-button, .home-button {
+        .copy-button, .clear-button, .home-button, .switch-button {
             padding: 8px 16px;
             background-color: white;
             color: #333;
@@ -57,7 +57,7 @@
             flex: 1;
             text-align: center;
         }
-        .copy-button:hover, .clear-button:hover, .home-button:hover {
+        .copy-button:hover, .clear-button:hover, .home-button:hover, .switch-button:hover {
             background-color: #f5f5f5;
             border-color: #999;
         }
@@ -97,6 +97,44 @@
             left: -9999px;
             top: 0;
         }
+        /* 自定義選項彈窗樣式 */
+        .context-menu {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 10px;
+        }
+        .context-menu button {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin: 0;
+            background-color: white;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+            color: #333;
+            font-size: 14px;
+        }
+        .context-menu button:hover {
+            background-color: #f5f5f5;
+        }
+        .home-button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .home-button {
+            text-decoration: none;
+            color: #000; /* 文字顏色改為黑色 */
+            font-size: 14px;
+        }
+        .home-button:hover {
+            text-decoration: underline;
+        }
         @media (max-width: 600px) {
             .container {
                 padding: 16px;
@@ -104,7 +142,7 @@
             h1 {
                 font-size: 20px;
             }
-            .copy-button, .clear-button, .home-button {
+            .copy-button, .home-button, .clear-button, .switch-button {
                 font-size: 12px;
                 padding: 6px 12px;
             }
@@ -117,10 +155,6 @@
                 height: 400px;
             }
         }
-        .home-button-container {
-            margin-top: 20px;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -130,7 +164,7 @@
         <div class="button-group">
             <button class="copy-button" onclick="copyTable()">Copy Table</button>
             <button class="clear-button" onclick="clearTable()">Clear Table</button>
-            <a href="https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html" class="copy-button">→ Switch Mode</a>
+            <button class="switch-button" id="switchModeButton">→ Switch Mode</button>
             <a href="https://eunicemak626.github.io/EuniceTools.github.io/RenameDescri.html" class="copy-button">Description Rename</a>
         </div>
 
@@ -153,8 +187,14 @@
             </tfoot>
         </table>
 
+        <!-- 彈出選項對話框 -->
+        <div class="context-menu" id="contextMenu">
+            <button onclick="navigateTo('unlocked')">Unlocked Table</button>
+            <button onclick="navigateTo('locked')">Locked Table</button>
+        </div>
+
         <div class="home-button-container">
-            <a href="/" class="home-button">HOME</a>
+            <a href="https://eunicemak626.github.io/EuniceTools.github.io/markdonwtablev2.html" class="home-button">HOME</a> <!-- 字體顏色已改為黑色 -->
         </div>
     </div>
 
@@ -271,7 +311,38 @@
             updateSummaryTable();  // 清空 Summary Table
         }
 
-        // 初始更新
+        // 點擊「→ Switch Mode」顯示選項
+        const switchModeButton = document.getElementById('switchModeButton');
+        const contextMenu = document.getElementById('contextMenu');
+
+        switchModeButton.addEventListener('click', function(event) {
+            event.preventDefault(); // 阻止默認行為
+
+            // 顯示自定義的選項對話框
+            const contextMenuX = event.pageX;
+            const contextMenuY = event.pageY;
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${contextMenuX}px`;
+            contextMenu.style.top = `${contextMenuY}px`;
+        });
+
+        // 當點擊其他地方時，關閉選項彈窗
+        document.addEventListener('click', function(event) {
+            if (!contextMenu.contains(event.target) && event.target !== switchModeButton) {
+                contextMenu.style.display = 'none';
+            }
+        });
+
+        // 跳轉到指定頁面
+        function navigateTo(page) {
+            if (page === 'unlocked') {
+                window.location.href = 'https://eunicemak626.github.io/EuniceTools.github.io/UnlockedTable.html';
+            } else if (page === 'locked') {
+                window.location.href = 'https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html';
+            }
+        }
+
+        // Initial update
         updateSummaryTable();
     </script>
 </body>
