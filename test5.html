@@ -3,93 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iPhone Price OCR Tool</title>
-    <script src="https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/handsontable@latest/dist/handsontable.full.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/handsontable@latest/dist/handsontable.full.min.css" rel="stylesheet">
+    <title>OCR with Handsontable</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@8.4.0/dist/handsontable.full.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            padding: 20px;
         }
-
-        .upload-container {
+        .upload-section {
             margin-bottom: 20px;
         }
-
-        .custom-file-upload {
-            border: 1px solid #ccc;
+        #fileInput {
+            display: none;
+        }
+        .custom-upload {
             display: inline-block;
-            padding: 6px 12px;
-            cursor: pointer;
-            background: #f8f9fa;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
             border-radius: 4px;
+            cursor: pointer;
         }
-
-        .custom-file-upload:hover {
-            background: #e9ecef;
-        }
-
-        #file-input {
-            display: none;
-        }
-
-        .success-message {
-            color: green;
-            display: none;
+        #uploadMessage {
             margin-top: 10px;
+            color: green;
         }
-
-        .table-container {
-            margin: 20px 0;
-            width: 100%;
-            max-width: 1200px;
-        }
-
-        #loading {
-            display: none;
-            color: blue;
-            margin: 10px 0;
+        #hot1, #hot2 {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="upload-container">
-        <label class="custom-file-upload">
-            <input type="file" id="file-input" accept="image/*">
-            選擇檔案
-        </label>
-        <div id="success-message" class="success-message">Upload Success!</div>
-        <div id="loading">Processing image...</div>
+    <h1>OCR to Handsontable</h1>
+    
+    <div class="upload-section">
+        <label for="fileInput" class="custom-upload">選擇檔案</label>
+        <input type="file" id="fileInput" accept="image/*">
+        <div id="uploadMessage"></div>
     </div>
+    
+    <div id="hot1"></div>
+    <div id="hot2"></div>
 
-    <div class="table-container" id="locked-table"></div>
-    <div class="table-container" id="capacity-table"></div>
-
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@8.4.0/dist/handsontable.full.min.js"></script>
     <script>
-        // Initial data for the first table
-        const initialLockedData = [
+        // Initialize Handsontable instances
+        const hot1Container = document.getElementById('hot1');
+        const hot2Container = document.getElementById('hot2');
+        
+        const initialData1 = [
+            ['LOCKED', 'SELLING', 'HKD', 'CUSTOMER', ''],
             ['IPHONE 16', 0, 0, 0, ''],
             ['IPHONE 16 PLUS', 0, 0, 0, ''],
-            ['IPHONE 16 PRO', 0, 0, 0, 0],
+            ['IPHONE 16 PRO', 0, 0, 0, ''],
             ['IPHONE 16 PRO MAX', 0, 0, 0, ''],
             ['IPHONE 15', 0, 0, 0, ''],
             ['IPHONE 15 PLUS', 0, 0, 0, ''],
-            ['IPHONE 15 PRO', 0, 0, 0, 0],
+            ['IPHONE 15 PRO', 0, 0, 0, ''],
             ['IPHONE 15 PRO MAX', 0, 0, 0, ''],
             ['IPHONE 14', 0, 0, 0, ''],
             ['IPHONE 14 PLUS', 0, 0, 0, ''],
-            ['IPHONE 14 PRO', 0, 0, 0, 0],
-            ['IPHONE 14 PRO MAX', 0, 0, 0, 0],
+            ['IPHONE 14 PRO', 0, 0, 0, ''],
+            ['IPHONE 14 PRO MAX', 0, 0, 0, ''],
             ['IPHONE 13 MINI', 0, 0, 0, ''],
             ['IPHONE 13', 0, 0, 0, ''],
             ['IPHONE 12', 0, 0, 0, ''],
             ['IPHONE SE 3', 0, 0, 0, '']
         ];
 
-        // Initial data for the second table
-        const initialCapacityData = [
+        const initialData2 = [
             ['iPhone 15', '128GB', ''],
             ['iPhone 15', '256GB', ''],
             ['iPhone 15', '512GB', ''],
@@ -99,113 +82,82 @@
             ['iPhone 15 Pro', '128GB', ''],
             ['iPhone 15 Pro', '256GB', ''],
             ['iPhone 15 Pro', '512GB', ''],
-            ['iPhone 15 Pro', '1TB', '']
-            // Add more rows as needed
+            ['iPhone 15 Pro', '1TB', ''],
+            ['iPhone 15 Pro Max', '256GB', ''],
+            ['iPhone 15 Pro Max', '512GB', ''],
+            ['iPhone 15 Pro Max', '1TB', ''],
+            ['iPhone 14', '128GB', ''],
+            ['iPhone 14', '256GB', ''],
+            ['iPhone 14', '512GB', ''],
+            ['iPhone 14 Plus', '128GB', ''],
+            ['iPhone 14 Plus', '256GB', ''],
+            ['iPhone 14 Plus', '512GB', ''],
+            ['iPhone 14 Pro', '128GB', ''],
+            ['iPhone 14 Pro', '256GB', ''],
+            ['iPhone 14 Pro', '512GB', ''],
+            ['iPhone 14 Pro', '1TB', ''],
+            ['iPhone 14 Pro Max', '256GB', ''],
+            ['iPhone 14 Pro Max', '512GB', ''],
+            ['iPhone 14 Pro Max', '1TB', ''],
+            ['iPhone 13 Mini', '128GB', ''],
+            ['iPhone 13 Mini', '256GB', ''],
+            ['iPhone 13 Mini', '512GB', ''],
+            ['iPhone 13', '128GB', ''],
+            ['iPhone 13', '256GB', ''],
+            ['iPhone 13', '512GB', ''],
+            ['iPhone 12', '64GB', ''],
+            ['iPhone 12', '128GB', ''],
+            ['iPhone 12', '256GB', ''],
+            ['iPhone SE 3RD GEN', '64GB', ''],
+            ['iPhone SE 3RD GEN', '128GB', ''],
+            ['iPhone SE 3RD GEN', '256GB', '']
         ];
 
-        // Initialize tables
-        const lockedTable = new Handsontable(document.getElementById('locked-table'), {
-            data: initialLockedData,
-            colHeaders: ['LOCKED', 'SELLING', 'HKD', 'CUSTOMER', ''],
+        const hot1 = new Handsontable(hot1Container, {
+            data: initialData1,
             rowHeaders: true,
-            height: 'auto',
-            width: '100%',
-            licenseKey: 'non-commercial-and-evaluation'
+            colHeaders: true,
+            colWidths: [150, 100, 100, 100, 100],
+            licenseKey: 'non-commercial-and-evaluation' // Free for non-commercial use
         });
 
-        const capacityTable = new Handsontable(document.getElementById('capacity-table'), {
-            data: initialCapacityData,
+        const hot2 = new Handsontable(hot2Container, {
+            data: initialData2,
+            rowHeaders: true,
             colHeaders: ['型號', '容量', '價格'],
-            rowHeaders: true,
-            height: 'auto',
-            width: '100%',
-            licenseKey: 'non-commercial-and-evaluation'
+            colWidths: [150, 100, 100],
+            licenseKey: 'non-commercial-and-evaluation' // Free for non-commercial use
         });
 
-        // File upload handler
-        document.getElementById('file-input').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
+        // OCR and file upload handling
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+
             if (file) {
-                const loading = document.getElementById('loading');
-                const successMessage = document.getElementById('success-message');
-                
-                loading.style.display = 'block';
-                successMessage.style.display = 'none';
+                // Show upload success message
+                document.getElementById('uploadMessage').textContent = 'Upload Success!';
 
-                try {
-                    // Perform OCR
-                    const result = await Tesseract.recognize(file, 'eng', {
-                        logger: m => console.log(m)
-                    });
-
-                    console.log('OCR Result:', result.text);
-
-                    // Update the first table with OCR results
-                    const lines = result.text.split('\n');
-                    const updatedData = [...initialLockedData];
-
-                    lines.forEach(line => {
-                        const values = line.trim().split(/\s+/);
-                        for (let i = 0; i < updatedData.length; i++) {
-                            if (values[0] && values[0].includes(updatedData[i][0])) {
-                                // Update values if they exist
-                                for (let j = 1; j < values.length && j < 5; j++) {
-                                    const num = parseInt(values[j]);
-                                    if (!isNaN(num)) {
-                                        updatedData[i][j] = num;
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-                    lockedTable.loadData(updatedData);
-
-                    // Update the second table based on the first table's data
-                    const capacityData = generateCapacityTableData(updatedData);
-                    capacityTable.loadData(capacityData);
-
-                    loading.style.display = 'none';
-                    successMessage.style.display = 'block';
-                } catch (error) {
-                    console.error('OCR Error:', error);
-                    loading.style.display = 'none';
-                }
-            }
-        });
-
-        function generateCapacityTableData(lockedData) {
-            const result = [];
-            lockedData.forEach(row => {
-                const model = row[0];
-                const sellingPrice = row[1];
-
-                // Skip if no selling price
-                if (!sellingPrice) return;
-
-                // Define capacities based on model
-                let capacities = [];
-                if (model.includes('PRO MAX')) {
-                    capacities = ['256GB', '512GB', '1TB'];
-                } else if (model.includes('PRO')) {
-                    capacities = ['128GB', '256GB', '512GB', '1TB'];
-                } else if (model.includes('SE')) {
-                    capacities = ['64GB', '128GB', '256GB'];
-                } else {
-                    capacities = ['128GB', '256GB', '512GB'];
-                }
-
-                // Generate rows for each capacity
-                capacities.forEach((capacity, index) => {
-                    result.push([
-                        model,
-                        capacity,
-                        sellingPrice + (index * 200) // Price increment for each capacity
+                // Perform OCR on the uploaded image
+                Tesseract.recognize(
+                    file,
+                    'eng',
+                    {
+                        logger: info => console.log(info) // Log OCR progress
+                    }
+                ).then(({ data: { text } }) => {
+                    console.log('OCR Result:', text);
+                    
+                    // Example: You can now process the OCR result and fill it into the table.
+                    // For demonstration, we're assuming the OCR result will be processed into table data.
+                    // Here, you could split the text and update the Handsontable data dynamically.
+                    hot2.loadData([
+                        ['iPhone 15', '128GB', 'OCR Result'],
+                        ['iPhone 15', '256GB', 'OCR Result'],
+                        // ... continue filling in the data
                     ]);
                 });
-            });
-            return result;
-        }
+            }
+        });
     </script>
 </body>
 </html>
