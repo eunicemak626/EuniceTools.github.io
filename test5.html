@@ -3,161 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OCR with Handsontable</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@8.4.0/dist/handsontable.full.min.css">
+    <title>OCR to Handsontable</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@12.1.0/dist/handsontable.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            padding: 20px;
         }
-        .upload-section {
+        #upload-section {
             margin-bottom: 20px;
         }
         #fileInput {
             display: none;
         }
-        .custom-upload {
-            display: inline-block;
-            padding: 10px 20px;
+        label {
             background-color: #4CAF50;
             color: white;
-            border-radius: 4px;
+            padding: 10px 20px;
+            border-radius: 5px;
             cursor: pointer;
         }
-        #uploadMessage {
-            margin-top: 10px;
+        #uploadSuccess {
+            display: none;
             color: green;
+            font-weight: bold;
+            margin-top: 10px;
         }
-        #hot1, #hot2 {
-            margin-top: 20px;
+        #ocrResult {
+            margin-top: 30px;
         }
     </style>
 </head>
 <body>
-    <h1>OCR to Handsontable</h1>
-    
-    <div class="upload-section">
-        <label for="fileInput" class="custom-upload">選擇檔案</label>
+
+    <h2>OCR to Handsontable</h2>
+
+    <div id="upload-section">
+        <label for="fileInput">選擇檔案</label>
         <input type="file" id="fileInput" accept="image/*">
-        <div id="uploadMessage"></div>
+        <div id="uploadSuccess">Upload Success!</div>
     </div>
-    
-    <div id="hot1"></div>
-    <div id="hot2"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.1/dist/tesseract.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/handsontable@8.4.0/dist/handsontable.full.min.js"></script>
+    <div id="ocrResult">
+        <div id="result-table"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@12.1.0/dist/handsontable.min.js"></script>
     <script>
-        // Initialize Handsontable instances
-        const hot1Container = document.getElementById('hot1');
-        const hot2Container = document.getElementById('hot2');
-        
-        const initialData1 = [
-            ['LOCKED', 'SELLING', 'HKD', 'CUSTOMER', ''],
-            ['IPHONE 16', 0, 0, 0, ''],
-            ['IPHONE 16 PLUS', 0, 0, 0, ''],
-            ['IPHONE 16 PRO', 0, 0, 0, ''],
-            ['IPHONE 16 PRO MAX', 0, 0, 0, ''],
-            ['IPHONE 15', 0, 0, 0, ''],
-            ['IPHONE 15 PLUS', 0, 0, 0, ''],
-            ['IPHONE 15 PRO', 0, 0, 0, ''],
-            ['IPHONE 15 PRO MAX', 0, 0, 0, ''],
-            ['IPHONE 14', 0, 0, 0, ''],
-            ['IPHONE 14 PLUS', 0, 0, 0, ''],
-            ['IPHONE 14 PRO', 0, 0, 0, ''],
-            ['IPHONE 14 PRO MAX', 0, 0, 0, ''],
-            ['IPHONE 13 MINI', 0, 0, 0, ''],
-            ['IPHONE 13', 0, 0, 0, ''],
-            ['IPHONE 12', 0, 0, 0, ''],
-            ['IPHONE SE 3', 0, 0, 0, '']
-        ];
+        const fileInput = document.getElementById('fileInput');
+        const uploadSuccess = document.getElementById('uploadSuccess');
+        const resultTable = document.getElementById('result-table');
 
-        const initialData2 = [
-            ['iPhone 15', '128GB', ''],
-            ['iPhone 15', '256GB', ''],
-            ['iPhone 15', '512GB', ''],
-            ['iPhone 15 Plus', '128GB', ''],
-            ['iPhone 15 Plus', '256GB', ''],
-            ['iPhone 15 Plus', '512GB', ''],
-            ['iPhone 15 Pro', '128GB', ''],
-            ['iPhone 15 Pro', '256GB', ''],
-            ['iPhone 15 Pro', '512GB', ''],
-            ['iPhone 15 Pro', '1TB', ''],
-            ['iPhone 15 Pro Max', '256GB', ''],
-            ['iPhone 15 Pro Max', '512GB', ''],
-            ['iPhone 15 Pro Max', '1TB', ''],
-            ['iPhone 14', '128GB', ''],
-            ['iPhone 14', '256GB', ''],
-            ['iPhone 14', '512GB', ''],
-            ['iPhone 14 Plus', '128GB', ''],
-            ['iPhone 14 Plus', '256GB', ''],
-            ['iPhone 14 Plus', '512GB', ''],
-            ['iPhone 14 Pro', '128GB', ''],
-            ['iPhone 14 Pro', '256GB', ''],
-            ['iPhone 14 Pro', '512GB', ''],
-            ['iPhone 14 Pro', '1TB', ''],
-            ['iPhone 14 Pro Max', '256GB', ''],
-            ['iPhone 14 Pro Max', '512GB', ''],
-            ['iPhone 14 Pro Max', '1TB', ''],
-            ['iPhone 13 Mini', '128GB', ''],
-            ['iPhone 13 Mini', '256GB', ''],
-            ['iPhone 13 Mini', '512GB', ''],
-            ['iPhone 13', '128GB', ''],
-            ['iPhone 13', '256GB', ''],
-            ['iPhone 13', '512GB', ''],
-            ['iPhone 12', '64GB', ''],
-            ['iPhone 12', '128GB', ''],
-            ['iPhone 12', '256GB', ''],
-            ['iPhone SE 3RD GEN', '64GB', ''],
-            ['iPhone SE 3RD GEN', '128GB', ''],
-            ['iPhone SE 3RD GEN', '256GB', '']
-        ];
-
-        const hot1 = new Handsontable(hot1Container, {
-            data: initialData1,
-            rowHeaders: true,
-            colHeaders: true,
-            colWidths: [150, 100, 100, 100, 100],
-            licenseKey: 'non-commercial-and-evaluation' // Free for non-commercial use
-        });
-
-        const hot2 = new Handsontable(hot2Container, {
-            data: initialData2,
-            rowHeaders: true,
-            colHeaders: ['型號', '容量', '價格'],
-            colWidths: [150, 100, 100],
-            licenseKey: 'non-commercial-and-evaluation' // Free for non-commercial use
-        });
-
-        // OCR and file upload handling
-        document.getElementById('fileInput').addEventListener('change', function(event) {
+        fileInput.addEventListener('change', async (event) => {
             const file = event.target.files[0];
-
             if (file) {
-                // Show upload success message
-                document.getElementById('uploadMessage').textContent = 'Upload Success!';
+                uploadSuccess.style.display = 'block';
 
-                // Perform OCR on the uploaded image
-                Tesseract.recognize(
-                    file,
-                    'eng',
-                    {
-                        logger: info => console.log(info) // Log OCR progress
-                    }
-                ).then(({ data: { text } }) => {
-                    console.log('OCR Result:', text);
-                    
-                    // Example: You can now process the OCR result and fill it into the table.
-                    // For demonstration, we're assuming the OCR result will be processed into table data.
-                    // Here, you could split the text and update the Handsontable data dynamically.
-                    hot2.loadData([
-                        ['iPhone 15', '128GB', 'OCR Result'],
-                        ['iPhone 15', '256GB', 'OCR Result'],
-                        // ... continue filling in the data
-                    ]);
-                });
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const imgData = e.target.result;
+
+                    // 使用 Tesseract.js 進行 OCR 辨識
+                    const { data: { text } } = await Tesseract.recognize(
+                        imgData,
+                        'eng',
+                        {
+                            logger: info => console.log(info) // 可以在此處顯示進度
+                        }
+                    );
+
+                    // 解析 OCR 辨識結果，並轉換為表格數據
+                    const ocrLines = text.split('\n').filter(line => line.trim() !== '');
+                    const tableData = ocrLines.map(line => line.split(/\s+/));
+
+                    // 顯示識別結果到 Handsontable
+                    const hot = new Handsontable(resultTable, {
+                        data: tableData,
+                        colHeaders: true,
+                        rowHeaders: true,
+                        filters: true,
+                        dropdownMenu: true
+                    });
+                };
+
+                reader.readAsDataURL(file);
             }
         });
     </script>
+
 </body>
 </html>
