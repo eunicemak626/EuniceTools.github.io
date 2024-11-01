@@ -6,7 +6,7 @@
     <title>iPhone Price Table</title>
     <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
-    <script src='https://unpkg.com/tesseract.js@4.1.1/dist/tesseract.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.3/dist/tesseract.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -132,6 +132,8 @@
 
                 try {
                     const ocrText = await this.getOCRTextFromImage(file);
+                    if (!ocrText) throw new Error("No text extracted from image.");
+
                     const tableDataA = this.generateTableDataA(ocrText);
                     this.createTableA(tableDataA);
 
@@ -146,16 +148,10 @@
             }
 
             async getOCRTextFromImage(file) {
-                const worker = Tesseract.createWorker({
-                    logger: info => console.log(info) // 日誌輸出幫助調試
-                });
-
                 try {
-                    await worker.load();
-                    await worker.loadLanguage('eng');
-                    await worker.initialize('eng');
-                    const { data: { text } } = await worker.recognize(file);
-                    await worker.terminate();
+                    const { data: { text } } = await Tesseract.recognize(file, 'eng', {
+                        logger: info => console.log(info) // 日誌輸出幫助調試
+                    });
                     return text;
                 } catch (error) {
                     console.error("Tesseract.js failed to process the image:", error);
