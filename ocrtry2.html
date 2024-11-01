@@ -83,22 +83,62 @@
         const successMessage = document.getElementById('successMessage');
         const tableContainer = document.getElementById('tableContainer');
 
+        function cleanModelName(modelName) {
+            // 定義iPhone型號的標準名稱
+            const standardModels = [
+                'IPHONE 16',
+                'IPHONE 16 PLUS',
+                'IPHONE 16 PRO',
+                'IPHONE 16 PRO MAX',
+                'IPHONE 15',
+                'IPHONE 15 PLUS',
+                'IPHONE 15 PRO',
+                'IPHONE 15 PRO MAX',
+                'IPHONE 14',
+                'IPHONE 14 PLUS',
+                'IPHONE 14 PRO',
+                'IPHONE 14 PRO MAX',
+                'IPHONE 13 MINI',
+                'IPHONE 13',
+                'IPHONE 12',
+                'IPHONE SE 3'
+            ];
+
+            // 尋找最匹配的標準型號名稱
+            for (let standardModel of standardModels) {
+                if (modelName.startsWith(standardModel)) {
+                    return standardModel;
+                }
+            }
+            return modelName;
+        }
+
         function parseOCRResult(text) {
             const rows = [];
             const lines = text.split('\n');
-            let currentRow = [];
             
             for (let line of lines) {
                 if (line.includes('IPHONE')) {
-                    const parts = line.split(/\s+/);
-                    const model = parts.slice(0, parts.length-3).join(' ');
-                    const numbers = parts.slice(-3);
+                    const parts = line.trim().split(/\s+/);
+                    let modelName = '';
+                    let numbers = [];
+                    
+                    // 從後往前找數字
+                    for (let i = parts.length - 1; i >= 0; i--) {
+                        if (!isNaN(parts[i]) && numbers.length < 3) {
+                            numbers.unshift(parseInt(parts[i]));
+                        } else {
+                            modelName = parts.slice(0, i + 1).join(' ');
+                            break;
+                        }
+                    }
+
                     if (numbers.length === 3) {
                         rows.push([
-                            model.trim(),
-                            parseInt(numbers[0]) || 0,
-                            parseInt(numbers[1]) || 0,
-                            parseInt(numbers[2]) || 0
+                            cleanModelName(modelName.trim()),
+                            numbers[0],
+                            numbers[1],
+                            numbers[2]
                         ]);
                     }
                 }
