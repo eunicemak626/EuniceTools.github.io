@@ -48,13 +48,13 @@
             flex-wrap: wrap;
         }
         .copy-button {
-            padding: 8px 16px;
+            padding: 12px 20px;
             background-color: white;
             color: #333;
             border: 1px solid #ccc;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: normal;
             transition: all 0.2s;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -72,14 +72,12 @@
             background-color: #e5e5e5;
             transform: scale(0.98);
         }
-
-        /* 手機響應式設計 */
         @media (max-width: 768px) {
             body {
                 background-color: white;
             }
             .container {
-                padding: 16px;
+                padding: 12px;
                 border-radius: 0;
                 box-shadow: none;
             }
@@ -97,8 +95,8 @@
                 flex-direction: column;
             }
             .copy-button {
-                padding: 6px 12px;
-                font-size: 12px;
+                padding: 14px 20px;
+                font-size: 16px;
                 width: 100%;
                 margin: 0;
             }
@@ -108,7 +106,6 @@
             .handsontable td {
                 padding: 8px 4px;
             }
-            /* 優化觸控體驗 */
             .handsontable .htSelectEditor {
                 max-width: 90vw;
             }
@@ -116,8 +113,6 @@
                 -webkit-overflow-scrolling: touch;
             }
         }
-
-        /* 針對更小螢幕的優化 */
         @media (max-width: 375px) {
             .container {
                 padding: 8px;
@@ -127,14 +122,12 @@
             }
             .copy-button {
                 padding: 12px 16px;
-                font-size: 12x;
+                font-size: 14px;
             }
             #hot-table {
                 height: calc(100vh - 180px);
             }
         }
-
-        /* 針對橫屏模式的優化 */
         @media (max-height: 600px) and (orientation: landscape) {
             .container {
                 padding: 10px;
@@ -150,8 +143,6 @@
                 flex-direction: row;
             }
         }
-
-        /* 防止iOS橡皮筋效果 */
         html, body {
             position: fixed;
             width: 100%;
@@ -172,12 +163,168 @@
         <div class="button-group">
             <button class="copy-button" onclick="copyData()">Copy Data</button>
             <button class="copy-button" onclick="clearTable()">Clear Table</button>
-            <a href="https://eunicemak626.github.io/EuniceTools.github.io/UnlockedTable.html" class="copy-button">Locked Or Unlocked Generator</a>
+            <a href="https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html" class="copy-button">Locked Or Unlocked Generator</a>
         </div>
     </div>
 
     <script>
-        // Create a replacement map
+        // 初始化表格時的響應式設定
+        function getTableHeight() {
+            if (window.innerWidth <= 768) {
+                return Math.max(300, window.innerHeight - 200);
+            }
+            return 500;
+        }
+
+        const container = document.getElementById('hot-table');
+        const hot = new Handsontable(container, {
+            data: [['350118659695429', '', 'IPHONE 13 128GB PINK']],
+            width: '100%',
+            height: getTableHeight(),
+            colHeaders: ['A', 'B', 'C'],
+            columns: [
+                { width: 150 },
+                { width: 100 },
+                { width: 200 }
+            ],
+            rowHeaders: true,
+            stretchH: 'all',
+            licenseKey: 'non-commercial-and-evaluation',
+            contextMenu: true,
+            minSpareRows: 1,
+            outsideClickDeselects: false,
+            manualColumnResize: true,
+            manualRowResize: true,
+            allowInvalid: false,
+            wordWrap: true,
+            autoColumnSize: true,
+            afterChange: function(changes) {
+                if (!changes) return;
+                
+                changes.forEach(([row, prop, oldValue, newValue]) => {
+                    if (prop === 2) {
+                        const renamedValue = processRename(newValue);
+                        if (renamedValue !== newValue) {
+                            this.setDataAtCell(row, 2, renamedValue);
+                        }
+                    }
+                });
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            hot.updateSettings({
+                height: getTableHeight()
+            });
+        });
+
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.closest('#hot-table')) {
+                e.stopPropagation();
+            }
+        }, { passive: false });
+
+        function processRename(input) {
+            if (!input) return '';
+
+            const colorMapping = {
+                'BLK': 'BLACK',
+                'UMR': 'ULTRAMARINE',
+                'WHT': 'WHITE',
+                'PNK': 'PINK',
+                'TL': 'TEAL',
+                'NTRL': 'NATURAL',
+                'NAT': 'NATURAL',
+                'PRP': 'PURPLE',
+                'BLU': 'BLUE',
+                'SPACE BLACK': 'BLACK',
+                'DEEP PURPLE': 'PURPLE',
+                'SIERRA BLUE': 'BLUE',
+                'GRAPHITE': 'BLACK'
+            };
+
+            const modelMapping = {
+                '(3RD GENERATION)': '3RD GEN',
+                '(3RD GEN)': '3RD GEN',
+                '3RD GENERATION': '3RD GEN'
+            };
+
+            const wordsToRemove = ['(A2172)', '(IPHONE13.2)', 'SIERRA', 'DEEP', 'SPACE', 'NAMM', 'CI/AR', '-USA'];
+
+            let prefix = '';
+            let processedLine = input.trim().toUpperCase();
+
+            if (processedLine.includes('AS IS+') || processedLine.includes('AS IS')) {
+                prefix = 'AS IS';
+                processedLine = processedLine.replace(/AS IS\+?/, '').trim();
+            } else if (processedLine.includes('SVC')) {
+                prefix = 'SVC';
+                processedLine = processedLine.replace('SVC', '').trim();
+            }
+
+            wordsToRemove.forEach(word => {
+                processedLine = processedLine.replace(word, '');
+            });
+
+            for (let key in modelMapping) {
+                processedLine = processedLine.replace(key, modelMapping[key]);
+            }
+
+            let parts = processedLine.split(' ').filter(part => part);
+
+            let modelParts = [];
+            let i = 0;
+            while (i < parts.length && 
+                  (parts[i] === 'IPHONE' || !isNaN(parts[i]) || 
+                   parts[i] === 'PRO' || parts[i] === 'MAX' || 
+                   parts[i] === 'PLUS' || parts[i] === 'MINI' ||
+                   parts[i] === 'PROMAX' || parts[i] === 'SE' ||
+                   parts[i] === '3RD' || parts[i] === 'GEN')) {
+                if (parts[i] === 'PROMAX') {
+                    modelParts.push('PRO');
+                    modelParts.push('MAX');
+                } else {
+                    modelParts.push(parts[i]);
+                }
+                i++;
+            }
+
+            let storage = '';
+            for (let j = 0; j < parts.length; j++) {
+                if (parts[j].includes('GB') || parts[j].includes('TB')) {
+                    storage = parts[j];
+                    break;
+                }
+            }
+
+            let color = '';
+            for (let part of parts) {
+                if (['STARLIGHT', 'GREEN', 'YELLOW', 'BLUE', 'PURPLE', 'PINK', 'BLACK', 'ULTRAMARINE', 'WHITE', 'SILVER', 'GOLD', 'NATURAL', 'MIDNIGHT', 'RED', 'DESERT'].includes(part)) {
+                    color = part;
+                    break;
+                }
+                if (colorMapping[part]) {
+                    color = colorMapping[part];
+                    break;
+                }
+            }
+
+            for (let key in colorMapping) {
+                if (processedLine.includes(key)) {
+                    color = colorMapping[key];
+                    break;
+                }
+            }
+
+            let model = modelParts.join(' ');
+            if (model && storage && color) {
+                return prefix ? `${model} ${storage} ${color} ${prefix}` : `${model} ${storage} ${color}`;
+            }
+
+            return processedLine;
+        }
+
+        // Add the replacementMap after processRename function
         const replacementMap = {
             // IPAD MINI (6TH GENERATION) WI-FI models
             'IPAD MINI (6TH GENERATION) WI-FI SPACE GRAY-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB GRAY',
@@ -396,69 +543,6 @@
 'IPAD PRO 13-INCH (M4) 13 WIFI + CELLULAR SILVER NT-USA 2TB': 'IPAD PRO 13" 7TH GEN 2024 M4 5G 2TB SILVER(NT)' , 
             // Add more replacements following the same pattern...
         };
-
-        // Function to process the input string and apply replacements
-        function processRename(input) {
-            if (!input) return input.trim();
-
-            // Check if the input string matches a key in the replacement map
-            if (replacementMap.hasOwnProperty(input)) {
-                return replacementMap[input];
-            }
-
-            // If no match in the replacement map, return the original input
-            return input.trim();
-        }
-
-        function getTableHeight() {
-            if (window.innerWidth <= 768) {
-                return Math.max(300, window.innerHeight - 200);
-            }
-            return 500;
-        }
-
-        const container = document.getElementById('hot-table');
-        const hot = new Handsontable(container, {
-            data: [['350118659695429', '', 'IPHONE 13 128GB PINK']],
-            width: '100%',
-            height: getTableHeight(),
-            colHeaders: ['A', 'B', 'C'],
-            columns: [
-                { width: 150 },
-                { width: 100 },
-                { width: 200 }
-            ],
-            rowHeaders: true,
-            stretchH: 'all',
-            licenseKey: 'non-commercial-and-evaluation',
-            contextMenu: true,
-            minSpareRows: 1,
-            outsideClickDeselects: false,
-            manualColumnResize: true,
-            manualRowResize: true,
-            allowInvalid: false,
-            wordWrap: true,
-            autoColumnSize: true,
-            afterChange: function(changes) {
-                if (!changes) return;
-
-                changes.forEach(([row, prop, oldValue, newValue]) => {
-                    if (prop === 2) {
-                        const renamedValue = processRename(newValue);
-                        if (renamedValue !== newValue) {
-                            this.setDataAtCell(row, 2, renamedValue);
-                        }
-                    }
-                });
-            }
-        });
-
-        // 監聽視窗大小變化
-        window.addEventListener('resize', () => {
-            hot.updateSettings({
-                height: getTableHeight()
-            });
-        });
 
         async function copyData() {
             const data = hot.getData();
