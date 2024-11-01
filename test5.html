@@ -51,7 +51,7 @@
         #tableContainerA, #tableContainerB {
             margin-top: 20px;
             overflow: auto;
-            min-height: 200px; /* 確保容器有最小高度 */
+            min-height: 300px; /* 增加最小高度 */
         }
         .status {
             text-align: center;
@@ -138,7 +138,6 @@
 
                     const tableDataA = this.generateTableDataA(ocrText);
                     console.log("Table Data A:", tableDataA); // 調試輸出
-                    if (!tableDataA.length) throw new Error("No valid data extracted for Table A.");
 
                     this.createTableA(tableDataA);
 
@@ -268,6 +267,14 @@
 
         // Initialize the processor
         new PriceTableProcessor();
+
+        // 為 Focus Catcher 手動添加 id 和 name 以消除警告
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('input.htFocusCatcher').forEach((input, index) => {
+                input.id = 'htFocusCatcher_' + index;
+                input.name = 'htFocusCatcher_' + index;
+            });
+        });
     </script>
 </body>
 </html>
