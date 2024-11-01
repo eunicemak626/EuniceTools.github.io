@@ -46,6 +46,12 @@
             width: 100%;
             max-width: 1200px;
         }
+
+        #loading {
+            display: none;
+            color: blue;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -55,13 +61,15 @@
             選擇檔案
         </label>
         <div id="success-message" class="success-message">Upload Success!</div>
+        <div id="loading">Processing image...</div>
     </div>
 
     <div class="table-container" id="locked-table"></div>
     <div class="table-container" id="capacity-table"></div>
 
     <script>
-        const lockedData = [
+        // Initial data for the first table
+        const initialLockedData = [
             ['IPHONE 16', 0, 0, 0, ''],
             ['IPHONE 16 PLUS', 0, 0, 0, ''],
             ['IPHONE 16 PRO', 0, 0, 0, 0],
@@ -80,56 +88,124 @@
             ['IPHONE SE 3', 0, 0, 0, '']
         ];
 
-        const capacityData = [
+        // Initial data for the second table
+        const initialCapacityData = [
             ['iPhone 15', '128GB', ''],
             ['iPhone 15', '256GB', ''],
             ['iPhone 15', '512GB', ''],
             ['iPhone 15 Plus', '128GB', ''],
             ['iPhone 15 Plus', '256GB', ''],
             ['iPhone 15 Plus', '512GB', ''],
-            // ... (其餘容量資料)
+            ['iPhone 15 Pro', '128GB', ''],
+            ['iPhone 15 Pro', '256GB', ''],
+            ['iPhone 15 Pro', '512GB', ''],
+            ['iPhone 15 Pro', '1TB', '']
+            // Add more rows as needed
         ];
 
-        // 初始化第一個表格
+        // Initialize tables
         const lockedTable = new Handsontable(document.getElementById('locked-table'), {
-            data: lockedData,
+            data: initialLockedData,
             colHeaders: ['LOCKED', 'SELLING', 'HKD', 'CUSTOMER', ''],
             rowHeaders: true,
             height: 'auto',
+            width: '100%',
             licenseKey: 'non-commercial-and-evaluation'
         });
 
-        // 初始化第二個表格
         const capacityTable = new Handsontable(document.getElementById('capacity-table'), {
-            data: capacityData,
+            data: initialCapacityData,
             colHeaders: ['型號', '容量', '價格'],
             rowHeaders: true,
             height: 'auto',
+            width: '100%',
             licenseKey: 'non-commercial-and-evaluation'
         });
 
-        // 文件上傳處理
+        // File upload handler
         document.getElementById('file-input').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (file) {
+                const loading = document.getElementById('loading');
                 const successMessage = document.getElementById('success-message');
-                successMessage.style.display = 'block';
+                
+                loading.style.display = 'block';
+                successMessage.style.display = 'none';
 
-                // OCR處理
-                const result = await Tesseract.recognize(file);
-                console.log(result.text);
+                try {
+                    // Perform OCR
+                    const result = await Tesseract.recognize(file, 'eng', {
+                        logger: m => console.log(m)
+                    });
 
-                // 這裡可以加入OCR結果的解析邏輯
-                // 並更新表格數據
+                    console.log('OCR Result:', result.text);
+
+                    // Update the first table with OCR results
+                    const lines = result.text.split('\n');
+                    const updatedData = [...initialLockedData];
+
+                    lines.forEach(line => {
+                        const values = line.trim().split(/\s+/);
+                        for (let i = 0; i < updatedData.length; i++) {
+                            if (values[0] && values[0].includes(updatedData[i][0])) {
+                                // Update values if they exist
+                                for (let j = 1; j < values.length && j < 5; j++) {
+                                    const num = parseInt(values[j]);
+                                    if (!isNaN(num)) {
+                                        updatedData[i][j] = num;
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    lockedTable.loadData(updatedData);
+
+                    // Update the second table based on the first table's data
+                    const capacityData = generateCapacityTableData(updatedData);
+                    capacityTable.loadData(capacityData);
+
+                    loading.style.display = 'none';
+                    successMessage.style.display = 'block';
+                } catch (error) {
+                    console.error('OCR Error:', error);
+                    loading.style.display = 'none';
+                }
             }
         });
 
-        // 監聽第一個表格的變化並更新第二個表格
-        lockedTable.addHook('afterChange', (changes) => {
-            if (changes) {
-                // 這裡添加更新第二個表格的邏輯
-            }
-        });
+        function generateCapacityTableData(lockedData) {
+            const result = [];
+            lockedData.forEach(row => {
+                const model = row[0];
+                const sellingPrice = row[1];
+
+                // Skip if no selling price
+                if (!sellingPrice) return;
+
+                // Define capacities based on model
+                let capacities = [];
+                if (model.includes('PRO MAX')) {
+                    capacities = ['256GB', '512GB', '1TB'];
+                } else if (model.includes('PRO')) {
+                    capacities = ['128GB', '256GB', '512GB', '1TB'];
+                } else if (model.includes('SE')) {
+                    capacities = ['64GB', '128GB', '256GB'];
+                } else {
+                    capacities = ['128GB', '256GB', '512GB'];
+                }
+
+                // Generate rows for each capacity
+                capacities.forEach((capacity, index) => {
+                    result.push([
+                        model,
+                        capacity,
+                        sellingPrice + (index * 200) // Price increment for each capacity
+                    ]);
+                });
+            });
+            return result;
+        }
     </script>
 </body>
 </html>
