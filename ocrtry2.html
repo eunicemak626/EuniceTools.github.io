@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Locked Price Table</title>
+    <title>iPhone Price Table</title>
     <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
     <style>
@@ -12,173 +12,209 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #f5f5f5;
         }
         .container {
-            border: 2px dashed #ccc;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             padding: 20px;
+            margin-bottom: 20px;
+        }
+        .header {
             text-align: center;
             margin-bottom: 20px;
-            background-color: #f9f9f9;
         }
-        #result {
-            margin-top: 20px;
-            padding: 10px;
-        }
-        .loading {
-            display: none;
-            margin: 10px 0;
-            color: #666;
-        }
-        .success-message {
-            color: #4CAF50;
-            font-weight: bold;
-            margin: 10px 0;
-            display: none;
+        .upload-section {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
         }
         .custom-file-upload {
-            border: 2px solid #4CAF50;
             display: inline-block;
             padding: 10px 20px;
             cursor: pointer;
-            background-color: white;
-            color: #4CAF50;
+            background-color: #007bff;
+            color: white;
             border-radius: 5px;
             transition: all 0.3s;
         }
         .custom-file-upload:hover {
-            background-color: #4CAF50;
-            color: white;
+            background-color: #0056b3;
         }
         input[type="file"] {
             display: none;
         }
         #tableContainer {
             margin-top: 20px;
-            height: 600px;
-            width: 100%;
+            overflow: auto;
         }
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
+        .status {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .loading {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Locked Price Table</h2>
-        <label class="custom-file-upload">
-            <input type="file" id="imageInput" accept="image/*">
-            Choose File
-        </label>
-        <div class="loading" id="loading">Processing...</div>
-        <div class="success-message" id="successMessage">Upload Success!</div>
-        <h3>Result:</h3>
+        <div class="header">
+            <h1>iPhone Price Table</h1>
+        </div>
+        <div class="upload-section">
+            <label class="custom-file-upload">
+                <input type="file" id="imageInput" accept="image/*">
+                Upload Price Table Image
+            </label>
+            <div id="loadingStatus" class="status loading">Processing image...</div>
+            <div id="successStatus" class="status success">Table generated successfully!</div>
+            <div id="errorStatus" class="status error">Error processing image. Please try again.</div>
+        </div>
         <div id="tableContainer"></div>
     </div>
 
     <script src='https://unpkg.com/tesseract.js@4.1.1/dist/tesseract.min.js'></script>
     <script>
-        const imageInput = document.getElementById('imageInput');
-        const loading = document.getElementById('loading');
-        const successMessage = document.getElementById('successMessage');
-        const tableContainer = document.getElementById('tableContainer');
-
-        // 預定義的模型數據結構
         const modelStructure = [
-            { model: 'IPHONE 16', prices: 3 },
-            { model: 'IPHONE 16 PLUS', prices: 3 },
-            { model: 'IPHONE 16 PRO', prices: 4 },
-            { model: 'IPHONE 16 PRO MAX', prices: 4 },
-            { model: 'IPHONE 15', prices: 3 },
-            { model: 'IPHONE 15 PLUS', prices: 3 },
-            { model: 'IPHONE 15 PRO', prices: 4 },
-            { model: 'IPHONE 15 PRO MAX', prices: 3 },
-            { model: 'IPHONE 14', prices: 3 },
-            { model: 'IPHONE 14 PLUS', prices: 3 },
-            { model: 'IPHONE 14 PRO', prices: 4 },
-            { model: 'IPHONE 14 PRO MAX', prices: 4 },
-            { model: 'IPHONE 13 MINI', prices: 3 },
-            { model: 'IPHONE 13', prices: 3 },
-            { model: 'IPHONE 12', prices: 3 },
-            { model: 'IPHONE SE 3', prices: 3 }
+            { model: 'IPHONE 16', storage: 3 },
+            { model: 'IPHONE 16 PLUS', storage: 3 },
+            { model: 'IPHONE 16 PRO', storage: 4 },
+            { model: 'IPHONE 16 PRO MAX', storage: 4 },
+            { model: 'IPHONE 15', storage: 3 },
+            { model: 'IPHONE 15 PLUS', storage: 3 },
+            { model: 'IPHONE 15 PRO', storage: 4 },
+            { model: 'IPHONE 15 PRO MAX', storage: 3 },
+            { model: 'IPHONE 14', storage: 3 },
+            { model: 'IPHONE 14 PLUS', storage: 3 },
+            { model: 'IPHONE 14 PRO', storage: 4 },
+            { model: 'IPHONE 14 PRO MAX', storage: 4 },
+            { model: 'IPHONE 13 MINI', storage: 3 },
+            { model: 'IPHONE 13', storage: 3 },
+            { model: 'IPHONE 12', storage: 3 },
+            { model: 'IPHONE SE 3', storage: 3 }
         ];
 
-        function parseOCRResult(text) {
-            const lines = text.split('\n');
-            let currentData = new Map();
+        class PriceTableProcessor {
+            constructor() {
+                this.imageInput = document.getElementById('imageInput');
+                this.loadingStatus = document.getElementById('loadingStatus');
+                this.successStatus = document.getElementById('successStatus');
+                this.errorStatus = document.getElementById('errorStatus');
+                this.tableContainer = document.getElementById('tableContainer');
+                this.setupEventListeners();
+            }
 
-            // 首先收集所有價格數據
-            for (let line of lines) {
-                if (line.includes('IPHONE')) {
-                    const numbers = line.match(/\d+/g);
-                    if (numbers && numbers.length >= 3) {
-                        let modelName = line.split(/\d+/)[0].trim();
-                        // 移除任何trailing數字
-                        modelName = modelName.replace(/\s+\d+$/, '');
-                        
-                        const prices = numbers.slice(-3).map(n => parseInt(n));
-                        currentData.set(modelName, prices);
-                    }
+            setupEventListeners() {
+                this.imageInput.addEventListener('change', (e) => this.handleImageUpload(e));
+            }
+
+            showStatus(element) {
+                [this.loadingStatus, this.successStatus, this.errorStatus].forEach(status => {
+                    status.style.display = 'none';
+                });
+                element.style.display = 'block';
+            }
+
+            async handleImageUpload(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                this.showStatus(this.loadingStatus);
+                this.tableContainer.innerHTML = '';
+
+                try {
+                    const { data: { text } } = await Tesseract.recognize(
+                        file,
+                        'eng',
+                        { logger: m => console.log(m) }
+                    );
+                    
+                    const tableData = this.processOCRText(text);
+                    this.createTable(tableData);
+                    
+                    this.showStatus(this.successStatus);
+                    setTimeout(() => this.successStatus.style.display = 'none', 3000);
+                } catch (error) {
+                    console.error('OCR Error:', error);
+                    this.showStatus(this.errorStatus);
+                    setTimeout(() => this.errorStatus.style.display = 'none', 3000);
                 }
             }
 
-            // 根據預定義結構創建最終數據
-            return modelStructure.map(model => {
-                const prices = currentData.get(model.model) || Array(model.prices).fill(0);
-                return [model.model, ...prices];
-            });
-        }
+            processOCRText(text) {
+                const lines = text.split('\n');
+                const priceData = new Map();
 
-        function createHandsontable(data) {
-            const hot = new Handsontable(tableContainer, {
-                data: data,
-                colHeaders: ['LOCKED', 'SELLING', 'HKD', 'CUSTOMER', '1TB'],
-                rowHeaders: true,
-                height: 'auto',
-                width: 'auto',
-                filters: true,
-                dropdownMenu: true,
-                licenseKey: 'non-commercial-and-evaluation',
-                stretchH: 'all',
-                className: 'htCenter',
-                readOnly: true,
-                columns: [
-                    { type: 'text' },
-                    { type: 'numeric', format: '0,0' },
-                    { type: 'numeric', format: '0,0' },
-                    { type: 'numeric', format: '0,0' },
-                    { type: 'numeric', format: '0,0' }
-                ]
-            });
-        }
+                lines.forEach(line => {
+                    modelStructure.forEach(model => {
+                        if (line.includes(model.model)) {
+                            const prices = line.match(/\d{3,4}/g);
+                            if (prices) {
+                                priceData.set(model.model, prices.map(p => parseInt(p)));
+                            }
+                        }
+                    });
+                });
 
-        imageInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            loading.style.display = 'block';
-            successMessage.style.display = 'none';
-            tableContainer.innerHTML = '';
-
-            try {
-                const { data: { text } } = await Tesseract.recognize(
-                    file,
-                    'eng',
-                    {
-                        logger: m => console.log(m)
-                    }
-                );
-                
-                const tableData = parseOCRResult(text);
-                createHandsontable(tableData);
-                
-                successMessage.style.display = 'block';
-                loading.style.display = 'none';
-            } catch (error) {
-                console.error('OCR Error:', error);
-                loading.style.display = 'none';
+                return modelStructure.map(model => {
+                    const prices = priceData.get(model.model) || Array(model.storage).fill(0);
+                    return [model.model, ...prices];
+                });
             }
-        });
+
+            createTable(data) {
+                const hot = new Handsontable(this.tableContainer, {
+                    data: data,
+                    colHeaders: ['MODEL', 'SELLING', 'HKD', 'CUSTOMER', '1TB'],
+                    rowHeaders: true,
+                    height: 'auto',
+                    width: 'auto',
+                    filters: true,
+                    dropdownMenu: true,
+                    licenseKey: 'non-commercial-and-evaluation',
+                    stretchH: 'all',
+                    className: 'htCenter',
+                    readOnly: true,
+                    columns: [
+                        { type: 'text' },
+                        { type: 'numeric', format: '0,0' },
+                        { type: 'numeric', format: '0,0' },
+                        { type: 'numeric', format: '0,0' },
+                        { type: 'numeric', format: '0,0' }
+                    ],
+                    afterRender: () => {
+                        const headers = this.tableContainer.querySelectorAll('.ht_clone_top th');
+                        headers.forEach(header => {
+                            header.style.backgroundColor = '#f8f9fa';
+                            header.style.fontWeight = 'bold';
+                        });
+                    }
+                });
+
+                window.addEventListener('resize', () => {
+                    hot.render();
+                });
+            }
+        }
+
+        // Initialize the processor
+        new PriceTableProcessor();
     </script>
 </body>
 </html>
