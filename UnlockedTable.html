@@ -42,7 +42,7 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
-        .copy-button, .clear-button, .home-button, .switch-button {
+        .copy-button, .home-button, .clear-button, .switch-button {
             padding: 8px 16px;
             background-color: white;
             color: #333;
@@ -57,7 +57,7 @@
             flex: 1;
             text-align: center;
         }
-        .copy-button:hover, .clear-button:hover, .home-button:hover, .switch-button:hover {
+        .copy-button:hover, .home-button:hover, .clear-button:hover, .switch-button:hover {
             background-color: #f5f5f5;
             border-color: #999;
         }
@@ -171,8 +171,8 @@
         <table class="summary-table">
             <thead>
                 <tr>
-                    <th>Model</th>
-                    <th>Capacity or Serial</th>
+                    <th>UNLOCKED N/A</th>
+                    <th>Capacity</th>
                     <th>Quantity</th>
                 </tr>
             </thead>
@@ -189,8 +189,8 @@
 
         <!-- 彈出選項對話框 -->
         <div class="context-menu" id="contextMenu">
-            <button onclick="navigateTo('unlocked')">Unlocked Table</button>
             <button onclick="navigateTo('locked')">Locked Table</button>
+            <button onclick="navigateTo('macbook')">MacBook Table</button>
         </div>
 
         <div class="home-button-container">
@@ -200,65 +200,53 @@
 
     <script>
         const container = document.getElementById('hot-table');
-
         const hot = new Handsontable(container, {
             data: [
-                ['SGK4RXQ6LY6', '', 'APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH TAN S', 'Not Activated', 'MX4E3LW'],
-                ['SFX9G9XR4HR', '', 'APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK OB', 'Not Activated', 'MX4P3LW'],
-                ['SH336F6732C', '', 'MACBOOK PRO 14" 2023 M3 PRO 512GB BLACK 11/14/18', 'Not Activated', 'MRX33LL'],
-                ['350118659695429', '', 'IPHONE 13 128GB PINK', '', ''],
-                ['', '', '', '', '']  // Empty row for new entries
+                ['350118659695429', '', 'IPHONE 13 128GB PINK'],
+                ['', '', '']
             ],
             width: '100%',
             height: 500,
-            colHeaders: ['A', 'B', 'Description', 'Status', 'Serial'],
+            colHeaders: ['A', 'B', 'C'],
             rowHeaders: true,
             stretchH: 'all',
             licenseKey: 'non-commercial-and-evaluation',
             contextMenu: true,
             minSpareRows: 1,
-            afterChange: function (changes) {
+            afterChange: function(changes) {
                 if (changes) {
                     updateSummaryTable();
                 }
             }
         });
 
-        // Parsing function for iPhone, iPad, Apple Watch, and MacBook
-        function parseModelInfo(description, serial) {
+        function parseModelInfo(description) {
             if (!description) return null;
 
             const parts = description.split(' ');
             if (parts.length < 3) return null;
 
-            let model, capacity;
-            if (description.includes('WATCH') || description.includes('MACBOOK')) {
-                // Apple Watch 和 MacBook 使用序列號
-                model = parts.join(' ');
-                capacity = serial;
-            } else {
-                // iPhone 和 iPad 使用容量和顏色
-                const capacityIndex = parts.findIndex(part => part.includes('GB') || part.includes('TB'));
-                if (capacityIndex === -1) return null;
+            const capacityIndex = parts.findIndex(part => part.includes('GB') || part.includes('TB'));
+            if (capacityIndex === -1) return null;
 
-                model = parts.slice(0, capacityIndex).join(' '); // 型號
-                const color = parts.slice(capacityIndex + 1).join(' '); // 顏色
-                capacity = parts[capacityIndex];  // 容量
-                return { model, capacity: `${capacity} ${color}` };  // 返回分開的容量和顏色
-            }
+            const model = parts.slice(0, capacityIndex).join(' ');
+            const capacity = parts[capacityIndex];
+            const color = parts.slice(capacityIndex + 1).join(' ');
 
-            return { model, capacity };
+            return {
+                model: model + ' ' + color,
+                capacity: capacity
+            };
         }
 
-        // 更新 Summary Table
         function updateSummaryTable() {
             const data = hot.getData();
             const modelCounts = {};
             let total = 0;
 
             data.forEach(row => {
-                if (row[2]) {  // 檢查描述欄位
-                    const info = parseModelInfo(row[2], row[4]);
+                if (row[2]) {  // Check column C
+                    const info = parseModelInfo(row[2]);
                     if (info) {
                         const key = `${info.model}|${info.capacity}`;
                         modelCounts[key] = (modelCounts[key] || 0) + 1;
@@ -286,7 +274,6 @@
             document.getElementById('total-quantity').textContent = total;
         }
 
-        // 複製表格至剪貼板
         function copyTable() {
             const summaryBody = document.querySelector('#summary-body');
             let textToCopy = '';
@@ -305,18 +292,18 @@
             });
         }
 
-        // 清空表格
+        // 清除表格數據
         function clearTable() {
-            hot.loadData([['', '', '', '', '']]);  // 清空表格數據
+            hot.loadData([['', '', '', '', '']]);  // 清空表格
             updateSummaryTable();  // 清空 Summary Table
         }
 
-        // 點擊「→ Switch Mode」顯示選項
+        // Context menu for switch button
         const switchModeButton = document.getElementById('switchModeButton');
         const contextMenu = document.getElementById('contextMenu');
 
-        switchModeButton.addEventListener('click', function(event) {
-            event.preventDefault(); // 阻止默認行為
+        switchModeButton.addEventListener('contextmenu', function(event) {
+            event.preventDefault(); // 阻止默認的右鍵菜單
 
             // 顯示自定義的選項對話框
             const contextMenuX = event.pageX;
@@ -328,17 +315,17 @@
 
         // 當點擊其他地方時，關閉選項彈窗
         document.addEventListener('click', function(event) {
-            if (!contextMenu.contains(event.target) && event.target !== switchModeButton) {
+            if (!contextMenu.contains(event.target)) {
                 contextMenu.style.display = 'none';
             }
         });
 
         // 跳轉到指定頁面
         function navigateTo(page) {
-            if (page === 'unlocked') {
-                window.location.href = 'https://eunicemak626.github.io/EuniceTools.github.io/UnlockedTable.html';
-            } else if (page === 'locked') {
+            if (page === 'locked') {
                 window.location.href = 'https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html';
+            } else if (page === 'macbook') {
+                window.location.href = 'https://eunicemak626.github.io/EuniceTools.github.io/macbookwatchtable.html';
             }
         }
 
