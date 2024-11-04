@@ -200,7 +200,7 @@
             autoColumnSize: true,
             afterChange: function(changes) {
                 if (!changes) return;
-                
+
                 changes.forEach(([row, prop, oldValue, newValue]) => {
                     if (prop === 2) {
                         const renamedValue = processRename(newValue);
@@ -224,127 +224,104 @@
             }
         }, { passive: false });
 
-         function processRename(input) {
-        if (!input) return '';
+        function processRename(input) {
+            if (!input) return '';
 
-        const colorMapping = {
-            'BLK': 'BLACK',
-            'UMR': 'ULTRAMARINE',
-            'WHT': 'WHITE',
-            'PNK': 'PINK',
-            'TL': 'TEAL',
-            'NTRL': 'NATURAL',
-            'NAT': 'NATURAL',
-            'PRP': 'PURPLE',
-            'BLU': 'BLUE',
-            'SPACE BLACK': 'BLACK',
-            'DEEP PURPLE': 'PURPLE',
-            'SIERRA BLUE': 'BLUE',
-            'GRAPHITE': 'BLACK'
-        };
+            const colorMapping = {
+                'BLK': 'BLACK',
+                'UMR': 'ULTRAMARINE',
+                'WHT': 'WHITE',
+                'PNK': 'PINK',
+                'TL': 'TEAL',
+                'NTRL': 'NATURAL',
+                'NAT': 'NATURAL',
+                'PRP': 'PURPLE',
+                'BLU': 'BLUE',
+                'SPACE BLACK': 'BLACK',
+                'DEEP PURPLE': 'PURPLE',
+                'SIERRA BLUE': 'BLUE',
+                'GRAPHITE': 'BLACK'
+            };
 
-        const modelMapping = {
-            '(3RD GENERATION)': '3RD GEN',
-            '(3RD GEN)': '3RD GEN',
-            '3RD GENERATION': '3RD GEN'
-        };
+            const modelMapping = {
+                '(3RD GENERATION)': '3RD GEN',
+                '(3RD GEN)': '3RD GEN',
+                '3RD GENERATION': '3RD GEN'
+            };
 
-        const wordsToRemove = ['(A2172)', '(IPHONE13.2)', 'SIERRA', 'DEEP', 'SPACE', 'NAMM', 'CI/AR', '-USA'];
+            const wordsToRemove = ['(A2172)', '(IPHONE13.2)', 'SIERRA', 'DEEP', 'SPACE', 'NAMM', 'CI/AR', '-USA'];
 
-        // List of specific models where MIDNIGHT and STARLIGHT need to be changed
-        const specificModels = ['IPHONE SE 3RD GEN', 'IPHONE 13 MINI', 'IPHONE 13', 'IPHONE 14', 'IPHONE 14 PLUS'];
-        
-        // Colors to replace for specific models
-        const specialColorMapping = {
-            'MIDNIGHT': 'BLACK',
-            'STARLIGHT': 'WHITE'
-        };
+            let prefix = '';
+            let processedLine = input.trim().toUpperCase();
 
-        let prefix = '';
-        let processedLine = input.trim().toUpperCase();
-
-        if (processedLine.includes('AS IS+') || processedLine.includes('AS IS')) {
-            prefix = 'AS IS';
-            processedLine = processedLine.replace(/AS IS\+?/, '').trim();
-        } else if (processedLine.includes('SVC')) {
-            prefix = 'SVC';
-            processedLine = processedLine.replace('SVC', '').trim();
-        }
-
-        wordsToRemove.forEach(word => {
-            processedLine = processedLine.replace(word, '');
-        });
-
-        for (let key in modelMapping) {
-            processedLine = processedLine.replace(key, modelMapping[key]);
-        }
-
-        let parts = processedLine.split(' ').filter(part => part);
-
-        let modelParts = [];
-        let i = 0;
-        while (i < parts.length && 
-              (parts[i] === 'IPHONE' || !isNaN(parts[i]) || 
-               parts[i] === 'PRO' || parts[i] === 'MAX' || 
-               parts[i] === 'PLUS' || parts[i] === 'MINI' ||
-               parts[i] === 'PROMAX' || parts[i] === 'SE' ||
-               parts[i] === '3RD' || parts[i] === 'GEN')) {
-            if (parts[i] === 'PROMAX') {
-                modelParts.push('PRO');
-                modelParts.push('MAX');
-            } else {
-                modelParts.push(parts[i]);
+            if (processedLine.includes('AS IS+') || processedLine.includes('AS IS')) {
+                prefix = 'AS IS';
+                processedLine = processedLine.replace(/AS IS\+?/, '').trim();
+            } else if (processedLine.includes('SVC')) {
+                prefix = 'SVC';
+                processedLine = processedLine.replace('SVC', '').trim();
             }
-            i++;
-        }
 
-        let storage = '';
-        for (let j = 0; j < parts.length; j++) {
-            if (parts[j].includes('GB') || parts[j].includes('TB')) {
-                storage = parts[j];
-                break;
+            wordsToRemove.forEach(word => {
+                processedLine = processedLine.replace(word, '');
+            });
+
+            for (let key in modelMapping) {
+                processedLine = processedLine.replace(key, modelMapping[key]);
             }
-        }
 
-        let color = '';
-        for (let part of parts) {
-            if (['STARLIGHT', 'GREEN', 'YELLOW', 'BLUE', 'PURPLE', 'PINK', 'BLACK', 'ULTRAMARINE', 'WHITE', 'SILVER', 'GOLD', 'NATURAL', 'MIDNIGHT', 'RED', 'DESERT'].includes(part)) {
-                color = part;
-                break;
+            let parts = processedLine.split(' ').filter(part => part);
+
+            let modelParts = [];
+            let i = 0;
+            while (i < parts.length && 
+                  (parts[i] === 'IPHONE' || !isNaN(parts[i]) || 
+                   parts[i] === 'PRO' || parts[i] === 'MAX' || 
+                   parts[i] === 'PLUS' || parts[i] === 'MINI' ||
+                   parts[i] === 'PROMAX' || parts[i] === 'SE' ||
+                   parts[i] === '3RD' || parts[i] === 'GEN')) {
+                if (parts[i] === 'PROMAX') {
+                    modelParts.push('PRO');
+                    modelParts.push('MAX');
+                } else {
+                    modelParts.push(parts[i]);
+                }
+                i++;
             }
-            if (colorMapping[part]) {
-                color = colorMapping[part];
-                break;
+
+            let storage = '';
+            for (let j = 0; j < parts.length; j++) {
+                if (parts[j].includes('GB') || parts[j].includes('TB')) {
+                    storage = parts[j];
+                    break;
+                }
             }
-        }
 
-        for (let key in colorMapping) {
-            if (processedLine.includes(key)) {
-                color = colorMapping[key];
-                break;
+            let color = '';
+            for (let part of parts) {
+                if (['STARLIGHT', 'GREEN', 'YELLOW', 'BLUE', 'PURPLE', 'PINK', 'BLACK', 'ULTRAMARINE', 'WHITE', 'SILVER', 'GOLD', 'NATURAL', 'MIDNIGHT', 'RED', 'DESERT'].includes(part)) {
+                    color = part;
+                    break;
+                }
+                if (colorMapping[part]) {
+                    color = colorMapping[part];
+                    break;
+                }
             }
-        }
 
-        // Join the model parts to form the model name
-        let model = modelParts.join(' ');
-
-        // Apply the color change for specific models (IPHONE SE 3RD GEN, IPHONE 13 MINI, etc.)
-        if (specificModels.some(specificModel => model.startsWith(specificModel))) {
-            if (color === 'MIDNIGHT') {
-                color = 'BLACK';
+            for (let key in colorMapping) {
+                if (processedLine.includes(key)) {
+                    color = colorMapping[key];
+                    break;
+                }
             }
-            if (color === 'STARLIGHT') {
-                color = 'WHITE';
+
+            let model = modelParts.join(' ');
+            if (model && storage && color) {
+                return prefix ? `${model} ${storage} ${color} ${prefix}` : `${model} ${storage} ${color}`;
             }
-        }
 
-        // If we have model, storage, and color, return the formatted string
-        if (model && storage && color) {
-            return prefix ? `${model} ${storage} ${color} ${prefix}` : `${model} ${storage} ${color}`;
-        }
-
-        return processedLine;
-    }
+            return processedLine;
         }
 
         // Add the replacementMap after processRename function
@@ -573,7 +550,7 @@
                 .filter(row => row[2])
                 .map(row => row[2])
                 .join('\n');
-            
+
             try {
                 await navigator.clipboard.writeText(results);
                 const button = document.querySelector('.copy-button');
