@@ -158,7 +158,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Model Description Rename</h1>
+        <h1>Model Description Rename for IMEImate & 365</h1>
         <div id="hot-table"></div>
         <div class="button-group">
             <button class="copy-button" onclick="copyData()">Copy Data</button>
@@ -178,7 +178,7 @@
 
         const container = document.getElementById('hot-table');
         const hot = new Handsontable(container, {
-            data: [['350118659695429', '', 'IPHONE 13 128GB PINK']],
+            data: [['350118659695429', '', 'IPHONE 13 PRO MAX 128GB GREEN']],
             width: '100%',
             height: getTableHeight(),
             colHeaders: ['A', 'B', 'C'],
@@ -240,7 +240,27 @@
                 'SPACE BLACK': 'BLACK',
                 'DEEP PURPLE': 'PURPLE',
                 'SIERRA BLUE': 'BLUE',
-                'GRAPHITE': 'BLACK'
+                'GRAPHITE': 'BLACK',
+                // 新增的顏色替換
+                '午夜色': 'BLACK',
+                '黑色': 'BLACK',
+                '白色': 'WHITE',
+                '绿色': 'GREEN',
+                '红色': 'RED',
+                '蓝色': 'BLUE',
+                '黄色': 'YELLOW',
+                '群青色': 'ULTRAMARINE',
+                '粉色': 'PINK',
+                '深青色': 'TEAL',
+                '紫色': 'PURPLE',
+                '沙漠色钛金属': 'DESERT',
+                '原色钛金属': 'NATURAL',
+                '白色钛金属': 'WHITE',
+                '黑色钛金属': 'BLACK',
+                '远峰蓝': 'BLUE',
+                '金色': 'GOLD',
+                '星光色': 'WHITE',
+                '蓝色钛金属': 'BLUE'
             };
 
             const modelMapping = {
@@ -253,7 +273,7 @@
 
             // List of specific models where MIDNIGHT and STARLIGHT need to be changed
             const specificModels = ['IPHONE SE 3RD GEN', 'IPHONE 13 MINI', 'IPHONE 13', 'IPHONE 14', 'IPHONE 14 PLUS'];
-            
+
             // Colors to replace for specific models
             const specialColorMapping = {
                 'MIDNIGHT': 'BLACK',
@@ -343,13 +363,44 @@
                 return prefix ? `${model} ${storage} ${color} ${prefix}` : `${model} ${storage} ${color}`;
             }
 
-            return processedLine;
-        }
+            // Add iPhone 13 Pro Max specific color and naming logic
+            const specificIphone13ProMaxModels = ['IPHONE 13 PRO MAX'];
+            const colorMappingIphone13ProMax = {
+                'ALP GRN': 'GREEN',
+                'ALPINE GREEN': 'GREEN',
+                'SR BLU': 'BLUE',
+                'GLD': 'GOLD',
+                'SLV': 'SILVER',
+                'GPH': 'GRAY'
+            };
 
-        // Add the replacementMap after processRename function
-        const replacementMap = {
-            // Example replacements
-                     'IPAD MINI (6TH GENERATION) WI-FI SPACE GRAY-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB GRAY',
+            // Check if the input line contains "IPHONE 13 PRO MAX"
+            if (specificIphone13ProMaxModels.some(model => processedLine.includes(model))) {
+                // Remove specific words (VER-USA, ATT-USA, -USA) for iPhone 13 Pro Max
+                wordsToRemove.forEach(word => {
+                    processedLine = processedLine.replace(word, '');
+                });
+
+                // Apply iPhone 13 Pro Max specific color mappings
+                for (let key in colorMappingIphone13ProMax) {
+                    if (processedLine.includes(key)) {
+                        color = colorMappingIphone13ProMax[key];
+                        break;
+                    }
+                }
+
+                // Join the model parts to form the model name for iPhone 13 Pro Max
+                let modelIphone13ProMax = modelParts.join(' ');
+
+                // If we have model, storage, and color for iPhone 13 Pro Max, return the formatted string
+                if (modelIphone13ProMax && storage && color) {
+                    return `${modelIphone13ProMax} ${storage} ${color}`.replace(/\s+/g, ' ').trim(); // Ensure no extra spaces
+                }
+            }
+
+            // iPad replacement map
+            const replacementMap = {
+            'IPAD MINI (6TH GENERATION) WI-FI SPACE GRAY-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB GRAY',
             'IPAD MINI (6TH GENERATION) WI-FI STARLIGHT-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB STARLIGHT',
             'IPAD MINI (6TH GENERATION) WI-FI PURPLE-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB PURPLE',
             'IPAD MINI (6TH GENERATION) WI-FI PINK-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB PINK',
@@ -564,8 +615,15 @@
 'IPAD PRO 13-INCH (M4) 13 WIFI + CELLULAR SP BLK NT-USA 2TB': 'IPAD PRO 13" 7TH GEN 2024 M4 5G 2TB BLACK(NT)' , 
 'IPAD PRO 13-INCH (M4) 13 WIFI + CELLULAR SILVER NT-USA 2TB': 'IPAD PRO 13" 7TH GEN 2024 M4 5G 2TB SILVER(NT)' , 
             // Add more replacements following the same pattern...
-    
         };
+
+            // Check if the input line matches an iPad model in the replacement map
+            if (replacementMap[processedLine]) {
+                return replacementMap[processedLine];
+            }
+
+            return processedLine;
+        }
 
         async function copyData() {
             const data = hot.getData();
