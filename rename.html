@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Model Description Rename</title>
+    <title>IMEIMATE 重新命名</title>
     <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
     <style>
@@ -163,7 +163,7 @@
         <div class="button-group">
             <button class="copy-button" onclick="copyData()">Copy Data</button>
             <button class="copy-button" onclick="clearTable()">Clear Table</button>
-            <a href="https://eunicemak626.github.io/EuniceTools.github.io/LockStatus.html" class="copy-button">Locked Or Unlocked Generator</a>
+            <a href="https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html" class="copy-button">Locked Or Unlocked Generator</a>
         </div>
     </div>
 
@@ -251,6 +251,15 @@
 
             const wordsToRemove = ['(A2172)', '(IPHONE13.2)', 'SIERRA', 'DEEP', 'SPACE', 'NAMM', 'CI/AR', '-USA'];
 
+            // List of specific models where MIDNIGHT and STARLIGHT need to be changed
+            const specificModels = ['IPHONE SE 3RD GEN', 'IPHONE 13 MINI', 'IPHONE 13', 'IPHONE 14', 'IPHONE 14 PLUS'];
+            
+            // Colors to replace for specific models
+            const specialColorMapping = {
+                'MIDNIGHT': 'BLACK',
+                'STARLIGHT': 'WHITE'
+            };
+
             let prefix = '';
             let processedLine = input.trim().toUpperCase();
 
@@ -316,7 +325,20 @@
                 }
             }
 
+            // Join the model parts to form the model name
             let model = modelParts.join(' ');
+
+            // Apply the color change for specific models (IPHONE SE 3RD GEN, IPHONE 13 MINI, etc.)
+            if (specificModels.some(specificModel => model.startsWith(specificModel))) {
+                if (color === 'MIDNIGHT') {
+                    color = 'BLACK';
+                }
+                if (color === 'STARLIGHT') {
+                    color = 'WHITE';
+                }
+            }
+
+            // If we have model, storage, and color, return the formatted string
             if (model && storage && color) {
                 return prefix ? `${model} ${storage} ${color} ${prefix}` : `${model} ${storage} ${color}`;
             }
@@ -326,8 +348,8 @@
 
         // Add the replacementMap after processRename function
         const replacementMap = {
-            // IPAD MINI (6TH GENERATION) WI-FI models
-            'IPAD MINI (6TH GENERATION) WI-FI SPACE GRAY-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB GRAY',
+            // Example replacements
+                     'IPAD MINI (6TH GENERATION) WI-FI SPACE GRAY-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB GRAY',
             'IPAD MINI (6TH GENERATION) WI-FI STARLIGHT-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB STARLIGHT',
             'IPAD MINI (6TH GENERATION) WI-FI PURPLE-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB PURPLE',
             'IPAD MINI (6TH GENERATION) WI-FI PINK-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB PINK',
@@ -542,6 +564,7 @@
 'IPAD PRO 13-INCH (M4) 13 WIFI + CELLULAR SP BLK NT-USA 2TB': 'IPAD PRO 13" 7TH GEN 2024 M4 5G 2TB BLACK(NT)' , 
 'IPAD PRO 13-INCH (M4) 13 WIFI + CELLULAR SILVER NT-USA 2TB': 'IPAD PRO 13" 7TH GEN 2024 M4 5G 2TB SILVER(NT)' , 
             // Add more replacements following the same pattern...
+    
         };
 
         async function copyData() {
