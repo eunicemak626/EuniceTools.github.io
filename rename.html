@@ -178,7 +178,7 @@
 
         const container = document.getElementById('hot-table');
         const hot = new Handsontable(container, {
-            data: [['350118659695429', '', 'IPHONE 13 128GB PINK']],
+            data: [['350118659695429', '', 'IPHONE 13 PRO MAX ALP GRN ATT-USA 128GB']],
             width: '100%',
             height: getTableHeight(),
             colHeaders: ['A', 'B', 'C'],
@@ -253,7 +253,7 @@
 
             // List of specific models where MIDNIGHT and STARLIGHT need to be changed
             const specificModels = ['IPHONE SE 3RD GEN', 'IPHONE 13 MINI', 'IPHONE 13', 'IPHONE 14', 'IPHONE 14 PLUS'];
-            
+
             // Colors to replace for specific models
             const specialColorMapping = {
                 'MIDNIGHT': 'BLACK',
@@ -343,12 +343,43 @@
                 return prefix ? `${model} ${storage} ${color} ${prefix}` : `${model} ${storage} ${color}`;
             }
 
-            return processedLine;
-        }
+            // Add iPhone 13 Pro Max specific color and naming logic
+            const specificIphone13ProMaxModels = ['IPHONE 13 PRO MAX'];
+            const colorMappingIphone13ProMax = {
+                'ALP GRN': 'GREEN',
+                'ALPINE GREEN': 'GREEN',
+                'SR BLU': 'BLUE',
+                'GLD': 'GOLD',
+                'SLV': 'SILVER',
+                'GPH': 'GRAY'
+            };
 
-        // Add the replacementMap after processRename function
-        const replacementMap = {
-            // Example replacements
+            // Check if the input line contains "IPHONE 13 PRO MAX"
+            if (specificIphone13ProMaxModels.some(model => processedLine.includes(model))) {
+                // Remove specific words (VER-USA, ATT-USA, -USA) for iPhone 13 Pro Max
+                wordsToRemove.forEach(word => {
+                    processedLine = processedLine.replace(word, '');
+                });
+
+                // Apply iPhone 13 Pro Max specific color mappings
+                for (let key in colorMappingIphone13ProMax) {
+                    if (processedLine.includes(key)) {
+                        color = colorMappingIphone13ProMax[key];
+                        break;
+                    }
+                }
+
+                // Join the model parts to form the model name for iPhone 13 Pro Max
+                let modelIphone13ProMax = modelParts.join(' ');
+
+                // If we have model, storage, and color for iPhone 13 Pro Max, return the formatted string
+                if (modelIphone13ProMax && storage && color) {
+                    return `${modelIphone13ProMax} ${storage} ${color}`.replace(/\s+/g, ' ').trim(); // Ensure no extra spaces
+                }
+            }
+
+            // iPad replacement map
+            const replacementMap = {
                      'IPAD MINI (6TH GENERATION) WI-FI SPACE GRAY-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB GRAY',
             'IPAD MINI (6TH GENERATION) WI-FI STARLIGHT-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB STARLIGHT',
             'IPAD MINI (6TH GENERATION) WI-FI PURPLE-USA 64GB': 'IPAD MINI 6TH GEN WI-FI 64GB PURPLE',
@@ -564,8 +595,15 @@
 'IPAD PRO 13-INCH (M4) 13 WIFI + CELLULAR SP BLK NT-USA 2TB': 'IPAD PRO 13" 7TH GEN 2024 M4 5G 2TB BLACK(NT)' , 
 'IPAD PRO 13-INCH (M4) 13 WIFI + CELLULAR SILVER NT-USA 2TB': 'IPAD PRO 13" 7TH GEN 2024 M4 5G 2TB SILVER(NT)' , 
             // Add more replacements following the same pattern...
-    
         };
+
+            // Check if the input line matches an iPad model in the replacement map
+            if (replacementMap[processedLine]) {
+                return replacementMap[processedLine];
+            }
+
+            return processedLine;
+        }
 
         async function copyData() {
             const data = hot.getData();
