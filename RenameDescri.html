@@ -268,7 +268,8 @@
             const modelMapping = {
                 '(3RD GENERATION)': '3RD GEN',
                 '(3RD GEN)': '3RD GEN',
-                '3RD GENERATION': '3RD GEN'
+                '3RD GENERATION': '3RD GEN',
+                'AIR \\(5TH GENERATION\\)': 'AIR 5TH GEN' // Add this mapping for AIR (5TH GENERATION)
             };
 
             const wordsToRemove = ['(A2172)', '(IPHONE13.2)', 'SIERRA', 'DEEP', 'SPACE', 'NAMM', 'CI/AR', '-USA'];
@@ -299,7 +300,7 @@
             });
 
             for (let key in modelMapping) {
-                processedLine = processedLine.replace(key, modelMapping[key]);
+                processedLine = processedLine.replace(new RegExp(key, 'gi'), modelMapping[key]);
             }
 
             let parts = processedLine.split(' ').filter(part => part);
@@ -397,9 +398,8 @@
                 "MINI \\(6TH GENERATION\\)": "MINI 6TH GEN",
                 "\\(9TH GENERATION\\)": "9TH GEN",
                 "\\(10TH GENERATION\\)": "10TH GEN",
-                "AIR \\(5TH GENERATION\\)": "AIR 5TH GEN",
-                "AIR 11-INCH \\(M2\\)11": "AIR 6TH GEN M2 11\"",
-                "AIR 13-INCH \\(M2\\)13": "AIR 6TH GEN M2 13\"",
+                "AIR 11-INCH \\(M2\\) 11": "AIR 6TH GEN M2 11\"", // Renaming for AIR 11-INCH
+                "AIR 13-INCH \\(M2\\) 13": "AIR 6TH GEN M2 13\"", // Renaming for AIR 13-INCH
                 "PRO \\(11-INCH\\) \\(4TH GENERATION\\)": "PRO 11\" 4TH GEN 2022",
                 "PRO 11-INCH \\(M4\\)": "PRO 11\" 5TH GEN 2024 M4",
                 "PRO \\(12.9-INCH\\) \\(6TH GENERATION\\)": "PRO 12.9\" 6TH GEN 2022",
@@ -419,7 +419,7 @@
             };
 
             const connectionReplacements = {
-                "WF CL": "4G", // Replace "WF CL" with "4G"
+                "WI-FI CL": "4G", // Replace "WI-FI CL" with "4G"
                 "WIFI \\+ CELLULAR": "5G", // Replace "WIFI + CELLULAR" with "5G"
                 "WIFI": "WI-FI" // Also ensure "WIFI" is converted to "WI-FI"
             };
@@ -445,16 +445,25 @@
             // Remove '-USA' if present
             processedLine = processedLine.replace(/-USA/gi, '');
 
-            // Clean up multiple spaces to a single space
-            processedLine = processedLine.replace(/\s+/g, ' ').trim();
+            // Handle "NT": Extract "NT" and place it after color
+            let ntMatch = processedLine.match(/\bNT\b/i); // Match NT as a standalone word
+            if (ntMatch) {
+                processedLine = processedLine.replace(/\bNT\b/i, '').trim(); // Remove "NT" from original position
+            }
 
             // Ensure the color is placed at the end of the string
-            let colorMatch = processedLine.match(/\b(SILVER|GRAY|PURPLE|BLUE|BLACK|STARLIGHT)\b/i);
+            let colorMatch = processedLine.match(/\b(SILVER|GRAY|PURPLE|BLUE|BLACK|STARLIGHT|PINK)\b/i);
             let ipadColor = colorMatch ? colorMatch[0] : '';
             if (ipadColor) {
                 processedLine = processedLine.replace(ipadColor, '').trim(); // Remove the color from its original place
                 processedLine = processedLine + ' ' + ipadColor; // Add the color at the end
+                if (ntMatch) {
+                    processedLine += ' NT'; // Add "NT" after the color
+                }
             }
+
+            // Remove "$SP$" if present and clean up spaces
+            processedLine = processedLine.replace(/\$SP\$/g, '').replace(/\s+/g, ' ').trim();
 
             return processedLine;
         }
