@@ -223,115 +223,114 @@
             }
         }, { passive: false });
 
-       const colorMapping = {
-    'SPACE GRAY': 'GRAY',
-    'SPG': 'GRAY',
-    'GRY': 'GRAY',
-    'STL': 'STARLIGHT',
-    'PUR': 'PURPLE',
-    'BLU': 'BLUE',
-    'SP BLK': 'BLACK',
-    'SLV': 'SILVER',
-    'ALP GRN': 'GREEN',
-    'ALPINE GREEN': 'GREEN',
-    'YLW': 'YELLOW',
-    'PRPL': 'PURPLE',
-    'WHT': 'WHITE',
-    'GLD': 'GOLD',
-    'RED': 'PRODUCT RED',
-    'MIDNIGHT': 'BLACK',
-    'NATURAL': 'NATURAL TITANIUM',
-    'BLK': 'BLACK',
-    'DESERT': 'DESERT',
-    'PINK': 'PINK',
-    'PURPLE': 'PURPLE',
-    'SILVER': 'SILVER'
-};
+        const colorMapping = {
+            'SPACE GRAY': 'GRAY',
+            'SPG': 'GRAY',
+            'GRY': 'GRAY',
+            'STL': 'STARLIGHT',
+            'PUR': 'PURPLE',
+            'BLU': 'BLUE',
+            'SP BLK': 'BLACK',
+            'SLV': 'SILVER',
+            'ALP GRN': 'GREEN',
+            'ALPINE GREEN': 'GREEN',
+            'YLW': 'YELLOW',
+            'PRPL': 'PURPLE',
+            'WHT': 'WHITE',
+            'GLD': 'GOLD',
+            'RED': 'PRODUCT RED',
+            'MIDNIGHT': 'BLACK',
+            'NATURAL': 'NATURAL TITANIUM',
+            'BLK': 'BLACK',
+            'DESERT': 'DESERT',
+            'PINK': 'PINK',
+            'PURPLE': 'PURPLE',
+            'SILVER': 'SILVER'
+        };
 
-const modelMapping = {
-    'IPAD MINI (6TH GENERATION)': 'IPAD MINI 6TH GEN',
-    'IPAD (9TH GENERATION)': 'IPAD 9TH GEN',
-    'IPAD (10TH GENERATION)': 'IPAD 10TH GEN',
-    'IPAD AIR (5TH GENERATION)': 'IPAD AIR 5TH GEN',
-    'IPAD AIR 11-INCH (M2) 11': 'IPAD AIR 6TH GEN M2 11"',
-    'IPAD AIR 13-INCH (M2) 13': 'IPAD AIR 6TH GEN M2 13"',
-    'IPAD PRO (11-INCH) (4TH GENERATION)': 'IPAD PRO 11" 4TH GEN 2022',
-    'IPAD PRO 11-INCH (M4)': 'IPAD PRO 11" 5TH GEN 2024 M4',
-    'IPAD PRO (12.9-INCH) (6TH GENERATION)': 'IPAD PRO 12.9" 6TH GEN 2022',
-    'IPAD PRO 13-INCH (M4) 13': 'IPAD PRO 13" 7TH GEN 2024 M4'
-};
+        const modelMapping = {
+            'IPAD MINI (6TH GENERATION)': 'IPAD MINI 6TH GEN',
+            'IPAD (9TH GENERATION)': 'IPAD 9TH GEN',
+            'IPAD (10TH GENERATION)': 'IPAD 10TH GEN',
+            'IPAD AIR (5TH GENERATION)': 'IPAD AIR 5TH GEN',
+            'IPAD AIR 11-INCH (M2) 11': 'IPAD AIR 6TH GEN M2 11"',
+            'IPAD AIR 13-INCH (M2) 13': 'IPAD AIR 6TH GEN M2 13"',
+            'IPAD PRO (11-INCH) (4TH GENERATION)': 'IPAD PRO 11" 4TH GEN 2022',
+            'IPAD PRO 11-INCH (M4)': 'IPAD PRO 11" 5TH GEN 2024 M4',
+            'IPAD PRO (12.9-INCH) (6TH GENERATION)': 'IPAD PRO 12.9" 6TH GEN 2022',
+            'IPAD PRO 13-INCH (M4) 13': 'IPAD PRO 13" 7TH GEN 2024 M4'
+        };
 
-function processRename(input) {
-    if (!input) return '';
+        function processRename(input) {
+            if (!input) return '';
 
-    let processedLine = input.trim().toUpperCase();
-    
-    // Remove -USA suffix
-    processedLine = processedLine.replace(/-USA/g, '');
+            let processedLine = input.trim().toUpperCase();
+            
+            // Remove -USA suffix
+            processedLine = processedLine.replace(/-USA/g, '');
 
-    // Replace WIFI + CELLULAR with 5G
-    if (processedLine.includes('WIFI + CELLULAR') || processedLine.includes('WI-FI + CELLULAR')) {
-        processedLine = processedLine.replace(/WIFI \+ CELLULAR|WI-FI \+ CELLULAR/, '5G');
-    }
-    // Standardize WI-FI
-    if (processedLine.includes('WIFI') || processedLine.includes('WI-FI')) {
-        processedLine = processedLine.replace(/WIFI|WI-FI/, 'WI-FI');
-    }
+            // Replace WIFI + CELLULAR with 5G
+            if (processedLine.includes('WIFI + CELLULAR') || processedLine.includes('WI-FI + CELLULAR')) {
+                processedLine = processedLine.replace(/WIFI \+ CELLULAR|WI-FI \+ CELLULAR/, '5G');
+            }
+            // Standardize WI-FI
+            if (processedLine.includes('WIFI') || processedLine.includes('WI-FI')) {
+                processedLine = processedLine.replace(/WIFI|WI-FI/, 'WI-FI');
+            }
 
-    // Apply model mappings
-    for (let key in modelMapping) {
-        processedLine = processedLine.replace(key, modelMapping[key]);
-    }
+            // Apply model mappings
+            for (let key in modelMapping) {
+                processedLine = processedLine.replace(key, modelMapping[key]);
+            }
 
-    // Apply color mappings
-    for (let key in colorMapping) {
-        processedLine = processedLine.replace(key, colorMapping[key]);
-    }
+            // Apply color mappings
+            for (let key in colorMapping) {
+                processedLine = processedLine.replace(key, colorMapping[key]);
+            }
 
-    // Split into parts and rearrange
-    let parts = processedLine.split(' ').filter(part => part);
-    
-    // Extract components
-    let modelParts = [];
-    let connection = '';
-    let storage = '';
-    let color = '';
+            // Split into parts and rearrange
+            let parts = processedLine.split(' ').filter(part => part);
+            
+            // Extract components
+            let modelParts = [];
+            let connection = '';
+            let storage = '';
+            let color = '';
 
-    parts.forEach(part => {
-        if (part === '5G' || part === 'WI-FI') {
-            connection = part;
-        } else if (part.includes('GB') || part.includes('TB')) {
-            storage = part;
-        } else if (Object.values(colorMapping).includes(part)) {
-            color = part;
-        } else {
-            modelParts.push(part);
-        }
-    });
+            parts.forEach(part => {
+                if (part === '5G' || part === 'WI-FI') {
+                    connection = part;
+                } else if (part.includes('GB') || part.includes('TB')) {
+                    storage = part;
+                } else if (Object.values(colorMapping).includes(part)) {
+                    color = part;
+                } else {
+                    modelParts.push(part);
+                }
+            });
 
-    // Construct final string
-    let result = '';
-    
-    // Add model parts first
-    result = modelParts.join(' ');
-    
-    // Add connection type if exists
-    if (connection) {
-        result += ` ${connection}`;
-    }
-    
-    // Add storage if exists
-    if (storage) {
-        result += ` ${storage}`;
-    }
-    
-    // Add color if exists
-    if (color) {
-        result += ` ${color}`;
-    }
+            // Construct final string
+            let result = '';
+            
+            // Add model parts first
+            result = modelParts.join(' ');
+            
+            // Add connection type if exists
+            if (connection) {
+                result += ` ${connection}`;
+            }
+            
+            // Add storage if exists
+            if (storage) {
+                result += ` ${storage}`;
+            }
+            
+            // Add color if exists
+            if (color) {
+                result += ` ${color}`;
+            }
 
-    return result.trim();
-}
+            return result.trim();
         }
 
         async function copyData() {
