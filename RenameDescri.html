@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -227,6 +227,7 @@
         function processRename(input) {
             if (!input) return '';
 
+            // iPhone color and model mappings
             const colorMapping = {
                 'BLK': 'BLACK',
                 'UMR': 'ULTRAMARINE',
@@ -236,12 +237,11 @@
                 'NTRL': 'NATURAL',
                 'NAT': 'NATURAL',
                 'PRP': 'PURPLE',
-                'BLU': 'BLUE',
+                'BLU': 'BLUE',  // Match exact word "BLU"
                 'SPACE BLACK': 'BLACK',
                 'DEEP PURPLE': 'PURPLE',
                 'SIERRA BLUE': 'BLUE',
                 'GRAPHITE': 'BLACK',
-                // 新增的顏色替換
                 '午夜色': 'BLACK',
                 '黑色': 'BLACK',
                 '白色': 'WHITE',
@@ -260,7 +260,10 @@
                 '远峰蓝': 'BLUE',
                 '金色': 'GOLD',
                 '星光色': 'WHITE',
-                '蓝色钛金属': 'BLUE'
+                // Use regex to only match the exact word "PUR"
+                '\\bPUR\\b': 'PURPLE',
+                // Use regex to only match the exact word "BLU"
+                '(?<!\w)BLU(?!\w)': 'BLUE'
             };
 
             const modelMapping = {
@@ -271,10 +274,8 @@
 
             const wordsToRemove = ['(A2172)', '(IPHONE13.2)', 'SIERRA', 'DEEP', 'SPACE', 'NAMM', 'CI/AR', '-USA'];
 
-            // List of specific models where MIDNIGHT and STARLIGHT need to be changed
             const specificModels = ['IPHONE SE 3RD GEN', 'IPHONE 13 MINI', 'IPHONE 13', 'IPHONE 14', 'IPHONE 14 PLUS'];
 
-            // Colors to replace for specific models
             const specialColorMapping = {
                 'MIDNIGHT': 'BLACK',
                 'STARLIGHT': 'WHITE'
@@ -282,6 +283,9 @@
 
             let prefix = '';
             let processedLine = input.trim().toUpperCase();
+
+            // Handle long, malformed strings (e.g., "PURPLEPLEPLE...")
+            processedLine = processedLine.replace(/(PURPLE)+/g, 'PURPLE'); // Trim excessive repetitions of "PURPLE"
 
             if (processedLine.includes('AS IS+') || processedLine.includes('AS IS')) {
                 prefix = 'AS IS';
@@ -339,16 +343,14 @@
             }
 
             for (let key in colorMapping) {
-                if (processedLine.includes(key)) {
-                    color = colorMapping[key];
-                    break;
+                const regex = new RegExp(key, 'gi');
+                if (regex.test(processedLine)) {
+                    processedLine = processedLine.replace(regex, colorMapping[key]);
                 }
             }
 
-            // Join the model parts to form the model name
             let model = modelParts.join(' ');
 
-            // Apply the color change for specific models (IPHONE SE 3RD GEN, IPHONE 13 MINI, etc.)
             if (specificModels.some(specificModel => model.startsWith(specificModel))) {
                 if (color === 'MIDNIGHT') {
                     color = 'BLACK';
@@ -358,12 +360,10 @@
                 }
             }
 
-            // If we have model, storage, and color, return the formatted string
             if (model && storage && color) {
                 return prefix ? `${model} ${storage} ${color} ${prefix}` : `${model} ${storage} ${color}`;
             }
 
-            // Add iPhone 13 Pro Max specific color and naming logic
             const specificIphone13ProMaxModels = ['IPHONE 13 PRO MAX'];
             const colorMappingIphone13ProMax = {
                 'ALP GRN': 'GREEN',
@@ -374,14 +374,11 @@
                 'GPH': 'GRAY'
             };
 
-            // Check if the input line contains "IPHONE 13 PRO MAX"
             if (specificIphone13ProMaxModels.some(model => processedLine.includes(model))) {
-                // Remove specific words (VER-USA, ATT-USA, -USA) for iPhone 13 Pro Max
                 wordsToRemove.forEach(word => {
                     processedLine = processedLine.replace(word, '');
                 });
 
-                // Apply iPhone 13 Pro Max specific color mappings
                 for (let key in colorMappingIphone13ProMax) {
                     if (processedLine.includes(key)) {
                         color = colorMappingIphone13ProMax[key];
@@ -389,13 +386,75 @@
                     }
                 }
 
-                // Join the model parts to form the model name for iPhone 13 Pro Max
                 let modelIphone13ProMax = modelParts.join(' ');
 
-                // If we have model, storage, and color for iPhone 13 Pro Max, return the formatted string
                 if (modelIphone13ProMax && storage && color) {
-                    return `${modelIphone13ProMax} ${storage} ${color}`.replace(/\s+/g, ' ').trim(); // Ensure no extra spaces
+                    return `${modelIphone13ProMax} ${storage} ${color}`.replace(/\s+/g, ' ').trim();
                 }
+            }
+
+            // **iPad Sorting Logic Starts Here**
+            const modelReplacements = {
+                "MINI \\(6TH GENERATION\\)": "MINI 6TH GEN",
+                "\\(9TH GENERATION\\)": "9TH GEN",
+                "\\(10TH GENERATION\\)": "10TH GEN",
+                "AIR \\(5TH GENERATION\\)": "AIR 5TH GEN",
+                "AIR 11-INCH \\(M2\\)": "AIR 6TH GEN M2 11\"",
+                "AIR 13-INCH \\(M2\\)": "AIR 6TH GEN M2 13\"",
+                "PRO \\(11-INCH\\) \\(4TH GENERATION\\)": "PRO 11\" 4TH GEN 2022",
+                "PRO 11-INCH \\(M4\\)": "PRO 11\" 5TH GEN 2024 M4",
+                "PRO \\(12.9-INCH\\) \\(6TH GENERATION\\)": "PRO 12.9\" 6TH GEN 2022",
+                "PRO 13-INCH \\(M4\\) 13": "PRO 13\" 7TH GEN 2024 M4"
+            };
+
+            const colorReplacements = {
+                "SPACE GRAY": "GRAY",
+                "SPG": "GRAY",
+                "STL": "STARLIGHT",
+                "PURPLE": "PURPLE", // Ensure "PURPLE" is used consistently
+                "BLU": "BLUE",  // Match exact word "BLU"
+                "BLUEE": "BLUE", // Fix typo (double 'E')
+                "SP BLK": "BLACK",
+                "GRY": "GRAY",
+                "SLV": "SILVER"
+            };
+
+            const connectionReplacements = {
+                "WF CL": "4G", // Replace "WF CL" with "4G"
+                "WIFI \\+ CELLULAR": "5G", // Replace "WIFI + CELLULAR" with "5G"
+                "WIFI": "WI-FI" // Also ensure "WIFI" is converted to "WI-FI"
+            };
+
+            // Apply iPad model replacements
+            for (let [pattern, replacement] of Object.entries(modelReplacements)) {
+                let regex = new RegExp(pattern, 'gi');
+                processedLine = processedLine.replace(regex, replacement);
+            }
+
+            // Apply connection type replacements
+            for (let [pattern, replacement] of Object.entries(connectionReplacements)) {
+                let regex = new RegExp(pattern, 'gi');
+                processedLine = processedLine.replace(regex, replacement);
+            }
+
+            // Apply color replacements
+            for (let [pattern, replacement] of Object.entries(colorReplacements)) {
+                let regex = new RegExp(pattern, 'gi');
+                processedLine = processedLine.replace(regex, replacement);
+            }
+
+            // Remove '-USA' if present
+            processedLine = processedLine.replace(/-USA/gi, '');
+
+            // Clean up multiple spaces to a single space
+            processedLine = processedLine.replace(/\s+/g, ' ').trim();
+
+            // Ensure the color is placed at the end of the string
+            let colorMatch = processedLine.match(/\b(SILVER|GRAY|PURPLE|BLUE|BLACK|STARLIGHT)\b/i);
+            let ipadColor = colorMatch ? colorMatch[0] : '';
+            if (ipadColor) {
+                processedLine = processedLine.replace(ipadColor, '').trim(); // Remove the color from its original place
+                processedLine = processedLine + ' ' + ipadColor; // Add the color at the end
             }
 
             return processedLine;
