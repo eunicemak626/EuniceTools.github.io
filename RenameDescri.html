@@ -178,7 +178,7 @@
 
         const container = document.getElementById('hot-table');
         const hot = new Handsontable(container, {
-            data: [['350118659695429', '', '1']],
+            data: [['2', '', 'IPHONE 13 PRO MAX ALP GRN ATT-USA 128GB']],
             width: '100%',
             height: getTableHeight(),
             colHeaders: ['A', 'B', 'C'],
@@ -237,7 +237,7 @@
                 'NTRL': 'NATURAL',
                 'NAT': 'NATURAL',
                 'PRP': 'PURPLE',
-                'BLU': 'BLUE',  // Match exact word "BLU"
+                'BLU': 'BLUE',
                 'SPACE BLACK': 'BLACK',
                 'DEEP PURPLE': 'PURPLE',
                 'SIERRA BLUE': 'BLUE',
@@ -260,10 +260,9 @@
                 '远峰蓝': 'BLUE',
                 '金色': 'GOLD',
                 '星光色': 'WHITE',
+                '蓝色钛金属': 'BLUE',
                 // Use regex to only match the exact word "PUR"
-                '\\bPUR\\b': 'PURPLE',
-                // Use regex to only match the exact word "BLU"
-                '(?<!\w)BLU(?!\w)': 'BLUE'
+                '\\bPUR\\b': 'PURPLE'
             };
 
             const modelMapping = {
@@ -412,7 +411,7 @@
                 "SPG": "GRAY",
                 "STL": "STARLIGHT",
                 "PURPLE": "PURPLE", // Ensure "PURPLE" is used consistently
-                "BLU": "BLUE",  // Match exact word "BLU"
+                "BLU": "BLUE",
                 "BLUEE": "BLUE", // Fix typo (double 'E')
                 "SP BLK": "BLACK",
                 "GRY": "GRAY",
