@@ -463,7 +463,7 @@
             }
 
             // Remove "$SP$" if present and clean up spaces
-            processedLine = processedLine.replace(/\$SP\$/g, '').replace(/\s+/g, ' ').trim();
+            processedLine = processedLine.replace(/SP/g, '').replace(/\s+/g, ' ').trim();
 
             return processedLine;
         }
