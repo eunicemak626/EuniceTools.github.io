@@ -322,7 +322,7 @@
             cleanedInput = cleanedInput.replace(capacity, '').trim();
 
             // Step 8: Extract color (assumed to be the last word before capacity)
-            const colorMatch = cleanedInput.match(/\b(RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SPG|SILVER|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|GREEN|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU)\b/i);  // Added BLU
+            const colorMatch = cleanedInput.match(/\b(RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SPG|SILVER|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|GREEN|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU|TEAL|ULTRAMARINE)\b/i);  // Added ULTRAMARINE and TEAL
             let color = colorMatch ? colorMatch[0].toUpperCase() : '';
 
             // Remove color from the input string (to append it at the end later)
@@ -388,6 +388,11 @@
 
             // Step 16: Final step to replace WI-FI XXGB WHITE/5G XXXGB WHITE with STARLIGHT (including TB)
             result = result.replace(/\b(WI-FI|5G) (\d{2,}GB|\dTB) WHITE\b/g, '$1 $2 STARLIGHT');
+
+            // Step 16.1: Replace BLACK with GRAY for iPhone 14 Pro and iPhone 14 Pro Max models
+            if (/IPHONE 14 PRO|IPHONE 14 PRO MAX/i.test(result)) {
+                result = result.replace(/\bBLACK\b/g, 'GRAY');
+            }
 
             return result;
         }
