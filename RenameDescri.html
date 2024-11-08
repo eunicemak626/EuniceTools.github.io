@@ -203,7 +203,7 @@
                 
                 changes.forEach(([row, prop, oldValue, newValue]) => {
                     if (prop === 2) {
-                        const renamedValue = processRename(newValue);
+                        const renamedValue = processRename(newValue); // Call the processRename function
                         if (renamedValue !== newValue) {
                             this.setDataAtCell(row, 2, renamedValue);
                         }
@@ -223,249 +223,6 @@
                 e.stopPropagation();
             }
         }, { passive: false });
-
-        function processRename(input) {
-            if (!input) return '';
-
-            // iPhone color and model mappings
-            const colorMapping = {
-                'BLK': 'BLACK',
-                'UMR': 'ULTRAMARINE',
-                'WHT': 'WHITE',
-                'PNK': 'PINK',
-                'TL': 'TEAL',
-                'NTRL': 'NATURAL',
-                'NAT': 'NATURAL',
-                'PRP': 'PURPLE',
-                'BLU': 'BLUE',
-                'SPACE BLACK': 'BLACK',
-                'DEEP PURPLE': 'PURPLE',
-                'SIERRA BLUE': 'BLUE',
-                'GRAPHITE': 'BLACK',
-                '午夜色': 'BLACK',
-                '黑色': 'BLACK',
-                '白色': 'WHITE',
-                '绿色': 'GREEN',
-                '红色': 'RED',
-                '蓝色': 'BLUE',
-                '黄色': 'YELLOW',
-                '群青色': 'ULTRAMARINE',
-                '粉色': 'PINK',
-                '深青色': 'TEAL',
-                '紫色': 'PURPLE',
-                '沙漠色钛金属': 'DESERT',
-                '原色钛金属': 'NATURAL',
-                '白色钛金属': 'WHITE',
-                '黑色钛金属': 'BLACK',
-                '远峰蓝': 'BLUE',
-                '金色': 'GOLD',
-                '星光色': 'WHITE',
-                '蓝色钛金属': 'BLUE',
-                // Use regex to only match the exact word "PUR"
-                '\\bPUR\\b': 'PURPLE',
-                 '\\bBLU\\b': 'BLUE',
-            };
-
-            const modelMapping = {
-                '(3RD GENERATION)': '3RD GEN',
-                '(3RD GEN)': '3RD GEN',
-                '3RD GENERATION': '3RD GEN',
-                'AIR \\(5TH GENERATION\\)': 'AIR 5TH GEN' // Add this mapping for AIR (5TH GENERATION)
-            };
-
-            const wordsToRemove = ['(A2172)', '(IPHONE13.2)', 'SIERRA', 'DEEP', 'SPACE', 'NAMM', 'CI/AR', '-USA'];
-
-            const specificModels = ['IPHONE SE 3RD GEN', 'IPHONE 13 MINI', 'IPHONE 13', 'IPHONE 14', 'IPHONE 14 PLUS'];
-
-            const specialColorMapping = {
-                'MIDNIGHT': 'BLACK',
-                'STARLIGHT': 'WHITE'
-            };
-
-            let prefix = '';
-            let processedLine = input.trim().toUpperCase();
-
-            // Handle long, malformed strings (e.g., "PURPLEPLEPLE...")
-            processedLine = processedLine.replace(/(PURPLE)+/g, 'PURPLE'); // Trim excessive repetitions of "PURPLE"
-
-            if (processedLine.includes('AS IS+') || processedLine.includes('AS IS')) {
-                prefix = 'AS IS';
-                processedLine = processedLine.replace(/AS IS\+?/, '').trim();
-            } else if (processedLine.includes('SVC')) {
-                prefix = 'SVC';
-                processedLine = processedLine.replace('SVC', '').trim();
-            }
-
-            wordsToRemove.forEach(word => {
-                processedLine = processedLine.replace(word, '');
-            });
-
-            for (let key in modelMapping) {
-                processedLine = processedLine.replace(new RegExp(key, 'gi'), modelMapping[key]);
-            }
-
-            let parts = processedLine.split(' ').filter(part => part);
-
-            let modelParts = [];
-            let i = 0;
-            while (i < parts.length && 
-                  (parts[i] === 'IPHONE' || !isNaN(parts[i]) || 
-                   parts[i] === 'PRO' || parts[i] === 'MAX' || 
-                   parts[i] === 'PLUS' || parts[i] === 'MINI' ||
-                   parts[i] === 'PROMAX' || parts[i] === 'SE' ||
-                   parts[i] === '3RD' || parts[i] === 'GEN')) {
-                if (parts[i] === 'PROMAX') {
-                    modelParts.push('PRO');
-                    modelParts.push('MAX');
-                } else {
-                    modelParts.push(parts[i]);
-                }
-                i++;
-            }
-
-            let storage = '';
-            for (let j = 0; j < parts.length; j++) {
-                if (parts[j].includes('GB') || parts[j].includes('TB')) {
-                    storage = parts[j];
-                    break;
-                }
-            }
-
-            let color = '';
-            for (let part of parts) {
-                if (['STARLIGHT', 'GREEN', 'YELLOW', 'BLUE', 'PURPLE', 'PINK', 'BLACK', 'ULTRAMARINE', 'WHITE', 'SILVER', 'GOLD', 'NATURAL', 'MIDNIGHT', 'RED', 'DESERT'].includes(part)) {
-                    color = part;
-                    break;
-                }
-                if (colorMapping[part]) {
-                    color = colorMapping[part];
-                    break;
-                }
-            }
-
-            for (let key in colorMapping) {
-                const regex = new RegExp(key, 'gi');
-                if (regex.test(processedLine)) {
-                    processedLine = processedLine.replace(regex, colorMapping[key]);
-                }
-            }
-
-            let model = modelParts.join(' ');
-
-            if (specificModels.some(specificModel => model.startsWith(specificModel))) {
-                if (color === 'MIDNIGHT') {
-                    color = 'BLACK';
-                }
-                if (color === 'STARLIGHT') {
-                    color = 'WHITE';
-                }
-            }
-
-            if (model && storage && color) {
-                return prefix ? `${model} ${storage} ${color} ${prefix}` : `${model} ${storage} ${color}`;
-            }
-
-            const specificIphone13ProMaxModels = ['IPHONE 13 PRO MAX'];
-            const colorMappingIphone13ProMax = {
-                'ALP GRN': 'GREEN',
-                'ALPINE GREEN': 'GREEN',
-                'SR BLU': 'BLUE',
-                'GLD': 'GOLD',
-                'SLV': 'SILVER',
-                'GPH': 'GRAY'
-            };
-
-            if (specificIphone13ProMaxModels.some(model => processedLine.includes(model))) {
-                wordsToRemove.forEach(word => {
-                    processedLine = processedLine.replace(word, '');
-                });
-
-                for (let key in colorMappingIphone13ProMax) {
-                    if (processedLine.includes(key)) {
-                        color = colorMappingIphone13ProMax[key];
-                        break;
-                    }
-                }
-
-                let modelIphone13ProMax = modelParts.join(' ');
-
-                if (modelIphone13ProMax && storage && color) {
-                    return `${modelIphone13ProMax} ${storage} ${color}`.replace(/\s+/g, ' ').trim();
-                }
-            }
-
-            // **iPad Sorting Logic Starts Here**
-            const modelReplacements = {
-                "MINI \\(6TH GENERATION\\)": "MINI 6TH GEN",
-                "\\(9TH GENERATION\\)": "9TH GEN",
-                "\\(10TH GENERATION\\)": "10TH GEN",
-                "AIR 11-INCH \\(M2\\) 11": "AIR 6TH GEN M2 11\"", // Renaming for AIR 11-INCH
-                "AIR 13-INCH \\(M2\\) 13": "AIR 6TH GEN M2 13\"", // Renaming for AIR 13-INCH
-                "PRO \\(11-INCH\\) \\(4TH GENERATION\\)": "PRO 11\" 4TH GEN 2022",
-                "PRO 11-INCH \\(M4\\)": "PRO 11\" 5TH GEN 2024 M4",
-                "PRO \\(12.9-INCH\\) \\(6TH GENERATION\\)": "PRO 12.9\" 6TH GEN 2022",
-                "PRO 13-INCH \\(M4\\) 13": "PRO 13\" 7TH GEN 2024 M4"
-            };
-
-            const colorReplacements = {
-                "SPACE GRAY": "GRAY",
-                "SPG": "GRAY",
-                "STL": "STARLIGHT",
-                "PURPLE": "PURPLE", // Ensure "PURPLE" is used consistently
-                "SP BLK": "BLACK",
-                "GRY": "GRAY",
-                "SLV": "SILVER"
-            };
-
-            const connectionReplacements = {
-                "WI-FI CL": "4G", // Replace "WI-FI CL" with "4G"
-                "WIFI \\+ CELLULAR": "5G", // Replace "WIFI + CELLULAR" with "5G"
-                "WIFI": "WI-FI" // Also ensure "WIFI" is converted to "WI-FI"
-            };
-
-            // Apply iPad model replacements
-            for (let [pattern, replacement] of Object.entries(modelReplacements)) {
-                let regex = new RegExp(pattern, 'gi');
-                processedLine = processedLine.replace(regex, replacement);
-            }
-
-            // Apply connection type replacements
-            for (let [pattern, replacement] of Object.entries(connectionReplacements)) {
-                let regex = new RegExp(pattern, 'gi');
-                processedLine = processedLine.replace(regex, replacement);
-            }
-
-            // Apply color replacements
-            for (let [pattern, replacement] of Object.entries(colorReplacements)) {
-                let regex = new RegExp(pattern, 'gi');
-                processedLine = processedLine.replace(regex, replacement);
-            }
-
-            // Remove '-USA' if present
-            processedLine = processedLine.replace(/-USA/gi, '');
-
-            // Handle "NT": Extract "NT" and place it after color
-            let ntMatch = processedLine.match(/\bNT\b/i); // Match NT as a standalone word
-            if (ntMatch) {
-                processedLine = processedLine.replace(/\bNT\b/i, '').trim(); // Remove "NT" from original position
-            }
-
-            // Ensure the color is placed at the end of the string
-            let colorMatch = processedLine.match(/\b(SILVER|GRAY|PURPLE|BLUE|BLACK|STARLIGHT|PINK)\b/i);
-            let ipadColor = colorMatch ? colorMatch[0] : '';
-            if (ipadColor) {
-                processedLine = processedLine.replace(ipadColor, '').trim(); // Remove the color from its original place
-                processedLine = processedLine + ' ' + ipadColor; // Add the color at the end
-                if (ntMatch) {
-                    processedLine += ' NT'; // Add "NT" after the color
-                }
-            }
-
-            // Remove "$SP$" if present and clean up spaces
-            processedLine = processedLine.replace(/SP/g, '').replace(/\s+/g, ' ').trim();
-
-            return processedLine;
-        }
 
         async function copyData() {
             const data = hot.getData();
@@ -495,6 +252,144 @@
             hot.setDataAtCell(0, 0, '');
             hot.setDataAtCell(0, 1, '');
             hot.setDataAtCell(0, 2, '');
+        }
+
+        // Reintroduce the processRename function
+        function processRename(input) {
+            // Call the formatProduct function to handle renaming using the provided logic
+            return formatProduct(input);
+        }
+
+        // Sorting logic script
+        function formatProducts() {
+            let input = document.getElementById('inputString').value; // Corrected quotes
+
+            // Split input by new lines into an array of strings
+            let lines = input.split('\n');
+            let results = [];
+
+            lines.forEach((line) => {
+                let formattedLine = formatProduct(line.trim());
+                if (formattedLine) {
+                    results.push(formattedLine);
+                }
+            });
+
+            // Join the results and display them
+            document.getElementById('formattedResult').innerText = results.join('\n');
+        }
+
+        function formatProduct(input) {
+            if (!input) return '';
+
+            // Step 1: Apply predefined model replacements (highest priority)
+            input = input
+                .replace(/AIR 11-INCH \(M2\) 11/i, 'AIR 6TH GEN M2 11"')
+                .replace(/AIR 13-INCH \(M2\) 13/i, 'AIR 6TH GEN M2 13"')
+                .replace(/PRO \(11-INCH\) \(4TH GENERATION\)/i, 'PRO 11" 4TH GEN 2022')
+                .replace(/PRO 11-INCH \(M4\)/i, 'PRO 11" 5TH GEN 2024 M4')
+                .replace(/PRO \(12.9-INCH\) \(6TH GENERATION\)/i, 'PRO 12.9" 6TH GEN 2022')
+                .replace(/PRO 13-INCH \(M4\) 13/i, 'PRO 13" 7TH GEN 2024 M4')
+                .replace(/SE \(3RD GENERATION\)/i, 'SE 3RD GEN');  // SE (3RD GENERATION) => SE 3RD GEN
+
+            // Step 2: Remove any occurrence of "-XXX" (e.g., -USA, ATT-USA, VER-USA, PPD-USA)
+            input = input.replace(/-\w{3}/g, '');  // Globally removes all -XXX patterns
+            input = input.replace(/\b(ATT|VER|PPD)-USA\b/gi, '');  // Remove ATT-USA, VER-USA, PPD-USA
+
+            // Step 3: Apply network and connection type replacements
+            input = input.replace(/WIFI \+ CELLULAR/i, '5G');  // Replace "WIFI + CELLULAR" with "5G"
+            input = input.replace(/\bWIFI\b/i, 'WI-FI');  // Replace "WIFI" with "WI-FI"
+            input = input.replace(/\bWI-FI CL\b/i, '4G');  // Replace "WI-FI CL" with "4G"
+
+            // Step 4: Remove carriers (VER, ATT, PPD)
+            input = input.replace(/\b(VER|ATT|PPD)\b/gi, '');
+
+            // Step 5: Keep "SP" as part of the color term
+            // Keeping "SP BLK", "SPG", etc., as valid color terms.
+
+            // Step 6: Extract the categories (e.g., IPHONE, IPAD)
+            const categoriesMatch = input.match(/^(IPHONE|IPAD|MACBOOK|APPLE WATCH|AIRPODS)/i);
+            const categories = categoriesMatch ? categoriesMatch[0].toUpperCase() : '';
+
+            // Remove categories from the input string
+            let cleanedInput = input.replace(categories, '').trim();
+
+            // Step 7: Extract the capacity (e.g., 128GB, 512GB, 1TB)
+            const capacityMatch = cleanedInput.match(/\d{2,}GB|\d{1}TB/i);  // Updated regex to capture both GB and TB
+            const capacity = capacityMatch ? capacityMatch[0].toUpperCase() : '';
+
+            // Remove capacity from the input string
+            cleanedInput = cleanedInput.replace(capacity, '').trim();
+
+            // Step 8: Extract color (assumed to be the last word before capacity)
+            const colorMatch = cleanedInput.match(/\b(RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SPG|SILVER|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|GREEN|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU)\b/i);  // Added BLU
+            let color = colorMatch ? colorMatch[0].toUpperCase() : '';
+
+            // Remove color from the input string (to append it at the end later)
+            cleanedInput = cleanedInput.replace(color, '').trim();
+
+            // Step 9: Do not expand "PUR" for this model
+
+            // Step 10: Check for "NT" and move it to the end if found
+            let nt = '';
+            if (cleanedInput.match(/\bNT\b/i)) {
+                nt = 'NT';
+                cleanedInput = cleanedInput.replace(/\bNT\b/i, '').trim();  // Remove NT from the middle
+            }
+
+            // Step 11: Replace "(XTH GENERATION)" with "XTH GEN"
+            cleanedInput = cleanedInput.replace(/\((\d+)(TH|RD|ST|ND) GENERATION\)/i, '$1TH GEN').trim();
+
+            // Final model is the remaining part of the cleaned input
+            const model = cleanedInput.trim();
+
+            // Step 12: Construct the final result, with capacity, color, and NT moved to the end
+            let result = `${categories} ${model}`.trim();
+
+            // Append capacity, color, and NT if they exist, ensuring no extra spaces
+            if (capacity) result += ` ${capacity}`;
+            if (color) result += ` ${color}`;
+            if (nt) result += ` ${nt}`;
+
+            // Step 13: Perform exact match color replacements
+            result = result
+                .replace(/\bGREY\b/g, 'GRAY')
+                .replace(/\bSP BLK\b/g, 'BLACK')
+                .replace(/\bSPG\b/g, 'GRAY')
+                .replace(/\bALPINE GREEN\b/g, 'GREEN')
+                .replace(/\bSIERRA BLUE\b/g, 'BLUE')
+                .replace(/\bGRAPHITE\b/g, 'GRAY')
+                .replace(/\bSPACE BLACK\b/g, 'BLACK')  // Handle SPACE BLACK case
+                .replace(/\bSPACE GRAY\b/g, 'GRAY')  // Handle SPACE GRAY case
+                .replace(/\bDEEP PURPLE\b/g, 'PURPLE')
+                .replace(/\bPUR\b/g, 'PURPLE')
+                .replace(/\bSLV\b/g, 'SILVER')
+                .replace(/\bGRY\b/g, 'GRAY')
+                .replace(/\bSTL\b/g, 'STARLIGHT')
+                .replace(/\bTL\b/g, 'TEAL')
+                .replace(/\bBLK\b/g, 'BLACK')
+                .replace(/\bWHT\b/g, 'WHITE')
+                .replace(/\bUMR\b/g, 'ULTRAMARINE')
+                .replace(/\bPNK\b/g, 'PINK')
+                .replace(/\bGLD\b/g, 'GOLD')
+                .replace(/\bGPH\b/g, 'GRAY')
+                .replace(/\bSR BLUE\b/g, 'BLUE')
+                .replace(/\bALP GRN\b/g, 'GREEN')
+                .replace(/\bSBLACK\b/g, 'GRAY')
+                .replace(/\bMIDNIGHT\b/g, 'BLACK')  // MIDNIGHT => BLACK
+                .replace(/\bSTARLIGHT\b/g, 'WHITE')  // STARLIGHT => WHITE
+                .replace(/\bBLU\b/g, 'BLUE');  // Added BLU => BLUE
+
+            // Step 14: Replace multiple spaces with a single space and trim final result
+            result = result.replace(/\s+/g, ' ').trim();
+
+            // Step 15: Remove empty parentheses from the result, if any
+            result = result.replace(/\(\s*\)/g, '').trim();
+
+            // Step 16: Final step to replace WI-FI XXGB WHITE/5G XXXGB WHITE with STARLIGHT (including TB)
+            result = result.replace(/\b(WI-FI|5G) (\d{2,}GB|\dTB) WHITE\b/g, '$1 $2 STARLIGHT');
+
+            return result;
         }
     </script>
 </body>
