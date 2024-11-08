@@ -168,13 +168,124 @@
     </div>
 
     <script>
-        // 初始化表格時的響應式設定
+        // Define the getTableHeight function to dynamically adjust the table height
         function getTableHeight() {
             if (window.innerWidth <= 768) {
                 return Math.max(300, window.innerHeight - 200);
             }
             return 500;
         }
+
+        // MacBook model mapping
+        const macbookMapping = {
+            "MGN63LL": "MACBOOK AIR 13\" 2020 M1 256GB GRAY",
+            "MLXW3LL": "MACBOOK AIR 13.6\" 2022 M2 256GB GRAY",
+            "MLXY3LL": "MACBOOK AIR 13.6\" 2022 M2 256GB SILVER",
+            "MLY23LL": "MACBOOK AIR 13.6\" 2022 M2 512GB STARLIGHT",
+            "MLY33LL": "MACBOOK AIR 13.6\" 2022 M2 256GB MIDNIGHT 8/8/8",
+            "MLY43LL": "MACBOOK AIR 13.6\" 2022 M2 512GB MIDNIGHT",
+            "MNEH3LL": "MACBOOK PRO 13\" 2022 M2 256GB GRAY 8/10/8",
+            "MQKU3LL": "MACBOOK AIR 15\" 2023 M2 256GB WHITE 8/10/8",
+            "MR7J3LL": "MACBOOK PRO 14\" 2023 M3 512GB SILVER 8/10/8",
+            "MR7K3LL": "MACBOOK PRO 14\" 2023 M3 1TB SILVER 8/10/8",
+            "MRW13LL": "MACBOOK PRO 16\" 2023 M3 PRO 512GB BLACK 12/18/18",
+            "MRW23LL": "MACBOOK PRO 16\" 2023 M3 PRO 512GB BLACK 12/18/36",
+            "MRW33LL": "MACBOOK PRO 16\" 2023 M3 MAX 1TB BLACK 14/30/36",
+            "MRW43LL": "MACBOOK PRO 16\" 2023 M3 PRO 512GB SILVER 12/18/18",
+            "MRW63LL": "MACBOOK PRO 16\" 2023 M3 PRO 512GB SILVER 12/18/36",
+            "MRX33LL": "MACBOOK PRO 14\" 2023 M3 PRO 512GB BLACK 11/14/18",
+            "MRX43LL": "MACBOOK PRO 14\" 2023 M3 PRO 1TB BLACK 12/18/18",
+            "MRX53LL": "MACBOOK PRO 14\" 2023 M3 MAX 1TB BLACK 14/30/36",
+            "MRX63LL": "MACBOOK PRO 14\" 2023 M3 PRO 512GB SILVER 11/14/18",
+            "MRX73LL": "MACBOOK PRO 14\" 2023 M3 PRO 1TB SILVER 12/18/18",
+            "MRX83LL": "MACBOOK PRO 14\" 2023 M3 MAX 1TB SILVER 14/30/36",
+            "MRXN3LL": "MACBOOK AIR 13\" 2024 M3 256GB GRAY 8/8/8",
+            "MRXU3LL": "MACBOOK AIR 13\" 2024 M3 512GB WHITE 8/10/8",
+            "MRXV3LL": "MACBOOK AIR 13\" 2024 M3 256GB MIDNIGHT 8/8/8",
+            "MRXW3LL": "MACBOOK AIR 13\" 2024 M3 512GB MIDNIGHT 8/10/8",
+            "MRYN3LL": "MACBOOK AIR 15\" 2024 M3 512GB GRAY 8/10/8",
+            "MRYQ3LL": "MACBOOK AIR 15\" 2024 M3 512GB SILVER 8/10/8",
+            "MRYR3LL": "MACBOOK AIR 15\" 2024 M3 256GB WHITE 8/10/8",
+            "MRYT3LL": "MACBOOK AIR 15\" 2024 M3 512GB WHITE 8/10/8",
+            "MRYU3LL": "MACBOOK AIR 15\" 2024 M3 256GB MIDNIGHT 8/10/8",
+            "MRYV3LL": "MACBOOK AIR 15\" 2024 M3 512GB MIDNIGHT 8/10/8",
+            "MTL73LL": "MACBOOK PRO 14\" 2023 M3 512GB GRAY 8/10/8",
+            "MTL83LL": "MACBOOK PRO 14\" 2023 M3 1TB GRAY 8/10/8",
+            "MUW63LL": "MACBOOK PRO 16\" 2023 M3 MAX 1TB BLACK 16/40/48",
+            "MUW73LL": "MACBOOK PRO 16\" 2023 M3 MAX 1TB SILVER 16/40/48",
+            "MXCR3LL": "MACBOOK AIR 13\" 2024 M3 512GB GRAY 8/10/16",
+            "MXCV3LL": "MACBOOK AIR 13\" 2024 M3 512GB MIDNIGHT 8/10/16",
+            "MXD33LL": "MACBOOK AIR 15\" 2024 M3 512GB WHITE 8/10/16",
+            "MXD43LL": "MACBOOK AIR 15\" 2024 M3 512GB MIDNIGHT 8/10/16",
+            "MXE03LL": "MACBOOK PRO 14\" 2023 M3 1TB GRAY 8/10/16",
+            "MXE13LL": "MACBOOK PRO 14\" 2023 M3 1TB SILVER 8/10/16",
+            "Z1AW001C7": "MACBOOK PRO 14\" 2023 M3 MAX 8TB BLACK 16/40/128"
+        };
+
+        // Apple Watch model mapping
+        const appleWatchMapping = {
+            "MXFR3LL": "APPLE WATCH SE2 2023 CEL 40MM MIDNIGHT SB SM",
+            "MX063LW": "APPLE WATCH S10 CEL 42MM GOLD SB SM TT",
+            "MWX63LW": "APPLE WATCH S10 CEL 42MM JET BLACK SB SM",
+            "MWX93LW": "APPLE WATCH S10 CEL 42MM ROSE GOLD SB SM",
+            "MWXH3LW": "APPLE WATCH S10 CEL 42MM SLATE SB ML TT",
+            "MWY43LW": "APPLE WATCH S10 CEL 46MM JET BLACK SB ML",
+            "MWY33LW": "APPLE WATCH S10 CEL 46MM JET BLACK SB SM",
+            "MC7Q4LW": "APPLE WATCH S10 CEL 46MM NATURAL MILANESE LOOP S/M TT",
+            "MWY93LW": "APPLE WATCH S10 CEL 46MM NATURAL TITANIUM SB SM TI",
+            "MWY73LW": "APPLE WATCH S10 CEL 46MM ROSE GOLD SB ML",
+            "MWY83LW": "APPLE WATCH S10 CEL 46MM ROSE GOLD SL",
+            "MWWE3LW": "APPLE WATCH S10 GPS 42MM JET BLACK SB SM",
+            "MWWG3LW": "APPLE WATCH S10 GPS 42MM JET BLACK SL",
+            "MWWR3LW": "APPLE WATCH S10 GPS 46MM JET BLACK INK SL",
+            "MWWQ3LW": "APPLE WATCH S10 GPS 46MM JET BLACK SB ML",
+            "MWWM3LW": "APPLE WATCH S10 GPS 46MM SILVER SB ML",
+            "MKJE3LL": "APPLE WATCH S7 CEL 45MM SILVER STAINLESS MIL LOOP",
+            "MRHR3LW": "APPLE WATCH S9 CEL 41MM MIDNIGHT SB SM",
+            "MRHX3LW": "APPLE WATCH S9 CEL 41MM SILVER WB SL",
+            "MRHN3LL": "APPLE WATCH S9 CEL 41MM STARLIGHT SB SM",
+            "MRMT3LL": "APPLE WATCH S9 CEL 45MM GOLD SB ML SS CL",
+            "MRMD3LW": "APPLE WATCH S9 CEL 45MM MIDNIGHT SB ML",
+            "MR993LW": "APPLE WATCH S9 GPS 45MM MIDNIGHT SB SM",
+            "MR963LW": "APPLE WATCH S9 GPS 45MM STARLIGHT SB SM",
+            "MRG33LL": "APPLE WATCH SE2 2023 CEL 40MM STARLIGHT SL",
+            "MXFQ3LL": "APPLE WATCH SE2 2023 CEL 44MM MIDNIGHT INK SL",
+            "MA9L4LL": "APPLE WATCH SE2 2023 CEL 44MM MIDNIGHT SB ML",
+            "MRH73LL": "APPLE WATCH SE2 2023 CEL 44MM MIDNIGHT SB ML",
+            "MRWQ3LL": "APPLE WATCH SE2 2023 CEL 44MM STARLIGHT SB ML",
+            "MXEA3LL": "APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT INK SL",
+            "MR9Y3LL": "APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT SB ML",
+            "MXE73LL": "APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT SB SM",
+            "MRE03LL": "APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT SL",
+            "MRE13LL": "APPLE WATCH SE2 2023 GPS 40MM SILVER SB SM",
+            "MRE33LL": "APPLE WATCH SE2 2023 GPS 40MM SILVER WB SL",
+            "MR9V3LL": "APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SB ML",
+            "MR9U3LL": "APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SB SM",
+            "MXEF3LL": "APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SB SM",
+            "MR9W3LL": "APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SL",
+            "MA7W4LL": "APPLE WATCH SE2 2023 GPS 44MM MIDNIGHT SL",
+            "MX4V3LW": "APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK M/L",
+            "MX4P3LW": "APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK OB",
+            "MX4U3LW": "APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK S/M",
+            "MX4R3LW": "APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH DARK GREEN M",
+            "MYT03LW": "APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH BLACK OB",
+            "MX4L3LW": "APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH BLUE M/L",
+            "MX5R3LW": "APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH NATURAL TML M",
+            "MX4D3LW": "APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH NAVY OB",
+            "MX4E3LW": "APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH TAN S",
+            "MREP3LL": "APPLE WATCH ULTRA 2 49MM BLUE M",
+            "MREP3LW": "APPLE WATCH ULTRA 2 49MM BLUE M",
+            "MREG3LW": "APPLE WATCH ULTRA 2 49MM BLUE OB",
+            "MREK3LW": "APPLE WATCH ULTRA 2 49MM BLUE S",
+            "MRF63LW": "APPLE WATCH ULTRA 2 49MM BLUE/BLACK ML",
+            "MRF53LW": "APPLE WATCH ULTRA 2 49MM BLUE/BLACK SM",
+            "MREW3LW": "APPLE WATCH ULTRA 2 49MM INDIGO L",
+            "MRET3LL": "APPLE WATCH ULTRA 2 49MM INDIGO M",
+            "MRET3LW": "APPLE WATCH ULTRA 2 49MM INDIGO M",
+            "MREY3LL": "APPLE WATCH ULTRA 2 49MM OLIVE M",
+            "MREY3LW": "APPLE WATCH ULTRA 2 49MM OLIVE M",
+            "MREJ3LW": "APPLE WATCH ULTRA 2 49MM WHITE OB"
+        };
 
         const container = document.getElementById('hot-table');
         const hot = new Handsontable(container, {
@@ -202,10 +313,21 @@
                 if (!changes) return;
                 
                 changes.forEach(([row, prop, oldValue, newValue]) => {
-                    if (prop === 2) {
-                        const renamedValue = processRename(newValue); // Call the processRename function
+                    if (prop === 1) {  // Column B
+                        const model = newValue.trim().toUpperCase();
+                        const renamedValue = processRename(newValue);  // Process iPhone/iPad first
                         if (renamedValue !== newValue) {
                             this.setDataAtCell(row, 2, renamedValue);
+                        }
+
+                        // Apply MacBook model matching last
+                        if (macbookMapping[model]) {
+                            this.setDataAtCell(row, 2, macbookMapping[model]);  // Override Column C if MacBook match found
+                        }
+
+                        // Apply Apple Watch model matching last
+                        if (appleWatchMapping[model]) {
+                            this.setDataAtCell(row, 2, appleWatchMapping[model]);  // Override Column C if Apple Watch match found
                         }
                     }
                 });
@@ -254,31 +376,11 @@
             hot.setDataAtCell(0, 2, '');
         }
 
-        // Reintroduce the processRename function
         function processRename(input) {
-            // Call the formatProduct function to handle renaming using the provided logic
             return formatProduct(input);
         }
 
-        // Sorting logic script
-        function formatProducts() {
-            let input = document.getElementById('inputString').value; // Corrected quotes
-
-            // Split input by new lines into an array of strings
-            let lines = input.split('\n');
-            let results = [];
-
-            lines.forEach((line) => {
-                let formattedLine = formatProduct(line.trim());
-                if (formattedLine) {
-                    results.push(formattedLine);
-                }
-            });
-
-            // Join the results and display them
-            document.getElementById('formattedResult').innerText = results.join('\n');
-        }
-
+        // Sorting logic for formatting products
         function formatProduct(input) {
             if (!input) return '';
 
@@ -290,7 +392,7 @@
                 .replace(/PRO 11-INCH \(M4\)/i, 'PRO 11" 5TH GEN 2024 M4')
                 .replace(/PRO \(12.9-INCH\) \(6TH GENERATION\)/i, 'PRO 12.9" 6TH GEN 2022')
                 .replace(/PRO 13-INCH \(M4\) 13/i, 'PRO 13" 7TH GEN 2024 M4')
-                .replace(/SE \(3RD GENERATION\)/i, 'SE 3RD GEN');  // SE (3RD GENERATION) => SE 3RD GEN
+                .replace(/SE \(3RD GENERATION\)/i, 'SE 3RD GEN');
 
             // Step 2: Remove any occurrence of "-XXX" (e.g., -USA, ATT-USA, VER-USA, PPD-USA)
             input = input.replace(/-\w{3}/g, '');  // Globally removes all -XXX patterns
@@ -328,22 +430,20 @@
             // Remove color from the input string (to append it at the end later)
             cleanedInput = cleanedInput.replace(color, '').trim();
 
-            // Step 9: Do not expand "PUR" for this model
-
-            // Step 10: Check for "NT" and move it to the end if found
+            // Step 9: Check for "NT" and move it to the end if found
             let nt = '';
             if (cleanedInput.match(/\bNT\b/i)) {
                 nt = 'NT';
                 cleanedInput = cleanedInput.replace(/\bNT\b/i, '').trim();  // Remove NT from the middle
             }
 
-            // Step 11: Replace "(XTH GENERATION)" with "XTH GEN"
+            // Step 10: Replace "(XTH GENERATION)" with "XTH GEN"
             cleanedInput = cleanedInput.replace(/\((\d+)(TH|RD|ST|ND) GENERATION\)/i, '$1TH GEN').trim();
 
             // Final model is the remaining part of the cleaned input
             const model = cleanedInput.trim();
 
-            // Step 12: Construct the final result, with capacity, color, and NT moved to the end
+            // Step 11: Construct the final result, with capacity, color, and NT moved to the end
             let result = `${categories} ${model}`.trim();
 
             // Append capacity, color, and NT if they exist, ensuring no extra spaces
@@ -351,7 +451,7 @@
             if (color) result += ` ${color}`;
             if (nt) result += ` ${nt}`;
 
-            // Step 13: Perform exact match color replacements
+            // Step 12: Perform exact match color replacements
             result = result
                 .replace(/\bGREY\b/g, 'GRAY')
                 .replace(/\bSP BLK\b/g, 'BLACK')
@@ -380,16 +480,16 @@
                 .replace(/\bSTARLIGHT\b/g, 'WHITE')  // STARLIGHT => WHITE
                 .replace(/\bBLU\b/g, 'BLUE');  // Added BLU => BLUE
 
-            // Step 14: Replace multiple spaces with a single space and trim final result
+            // Step 13: Replace multiple spaces with a single space and trim final result
             result = result.replace(/\s+/g, ' ').trim();
 
-            // Step 15: Remove empty parentheses from the result, if any
+            // Step 14: Remove empty parentheses from the result, if any
             result = result.replace(/\(\s*\)/g, '').trim();
 
-            // Step 16: Final step to replace WI-FI XXGB WHITE/5G XXXGB WHITE with STARLIGHT (including TB)
+            // Step 15: Final step to replace WI-FI XXGB WHITE/5G XXXGB WHITE with STARLIGHT (including TB)
             result = result.replace(/\b(WI-FI|5G) (\d{2,}GB|\dTB) WHITE\b/g, '$1 $2 STARLIGHT');
 
-            // Step 16.1: Replace BLACK with GRAY for iPhone 14 Pro and iPhone 14 Pro Max models
+            // Step 16: Replace BLACK with GRAY for iPhone 14 Pro and iPhone 14 Pro Max models
             if (/IPHONE 14 PRO|IPHONE 14 PRO MAX/i.test(result)) {
                 result = result.replace(/\bBLACK\b/g, 'GRAY');
             }
