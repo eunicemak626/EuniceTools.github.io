@@ -1,501 +1,515 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>IMEIMATE 重新命名</title>
-    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f7;
-            min-height: 100vh;
-        }
-        .container {
-            padding: 24px;
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            box-sizing: border-box;
-            height: 100%;
-        }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #1d1d1f;
-            text-align: center;
-        }
-        #hot-table {
-            margin-bottom: 20px;
-            height: 500px;
-            border: 1px solid #e5e5e5;
-            border-radius: 8px;
-            overflow: hidden;
-            width: 100%;
-        }
-        .handsontable .ht_master .wtHolder {
-            overflow: hidden !important;
-        }
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .copy-button {
-            padding: 12px 20px;
-            background-color: white;
-            color: #333;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: normal;
-            transition: all 0.2s;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            text-decoration: none;
-            flex: 1;
-            text-align: center;
-            min-width: 120px;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .copy-button:hover {
-            background-color: #f5f5f5;
-            border-color: #999;
-        }
-        .copy-button:active {
-            background-color: #e5e5e5;
-            transform: scale(0.98);
-        }
-        @media (max-width: 768px) {
-            body {
-                background-color: white;
-            }
-            .container {
-                padding: 12px;
-                border-radius: 0;
-                box-shadow: none;
-            }
-            h1 {
-                font-size: 20px;
-                margin: 10px 0;
-            }
-            #hot-table {
-                height: calc(100vh - 200px);
-                min-height: 300px;
-                margin-bottom: 15px;
-            }
-            .button-group {
-                gap: 8px;
-                flex-direction: column;
-            }
-            .copy-button {
-                padding: 14px 20px;
-                font-size: 16px;
-                width: 100%;
-                margin: 0;
-            }
-            .handsontable {
-                font-size: 14px;
-            }
-            .handsontable td {
-                padding: 8px 4px;
-            }
-            .handsontable .htSelectEditor {
-                max-width: 90vw;
-            }
-            .handsontable .wtHolder {
-                -webkit-overflow-scrolling: touch;
-            }
-        }
-        @media (max-width: 375px) {
-            .container {
-                padding: 8px;
-            }
-            h1 {
-                font-size: 18px;
-            }
-            .copy-button {
-                padding: 12px 16px;
-                font-size: 14px;
-            }
-            #hot-table {
-                height: calc(100vh - 180px);
-            }
-        }
-        @media (max-height: 600px) and (orientation: landscape) {
-            .container {
-                padding: 10px;
-            }
-            h1 {
-                font-size: 18px;
-                margin: 5px 0;
-            }
-            #hot-table {
-                height: calc(100vh - 140px);
-            }
-            .button-group {
-                flex-direction: row;
-            }
-        }
-        html, body {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-        .container {
-            height: 100%;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-    </style>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>IMEIMATE 重新命名</title>
+
+<script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
+
+<style>
+/* Your original styles */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f7;
+  min-height: 100vh;
+}
+
+.container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  height: 100%;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #1d1d1f;
+  text-align: center;
+}
+
+#hot-table {
+  margin-bottom: 20px;
+  height: 500px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.handsontable .ht_master .wtHolder {
+  overflow: hidden !important;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.copy-button {
+  padding: 12px 20px;
+  background-color: white;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: normal;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  flex: 1;
+  text-align: center;
+  min-width: 120px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.copy-button:hover {
+  background-color: #f5f5f5;
+  border-color: #999;
+}
+
+.copy-button:active {
+  background-color: #e5e5e5;
+  transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+  body {
+    background-color: white;
+  }
+  .container {
+    padding: 12px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 10px 0;
+  }
+  #hot-table {
+    height: calc(100vh - 200px);
+    min-height: 300px;
+    margin-bottom: 15px;
+  }
+  .button-group {
+    gap: 8px;
+    flex-direction: column;
+  }
+  .copy-button {
+    padding: 14px 20px;
+    font-size: 16px;
+    width: 100%;
+    margin: 0;
+  }
+  .handsontable {
+    font-size: 14px;
+  }
+  .handsontable td {
+    padding: 8px 4px;
+  }
+  .handsontable .htSelectEditor {
+    max-width: 90vw;
+  }
+  .handsontable .wtHolder {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 375px) {
+  .container {
+    padding: 8px;
+  }
+  h1 {
+    font-size: 18px;
+  }
+  .copy-button {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  #hot-table {
+    height: calc(100vh - 180px);
+  }
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .container {
+    padding: 10px;
+  }
+  h1 {
+    font-size: 18px;
+    margin: 5px 0;
+  }
+  #hot-table {
+    height: calc(100vh - 140px);
+  }
+  .button-group {
+    flex-direction: row;
+  }
+}
+
+html, body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.container {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+</style>
+
 </head>
+
 <body>
-    <div class="container">
-        <h1>Model Description Rename for Imeimate&365</h1>
-        <div id="hot-table"></div>
-        <div class="button-group">
-            <button class="copy-button" onclick="copyData()">Copy Data</button>
-            <button class="copy-button" onclick="clearTable()">Clear Table</button>
-            <a href="https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html" class="copy-button">Locked Or Unlocked Generator</a>
-        </div>
-    </div>
 
-    <script>
-        // Define the getTableHeight function to dynamically adjust the table height
-        function getTableHeight() {
-            if (window.innerWidth <= 768) {
-                return Math.max(300, window.innerHeight - 200);
+<div class="container">
+
+<h1>Model Description Rename for Imeimate&365</h1>
+
+<div id="hot-table"></div>
+
+<div class="button-group">
+
+<button class="copy-button" onclick="copyData()">Copy Data</button>
+
+<button class="copy-button" onclick="clearTable()">Clear Table</button>
+
+<a href="https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html" class="copy-button">Locked Or Unlocked Generator</a>
+
+</div>
+
+</div>
+
+<script>
+// Initialize the Handsontable with responsive settings
+function getTableHeight() {
+    if (window.innerWidth <= 768) {
+        return Math.max(300, window.innerHeight - 200);
+    }
+    return 500;
+}
+
+// Serial number to model name mapping
+const serialToModelMap = {
+'MLXW3LL':'MACBOOK AIR 13.6" 2022 M2 256GB GRAY',
+'MLXY3LL':'MACBOOK AIR 13.6" 2022 M2 256GB SILVER',
+'MLY23LL':'MACBOOK AIR 13.6" 2022 M2 512GB STARLIGHT',
+'MLY33LL':'MACBOOK AIR 13.6" 2022 M2 256GB MIDNIGHT 8/8/8',
+'MLY43LL':'MACBOOK AIR 13.6" 2022 M2 512GB MIDNIGHT',
+'MNEH3LL':'MACBOOK PRO 13" 2022 M2 256GB GRAY 8/10/8',
+'MQKU3LL':'MACBOOK AIR 15" 2023 M2 256GB WHITE 8/10/8',
+'MR7J3LL':'MACBOOK PRO 14" 2023 M3 512GB SILVER 8/10/8',
+'MR7K3LL':'MACBOOK PRO 14" 2023 M3 1TB SILVER 8/10/8',
+'MRW13LL':'MACBOOK PRO 16" 2023 M3 PRO 512GB BLACK 12/18/18',
+'MRW23LL':'MACBOOK PRO 16" 2023 M3 PRO 512GB BLACK 12/18/36',
+'MRW33LL':'MACBOOK PRO 16" 2023 M3 MAX 1TB BLACK 14/30/36',
+'MRW43LL':'MACBOOK PRO 16" 2023 M3 PRO 512GB SILVER 12/18/18',
+'MRW63LL':'MACBOOK PRO 16" 2023 M3 PRO 512GB SILVER 12/18/36',
+'MRX33LL':'MACBOOK PRO 14" 2023 M3 PRO 512GB BLACK 11/14/18',
+'MRX43LL':'MACBOOK PRO 14" 2023 M3 PRO 1TB BLACK 12/18/18',
+'MRX53LL':'MACBOOK PRO 14" 2023 M3 MAX 1TB BLACK 14/30/36',
+'MRX63LL':'MACBOOK PRO 14" 2023 M3 PRO 512GB SILVER 11/14/18',
+'MRX73LL':'MACBOOK PRO 14" 2023 M3 PRO 1TB SILVER 12/18/18',
+'MRX83LL':'MACBOOK PRO 14" 2023 M3 MAX 1TB SILVER 14/30/36',
+'MRXN3LL':'MACBOOK AIR 13" 2024 M3 256GB GRAY 8/8/8',
+'MRXU3LL':'MACBOOK AIR 13" 2024 M3 512GB WHITE 8/10/8',
+'MRXV3LL':'MACBOOK AIR 13" 2024 M3 256GB MIDNIGHT 8/8/8',
+'MRXW3LL':'MACBOOK AIR 13" 2024 M3 512GB MIDNIGHT 8/10/8',
+'MRYN3LL':'MACBOOK AIR 15" 2024 M3 512GB GRAY 8/10/8',
+'MRYQ3LL':'MACBOOK AIR 15" 2024 M3 512GB SILVER 8/10/8',
+'MRYR3LL':'MACBOOK AIR 15" 2024 M3 256GB WHITE 8/10/8',
+'MRYT3LL':'MACBOOK AIR 15" 2024 M3 512GB WHITE 8/10/8',
+'MRYU3LL':'MACBOOK AIR 15" 2024 M3 256GB MIDNIGHT 8/10/8',
+'MRYV3LL':'MACBOOK AIR 15" 2024 M3 512GB MIDNIGHT 8/10/8',
+'MTL73LL':'MACBOOK PRO 14" 2023 M3 512GB GRAY 8/10/8',
+'MTL83LL':'MACBOOK PRO 14" 2023 M3 1TB GRAY 8/10/8',
+'MUW63LL':'MACBOOK PRO 16" 2023 M3 MAX 1TB BLACK 16/40/48',
+'MUW73LL':'MACBOOK PRO 16" 2023 M3 MAX 1TB SILVER 16/40/48',
+'MXCR3LL':'MACBOOK AIR 13" 2024 M3 512GB GRAY 8/10/16',
+'MXCV3LL':'MACBOOK AIR 13" 2024 M3 512GB MIDNIGHT 8/10/16',
+'MXD33LL':'MACBOOK AIR 15" 2024 M3 512GB WHITE 8/10/16',
+'MXD43LL':'MACBOOK AIR 15" 2024 M3 512GB MIDNIGHT 8/10/16',
+'MXE03LL':'MACBOOK PRO 14" 2023 M3 1TB GRAY 8/10/16',
+'MXE13LL':'MACBOOK PRO 14" 2023 M3 1TB SILVER 8/10/16',
+'Z1AW001C7':'MACBOOK PRO 14" 2023 M3 MAX 8TB BLACK 16/40/128',
+'MXFR3LL':'APPLE WATCH SE2 2023 CEL 40MM MIDNIGHT SB SM',
+'MX063LW':'APPLE WATCH S10 CEL 42MM GOLD SB SM TT',
+'MWX63LW':'APPLE WATCH S10 CEL 42MM JET BLACK SB SM',
+'MWX93LW':'APPLE WATCH S10 CEL 42MM ROSE GOLD SB SM',
+'MWXH3LW':'APPLE WATCH S10 CEL 42MM SLATE SB ML TT',
+'MWY43LW':'APPLE WATCH S10 CEL 46MM JET BLACK SB ML',
+'MWY33LW':'APPLE WATCH S10 CEL 46MM JET BLACK SB SM',
+'MC7Q4LW':'APPLE WATCH S10 CEL 46MM NATURAL MILANESE LOOP S/M TT',
+'MWY93LW':'APPLE WATCH S10 CEL 46MM NATURAL TITANIUM SB SM TI',
+'MWY73LW':'APPLE WATCH S10 CEL 46MM ROSE GOLD SB ML',
+'MWY83LW':'APPLE WATCH S10 CEL 46MM ROSE GOLD SL',
+'MWWE3LW':'APPLE WATCH S10 GPS 42MM JET BLACK SB SM',
+'MWWG3LW':'APPLE WATCH S10 GPS 42MM JET BLACK SL',
+'MWWR3LW':'APPLE WATCH S10 GPS 46MM JET BLACK INK SL',
+'MWWQ3LW':'APPLE WATCH S10 GPS 46MM JET BLACK SB ML',
+'MWWM3LW':'APPLE WATCH S10 GPS 46MM SILVER SB ML',
+'MKJE3LL':'APPLE WATCH S7 CEL 45MM SILVER STAINLESS MIL LOOP',
+'MRHR3LW':'APPLE WATCH S9 CEL 41MM MIDNIGHT SB SM',
+'MRHX3LW':'APPLE WATCH S9 CEL 41MM SILVER WB SL',
+'MRHN3LL':'APPLE WATCH S9 CEL 41MM STARLIGHT SB SM',
+'MRMT3LL':'APPLE WATCH S9 CEL 45MM GOLD SB ML SS CL',
+'MRMD3LW':'APPLE WATCH S9 CEL 45MM MIDNIGHT SB ML',
+'MR993LW':'APPLE WATCH S9 GPS 45MM MIDNIGHT SB SM',
+'MR963LW':'APPLE WATCH S9 GPS 45MM STARLIGHT SB SM',
+'MRG33LL':'APPLE WATCH SE2 2023 CEL 40MM STARLIGHT SL',
+'MXFQ3LL':'APPLE WATCH SE2 2023 CEL 44MM MIDNIGHT INK SL',
+'MA9L4LL':'APPLE WATCH SE2 2023 CEL 44MM MIDNIGHT SB ML',
+'MRH73LL':'APPLE WATCH SE2 2023 CEL 44MM MIDNIGHT SB ML',
+'MRWQ3LL':'APPLE WATCH SE2 2023 CEL 44MM STARLIGHT SB ML',
+'MXEA3LL':'APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT INK SL',
+'MR9Y3LL':'APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT SB ML',
+'MXE73LL':'APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT SB SM',
+'MRE03LL':'APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT SL',
+'MRE13LL':'APPLE WATCH SE2 2023 GPS 40MM SILVER SB SM',
+'MRE33LL':'APPLE WATCH SE2 2023 GPS 40MM SILVER WB SL',
+'MR9V3LL':'APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SB ML',
+'MR9U3LL':'APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SB SM',
+'MXEF3LL':'APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SB SM',
+'MR9W3LL':'APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SL',
+'MA7W4LL':'APPLE WATCH SE2 2023 GPS 44MM MIDNIGHT SL',
+'MX4V3LW':'APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK M/L',
+'MX4P3LW':'APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK OB',
+'MX4U3LW':'APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK S/M',
+'MX4R3LW':'APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH DARK GREEN M',
+'MYT03LW':'APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH BLACK OB',
+'MX4L3LW':'APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH BLUE M/L',
+'MX5R3LW':'APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH NATURAL TML M',
+'MX4D3LW':'APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH NAVY OB',
+'MX4E3LW':'APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH TAN S',
+'MREP3LL':'APPLE WATCH ULTRA 2 49MM BLUE M',
+'MREP3LW':'APPLE WATCH ULTRA 2 49MM BLUE M',
+'MREG3LW':'APPLE WATCH ULTRA 2 49MM BLUE OB',
+'MREK3LW':'APPLE WATCH ULTRA 2 49MM BLUE S',
+'MRF63LW':'APPLE WATCH ULTRA 2 49MM BLUE/BLACK ML',
+'MRF53LW':'APPLE WATCH ULTRA 2 49MM BLUE/BLACK SM',
+'MREW3LW':'APPLE WATCH ULTRA 2 49MM INDIGO L',
+'MRET3LL':'APPLE WATCH ULTRA 2 49MM INDIGO M',
+'MRET3LW':'APPLE WATCH ULTRA 2 49MM INDIGO M',
+'MREY3LL':'APPLE WATCH ULTRA 2 49MM OLIVE M',
+'MREY3LW':'APPLE WATCH ULTRA 2 49MM OLIVE M',
+    // Continue adding the rest of your data...
+};
+
+const container = document.getElementById('hot-table');
+const hot = new Handsontable(container, {
+    data: [['2', '', 'IPHONE 13 PRO MAX ALP GRN ATT-USA 128GB']],
+    width: '100%',
+    height: getTableHeight(),
+    colHeaders: ['A', 'B', 'C'],
+    columns: [
+        { width: 150 },
+        { width: 100 },
+        { width: 200 }
+    ],
+    rowHeaders: true,
+    stretchH: 'all',
+    licenseKey: 'non-commercial-and-evaluation',
+    contextMenu: true,
+    minSpareRows: 1,
+    outsideClickDeselects: false,
+    manualColumnResize: true,
+    manualRowResize: true,
+    allowInvalid: false,
+    wordWrap: true,
+    autoColumnSize: true,
+    afterChange: function(changes) {
+        if (!changes) return;
+
+        changes.forEach(([row, prop, oldValue, newValue]) => {
+            // If column B (serial number column) is modified
+            if (prop === 1 && newValue) {
+                const modelName = serialToModelMap[newValue.trim().toUpperCase()];
+                if (modelName) {
+                    this.setDataAtCell(row, 2, modelName); // Set the model name in column C
+                }
             }
-            return 500;
-        }
 
-        // MacBook model mapping
-        const macbookMapping = {
-            "MGN63LL": "MACBOOK AIR 13\" 2020 M1 256GB GRAY",
-            "MLXW3LL": "MACBOOK AIR 13.6\" 2022 M2 256GB GRAY",
-            "MLXY3LL": "MACBOOK AIR 13.6\" 2022 M2 256GB SILVER",
-            "MLY23LL": "MACBOOK AIR 13.6\" 2022 M2 512GB STARLIGHT",
-            "MLY33LL": "MACBOOK AIR 13.6\" 2022 M2 256GB MIDNIGHT 8/8/8",
-            "MLY43LL": "MACBOOK AIR 13.6\" 2022 M2 512GB MIDNIGHT",
-            "MNEH3LL": "MACBOOK PRO 13\" 2022 M2 256GB GRAY 8/10/8",
-            "MQKU3LL": "MACBOOK AIR 15\" 2023 M2 256GB WHITE 8/10/8",
-            "MR7J3LL": "MACBOOK PRO 14\" 2023 M3 512GB SILVER 8/10/8",
-            "MR7K3LL": "MACBOOK PRO 14\" 2023 M3 1TB SILVER 8/10/8",
-            "MRW13LL": "MACBOOK PRO 16\" 2023 M3 PRO 512GB BLACK 12/18/18",
-            "MRW23LL": "MACBOOK PRO 16\" 2023 M3 PRO 512GB BLACK 12/18/36",
-            "MRW33LL": "MACBOOK PRO 16\" 2023 M3 MAX 1TB BLACK 14/30/36",
-            "MRW43LL": "MACBOOK PRO 16\" 2023 M3 PRO 512GB SILVER 12/18/18",
-            "MRW63LL": "MACBOOK PRO 16\" 2023 M3 PRO 512GB SILVER 12/18/36",
-            "MRX33LL": "MACBOOK PRO 14\" 2023 M3 PRO 512GB BLACK 11/14/18",
-            "MRX43LL": "MACBOOK PRO 14\" 2023 M3 PRO 1TB BLACK 12/18/18",
-            "MRX53LL": "MACBOOK PRO 14\" 2023 M3 MAX 1TB BLACK 14/30/36",
-            "MRX63LL": "MACBOOK PRO 14\" 2023 M3 PRO 512GB SILVER 11/14/18",
-            "MRX73LL": "MACBOOK PRO 14\" 2023 M3 PRO 1TB SILVER 12/18/18",
-            "MRX83LL": "MACBOOK PRO 14\" 2023 M3 MAX 1TB SILVER 14/30/36",
-            "MRXN3LL": "MACBOOK AIR 13\" 2024 M3 256GB GRAY 8/8/8",
-            "MRXU3LL": "MACBOOK AIR 13\" 2024 M3 512GB WHITE 8/10/8",
-            "MRXV3LL": "MACBOOK AIR 13\" 2024 M3 256GB MIDNIGHT 8/8/8",
-            "MRXW3LL": "MACBOOK AIR 13\" 2024 M3 512GB MIDNIGHT 8/10/8",
-            "MRYN3LL": "MACBOOK AIR 15\" 2024 M3 512GB GRAY 8/10/8",
-            "MRYQ3LL": "MACBOOK AIR 15\" 2024 M3 512GB SILVER 8/10/8",
-            "MRYR3LL": "MACBOOK AIR 15\" 2024 M3 256GB WHITE 8/10/8",
-            "MRYT3LL": "MACBOOK AIR 15\" 2024 M3 512GB WHITE 8/10/8",
-            "MRYU3LL": "MACBOOK AIR 15\" 2024 M3 256GB MIDNIGHT 8/10/8",
-            "MRYV3LL": "MACBOOK AIR 15\" 2024 M3 512GB MIDNIGHT 8/10/8",
-            "MTL73LL": "MACBOOK PRO 14\" 2023 M3 512GB GRAY 8/10/8",
-            "MTL83LL": "MACBOOK PRO 14\" 2023 M3 1TB GRAY 8/10/8",
-            "MUW63LL": "MACBOOK PRO 16\" 2023 M3 MAX 1TB BLACK 16/40/48",
-            "MUW73LL": "MACBOOK PRO 16\" 2023 M3 MAX 1TB SILVER 16/40/48",
-            "MXCR3LL": "MACBOOK AIR 13\" 2024 M3 512GB GRAY 8/10/16",
-            "MXCV3LL": "MACBOOK AIR 13\" 2024 M3 512GB MIDNIGHT 8/10/16",
-            "MXD33LL": "MACBOOK AIR 15\" 2024 M3 512GB WHITE 8/10/16",
-            "MXD43LL": "MACBOOK AIR 15\" 2024 M3 512GB MIDNIGHT 8/10/16",
-            "MXE03LL": "MACBOOK PRO 14\" 2023 M3 1TB GRAY 8/10/16",
-            "MXE13LL": "MACBOOK PRO 14\" 2023 M3 1TB SILVER 8/10/16",
-            "Z1AW001C7": "MACBOOK PRO 14\" 2023 M3 MAX 8TB BLACK 16/40/128"
-        };
-
-        // Apple Watch model mapping
-        const appleWatchMapping = {
-            "MXFR3LL": "APPLE WATCH SE2 2023 CEL 40MM MIDNIGHT SB SM",
-            "MX063LW": "APPLE WATCH S10 CEL 42MM GOLD SB SM TT",
-            "MWX63LW": "APPLE WATCH S10 CEL 42MM JET BLACK SB SM",
-            "MWX93LW": "APPLE WATCH S10 CEL 42MM ROSE GOLD SB SM",
-            "MWXH3LW": "APPLE WATCH S10 CEL 42MM SLATE SB ML TT",
-            "MWY43LW": "APPLE WATCH S10 CEL 46MM JET BLACK SB ML",
-            "MWY33LW": "APPLE WATCH S10 CEL 46MM JET BLACK SB SM",
-            "MC7Q4LW": "APPLE WATCH S10 CEL 46MM NATURAL MILANESE LOOP S/M TT",
-            "MWY93LW": "APPLE WATCH S10 CEL 46MM NATURAL TITANIUM SB SM TI",
-            "MWY73LW": "APPLE WATCH S10 CEL 46MM ROSE GOLD SB ML",
-            "MWY83LW": "APPLE WATCH S10 CEL 46MM ROSE GOLD SL",
-            "MWWE3LW": "APPLE WATCH S10 GPS 42MM JET BLACK SB SM",
-            "MWWG3LW": "APPLE WATCH S10 GPS 42MM JET BLACK SL",
-            "MWWR3LW": "APPLE WATCH S10 GPS 46MM JET BLACK INK SL",
-            "MWWQ3LW": "APPLE WATCH S10 GPS 46MM JET BLACK SB ML",
-            "MWWM3LW": "APPLE WATCH S10 GPS 46MM SILVER SB ML",
-            "MKJE3LL": "APPLE WATCH S7 CEL 45MM SILVER STAINLESS MIL LOOP",
-            "MRHR3LW": "APPLE WATCH S9 CEL 41MM MIDNIGHT SB SM",
-            "MRHX3LW": "APPLE WATCH S9 CEL 41MM SILVER WB SL",
-            "MRHN3LL": "APPLE WATCH S9 CEL 41MM STARLIGHT SB SM",
-            "MRMT3LL": "APPLE WATCH S9 CEL 45MM GOLD SB ML SS CL",
-            "MRMD3LW": "APPLE WATCH S9 CEL 45MM MIDNIGHT SB ML",
-            "MR993LW": "APPLE WATCH S9 GPS 45MM MIDNIGHT SB SM",
-            "MR963LW": "APPLE WATCH S9 GPS 45MM STARLIGHT SB SM",
-            "MRG33LL": "APPLE WATCH SE2 2023 CEL 40MM STARLIGHT SL",
-            "MXFQ3LL": "APPLE WATCH SE2 2023 CEL 44MM MIDNIGHT INK SL",
-            "MA9L4LL": "APPLE WATCH SE2 2023 CEL 44MM MIDNIGHT SB ML",
-            "MRH73LL": "APPLE WATCH SE2 2023 CEL 44MM MIDNIGHT SB ML",
-            "MRWQ3LL": "APPLE WATCH SE2 2023 CEL 44MM STARLIGHT SB ML",
-            "MXEA3LL": "APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT INK SL",
-            "MR9Y3LL": "APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT SB ML",
-            "MXE73LL": "APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT SB SM",
-            "MRE03LL": "APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT SL",
-            "MRE13LL": "APPLE WATCH SE2 2023 GPS 40MM SILVER SB SM",
-            "MRE33LL": "APPLE WATCH SE2 2023 GPS 40MM SILVER WB SL",
-            "MR9V3LL": "APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SB ML",
-            "MR9U3LL": "APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SB SM",
-            "MXEF3LL": "APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SB SM",
-            "MR9W3LL": "APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SL",
-            "MA7W4LL": "APPLE WATCH SE2 2023 GPS 44MM MIDNIGHT SL",
-            "MX4V3LW": "APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK M/L",
-            "MX4P3LW": "APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK OB",
-            "MX4U3LW": "APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK S/M",
-            "MX4R3LW": "APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH DARK GREEN M",
-            "MYT03LW": "APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH BLACK OB",
-            "MX4L3LW": "APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH BLUE M/L",
-            "MX5R3LW": "APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH NATURAL TML M",
-            "MX4D3LW": "APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH NAVY OB",
-            "MX4E3LW": "APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH TAN S",
-            "MREP3LL": "APPLE WATCH ULTRA 2 49MM BLUE M",
-            "MREP3LW": "APPLE WATCH ULTRA 2 49MM BLUE M",
-            "MREG3LW": "APPLE WATCH ULTRA 2 49MM BLUE OB",
-            "MREK3LW": "APPLE WATCH ULTRA 2 49MM BLUE S",
-            "MRF63LW": "APPLE WATCH ULTRA 2 49MM BLUE/BLACK ML",
-            "MRF53LW": "APPLE WATCH ULTRA 2 49MM BLUE/BLACK SM",
-            "MREW3LW": "APPLE WATCH ULTRA 2 49MM INDIGO L",
-            "MRET3LL": "APPLE WATCH ULTRA 2 49MM INDIGO M",
-            "MRET3LW": "APPLE WATCH ULTRA 2 49MM INDIGO M",
-            "MREY3LL": "APPLE WATCH ULTRA 2 49MM OLIVE M",
-            "MREY3LW": "APPLE WATCH ULTRA 2 49MM OLIVE M",
-            "MREJ3LW": "APPLE WATCH ULTRA 2 49MM WHITE OB"
-        };
-
-        const container = document.getElementById('hot-table');
-        const hot = new Handsontable(container, {
-            data: [['2', '', 'IPHONE 13 PRO MAX ALP GRN ATT-USA 128GB']],
-            width: '100%',
-            height: getTableHeight(),
-            colHeaders: ['A', 'B', 'C'],
-            columns: [
-                { width: 150 },
-                { width: 100 },
-                { width: 200 }
-            ],
-            rowHeaders: true,
-            stretchH: 'all',
-            licenseKey: 'non-commercial-and-evaluation',
-            contextMenu: true,
-            minSpareRows: 1,
-            outsideClickDeselects: false,
-            manualColumnResize: true,
-            manualRowResize: true,
-            allowInvalid: false,
-            wordWrap: true,
-            autoColumnSize: true,
-            afterChange: function(changes) {
-                if (!changes) return;
-                
-                changes.forEach(([row, prop, oldValue, newValue]) => {
-                    if (prop === 1) {  // Column B
-                        const model = newValue.trim().toUpperCase();
-                        const renamedValue = processRename(newValue);  // Process iPhone/iPad first
-                        if (renamedValue !== newValue) {
-                            this.setDataAtCell(row, 2, renamedValue);
-                        }
-
-                        // Apply MacBook model matching last
-                        if (macbookMapping[model]) {
-                            this.setDataAtCell(row, 2, macbookMapping[model]);  // Override Column C if MacBook match found
-                        }
-
-                        // Apply Apple Watch model matching last
-                        if (appleWatchMapping[model]) {
-                            this.setDataAtCell(row, 2, appleWatchMapping[model]);  // Override Column C if Apple Watch match found
-                        }
-                    }
-                });
+            // Original renaming logic for column C (kept unchanged for iPhone/iPad)
+            if (prop === 2) {
+                const renamedValue = processRename(newValue); // Call the processRename function
+                if (renamedValue !== newValue) {
+                    this.setDataAtCell(row, 2, renamedValue);
+                }
             }
         });
+    }
+});
 
-        window.addEventListener('resize', () => {
-            hot.updateSettings({
-                height: getTableHeight()
-            });
-        });
+window.addEventListener('resize', () => {
+    hot.updateSettings({
+        height: getTableHeight()
+    });
+});
 
-        document.addEventListener('touchmove', function(e) {
-            if (e.target.closest('#hot-table')) {
-                e.stopPropagation();
-            }
-        }, { passive: false });
+document.addEventListener('touchmove', function(e) {
+    if (e.target.closest('#hot-table')) {
+        e.stopPropagation();
+    }
+}, { passive: false });
 
-        async function copyData() {
-            const data = hot.getData();
-            const results = data
-                .filter(row => row[2])
-                .map(row => row[2])
-                .join('\n');
-            
-            try {
-                await navigator.clipboard.writeText(results);
-                const button = document.querySelector('.copy-button');
-                const originalText = button.textContent;
-                button.textContent = 'Copied!';
-                setTimeout(() => {
-                    button.textContent = originalText;
-                }, 2000);
-            } catch (err) {
-                console.error('Failed to copy:', err);
-                alert('Failed to copy data');
-            }
-        }
+async function copyData() {
+    const data = hot.getData();
+    const results = data
+        .filter(row => row[2])
+        .map(row => row[2])
+        .join('\n');
+    
+    try {
+        await navigator.clipboard.writeText(results);
+        const button = document.querySelector('.copy-button');
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        setTimeout(() => {
+            button.textContent = originalText;
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy data');
+    }
+}
 
-        function clearTable() {
-            const rowCount = hot.countRows();
-            hot.clear();
-            hot.alter('remove_row', 1, rowCount - 1);
-            hot.setDataAtCell(0, 0, '');
-            hot.setDataAtCell(0, 1, '');
-            hot.setDataAtCell(0, 2, '');
-        }
+function clearTable() {
+    const rowCount = hot.countRows();
+    hot.clear();
+    hot.alter('remove_row', 1, rowCount - 1);
+    hot.setDataAtCell(0, 0, '');
+    hot.setDataAtCell(0, 1, '');
+    hot.setDataAtCell(0, 2, '');
+}
 
-        function processRename(input) {
-            return formatProduct(input);
-        }
+// Reintroduce the processRename function (kept as it is)
+function processRename(input) {
+    return formatProduct(input);
+}
 
-        // Sorting logic for formatting products
-        function formatProduct(input) {
-            if (!input) return '';
+// Other utility functions...
+function formatProduct(input) {
+    // Original iPhone/iPad renaming logic remains unchanged
+    if (!input) return '';
 
-            // Step 1: Apply predefined model replacements (highest priority)
-            input = input
-                .replace(/AIR 11-INCH \(M2\) 11/i, 'AIR 6TH GEN M2 11"')
-                .replace(/AIR 13-INCH \(M2\) 13/i, 'AIR 6TH GEN M2 13"')
-                .replace(/PRO \(11-INCH\) \(4TH GENERATION\)/i, 'PRO 11" 4TH GEN 2022')
-                .replace(/PRO 11-INCH \(M4\)/i, 'PRO 11" 5TH GEN 2024 M4')
-                .replace(/PRO \(12.9-INCH\) \(6TH GENERATION\)/i, 'PRO 12.9" 6TH GEN 2022')
-                .replace(/PRO 13-INCH \(M4\) 13/i, 'PRO 13" 7TH GEN 2024 M4')
-                .replace(/SE \(3RD GENERATION\)/i, 'SE 3RD GEN');
+    // Step 1: Apply predefined model replacements (highest priority)
+    input = input
+        .replace(/AIR 11-INCH \(M2\) 11/i, 'AIR 6TH GEN M2 11"')
+        .replace(/AIR 13-INCH \(M2\) 13/i, 'AIR 6TH GEN M2 13"')
+        .replace(/PRO \(11-INCH\) \(4TH GENERATION\)/i, 'PRO 11" 4TH GEN 2022')
+        .replace(/PRO 11-INCH \(M4\)/i, 'PRO 11" 5TH GEN 2024 M4')
+        .replace(/PRO \(12.9-INCH\) \(6TH GENERATION\)/i, 'PRO 12.9" 6TH GEN 2022')
+        .replace(/PRO 13-INCH \(M4\) 13/i, 'PRO 13" 7TH GEN 2024 M4')
+        .replace(/SE \(3RD GENERATION\)/i, 'SE 3RD GEN');
 
-            // Step 2: Remove any occurrence of "-XXX" (e.g., -USA, ATT-USA, VER-USA, PPD-USA)
-            input = input.replace(/-\w{3}/g, '');  // Globally removes all -XXX patterns
-            input = input.replace(/\b(ATT|VER|PPD)-USA\b/gi, '');  // Remove ATT-USA, VER-USA, PPD-USA
+    // Step 2: Remove any occurrence of "-XXX" (e.g., -USA, ATT-USA, VER-USA, PPD-USA)
+    input = input.replace(/-\w{3}/g, '');  
+    input = input.replace(/\b(ATT|VER|PPD)-USA\b/gi, '');
 
-            // Step 3: Apply network and connection type replacements
-            input = input.replace(/WIFI \+ CELLULAR/i, '5G');  // Replace "WIFI + CELLULAR" with "5G"
-            input = input.replace(/\bWIFI\b/i, 'WI-FI');  // Replace "WIFI" with "WI-FI"
-            input = input.replace(/\bWI-FI CL\b/i, '4G');  // Replace "WI-FI CL" with "4G"
+    // Step 3: Apply network and connection type replacements
+    input = input.replace(/WIFI \+ CELLULAR/i, '5G');
+    input = input.replace(/\bWIFI\b/i, 'WI-FI');
+    input = input.replace(/\bWI-FI CL\b/i, '4G');
 
-            // Step 4: Remove carriers (VER, ATT, PPD)
-            input = input.replace(/\b(VER|ATT|PPD)\b/gi, '');
+    // Step 4: Remove carriers (VER, ATT, PPD)
+    input = input.replace(/\b(VER|ATT|PPD)\b/gi, '');
 
-            // Step 5: Keep "SP" as part of the color term
-            // Keeping "SP BLK", "SPG", etc., as valid color terms.
+    // Step 5: Keep "SP" as part of the color term
 
-            // Step 6: Extract the categories (e.g., IPHONE, IPAD)
-            const categoriesMatch = input.match(/^(IPHONE|IPAD|MACBOOK|APPLE WATCH|AIRPODS)/i);
-            const categories = categoriesMatch ? categoriesMatch[0].toUpperCase() : '';
+    // Step 6: Extract the categories (e.g., IPHONE, IPAD)
+    const categoriesMatch = input.match(/^(IPHONE|IPAD|MACBOOK|APPLE WATCH|AIRPODS)/i);
+    const categories = categoriesMatch ? categoriesMatch[0].toUpperCase() : '';
 
-            // Remove categories from the input string
-            let cleanedInput = input.replace(categories, '').trim();
+    let cleanedInput = input.replace(categories, '').trim();
 
-            // Step 7: Extract the capacity (e.g., 128GB, 512GB, 1TB)
-            const capacityMatch = cleanedInput.match(/\d{2,}GB|\d{1}TB/i);  // Updated regex to capture both GB and TB
-            const capacity = capacityMatch ? capacityMatch[0].toUpperCase() : '';
+    // Step 7: Extract the capacity (e.g., 128GB, 512GB, 1TB)
+    const capacityMatch = cleanedInput.match(/\d{2,}GB|\d{1}TB/i);
+    const capacity = capacityMatch ? capacityMatch[0].toUpperCase() : '';
 
-            // Remove capacity from the input string
-            cleanedInput = cleanedInput.replace(capacity, '').trim();
+    cleanedInput = cleanedInput.replace(capacity, '').trim();
 
-            // Step 8: Extract color (assumed to be the last word before capacity)
-            const colorMatch = cleanedInput.match(/\b(RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SPG|SILVER|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|GREEN|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU|TEAL|ULTRAMARINE)\b/i);  // Added ULTRAMARINE and TEAL
-            let color = colorMatch ? colorMatch[0].toUpperCase() : '';
+    // Step 8: Extract color (assumed to be the last word before capacity)
+    const colorMatch = cleanedInput.match(/\b(RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SPG|SILVER|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|GREEN|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU|TEAL|ULTRAMARINE)\b/i);
+    let color = colorMatch ? colorMatch[0].toUpperCase() : '';
 
-            // Remove color from the input string (to append it at the end later)
-            cleanedInput = cleanedInput.replace(color, '').trim();
+    cleanedInput = cleanedInput.replace(color, '').trim();
 
-            // Step 9: Check for "NT" and move it to the end if found
-            let nt = '';
-            if (cleanedInput.match(/\bNT\b/i)) {
-                nt = 'NT';
-                cleanedInput = cleanedInput.replace(/\bNT\b/i, '').trim();  // Remove NT from the middle
-            }
+    let nt = '';
+    if (cleanedInput.match(/\bNT\b/i)) {
+        nt = 'NT';
+        cleanedInput = cleanedInput.replace(/\bNT\b/i, '').trim();
+    }
 
-            // Step 10: Replace "(XTH GENERATION)" with "XTH GEN"
-            cleanedInput = cleanedInput.replace(/\((\d+)(TH|RD|ST|ND) GENERATION\)/i, '$1TH GEN').trim();
+    cleanedInput = cleanedInput.replace(/\((\d+)(TH|RD|ST|ND) GENERATION\)/i, '$1TH GEN').trim();
 
-            // Final model is the remaining part of the cleaned input
-            const model = cleanedInput.trim();
+    const model = cleanedInput.trim();
 
-            // Step 11: Construct the final result, with capacity, color, and NT moved to the end
-            let result = `${categories} ${model}`.trim();
+    let result = `${categories} ${model}`.trim();
 
-            // Append capacity, color, and NT if they exist, ensuring no extra spaces
-            if (capacity) result += ` ${capacity}`;
-            if (color) result += ` ${color}`;
-            if (nt) result += ` ${nt}`;
+    if (capacity) result += ` ${capacity}`;
+    if (color) result += ` ${color}`;
+    if (nt) result += ` ${nt}`;
 
-            // Step 12: Perform exact match color replacements
-            result = result
-                .replace(/\bGREY\b/g, 'GRAY')
-                .replace(/\bSP BLK\b/g, 'BLACK')
-                .replace(/\bSPG\b/g, 'GRAY')
-                .replace(/\bALPINE GREEN\b/g, 'GREEN')
-                .replace(/\bSIERRA BLUE\b/g, 'BLUE')
-                .replace(/\bGRAPHITE\b/g, 'GRAY')
-                .replace(/\bSPACE BLACK\b/g, 'BLACK')  // Handle SPACE BLACK case
-                .replace(/\bSPACE GRAY\b/g, 'GRAY')  // Handle SPACE GRAY case
-                .replace(/\bDEEP PURPLE\b/g, 'PURPLE')
-                .replace(/\bPUR\b/g, 'PURPLE')
-                .replace(/\bSLV\b/g, 'SILVER')
-                .replace(/\bGRY\b/g, 'GRAY')
-                .replace(/\bSTL\b/g, 'STARLIGHT')
-                .replace(/\bTL\b/g, 'TEAL')
-                .replace(/\bBLK\b/g, 'BLACK')
-                .replace(/\bWHT\b/g, 'WHITE')
-                .replace(/\bUMR\b/g, 'ULTRAMARINE')
-                .replace(/\bPNK\b/g, 'PINK')
-                .replace(/\bGLD\b/g, 'GOLD')
-                .replace(/\bGPH\b/g, 'GRAY')
-                .replace(/\bSR BLUE\b/g, 'BLUE')
-                .replace(/\bALP GRN\b/g, 'GREEN')
-                .replace(/\bSBLACK\b/g, 'GRAY')
-                .replace(/\bMIDNIGHT\b/g, 'BLACK')  // MIDNIGHT => BLACK
-                .replace(/\bSTARLIGHT\b/g, 'WHITE')  // STARLIGHT => WHITE
-                .replace(/\bBLU\b/g, 'BLUE');  // Added BLU => BLUE
+    result = result
+        .replace(/\bGREY\b/g, 'GRAY')
+        .replace(/\bSP BLK\b/g, 'BLACK')
+        .replace(/\bSPG\b/g, 'GRAY')
+        .replace(/\bALPINE GREEN\b/g, 'GREEN')
+        .replace(/\bSIERRA BLUE\b/g, 'BLUE')
+        .replace(/\bGRAPHITE\b/g, 'GRAY')
+        .replace(/\bSPACE BLACK\b/g, 'BLACK')
+        .replace(/\bSPACE GRAY\b/g, 'GRAY')
+        .replace(/\bDEEP PURPLE\b/g, 'PURPLE')
+        .replace(/\bPUR\b/g, 'PURPLE')
+        .replace(/\bSLV\b/g, 'SILVER')
+        .replace(/\bGRY\b/g, 'GRAY')
+        .replace(/\bSTL\b/g, 'STARLIGHT')
+        .replace(/\bTL\b/g, 'TEAL')
+        .replace(/\bBLK\b/g, 'BLACK')
+        .replace(/\bWHT\b/g, 'WHITE')
+        .replace(/\bUMR\b/g, 'ULTRAMARINE')
+        .replace(/\bPNK\b/g, 'PINK')
+        .replace(/\bGLD\b/g, 'GOLD')
+        .replace(/\bGPH\b/g, 'GRAY')
+        .replace(/\bSR BLUE\b/g, 'BLUE')
+        .replace(/\bALP GRN\b/g, 'GREEN')
+        .replace(/\bSBLACK\b/g, 'GRAY')
+        .replace(/\bMIDNIGHT\b/g, 'BLACK')
+        .replace(/\bSTARLIGHT\b/g, 'WHITE')
+        .replace(/\bBLU\b/g, 'BLUE');
 
-            // Step 13: Replace multiple spaces with a single space and trim final result
-            result = result.replace(/\s+/g, ' ').trim();
+    result = result.replace(/\s+/g, ' ').trim();
+    result = result.replace(/\(\s*\)/g, '').trim();
+    result = result.replace(/\b(WI-FI|5G) (\d{2,}GB|\dTB) WHITE\b/g, '$1 $2 STARLIGHT');
 
-            // Step 14: Remove empty parentheses from the result, if any
-            result = result.replace(/\(\s*\)/g, '').trim();
+    if (/IPHONE 14 PRO|IPHONE 14 PRO MAX/i.test(result)) {
+        result = result.replace(/\bBLACK\b/g, 'GRAY');
+    }
 
-            // Step 15: Final step to replace WI-FI XXGB WHITE/5G XXXGB WHITE with STARLIGHT (including TB)
-            result = result.replace(/\b(WI-FI|5G) (\d{2,}GB|\dTB) WHITE\b/g, '$1 $2 STARLIGHT');
+    return result;
+}
+</script>
 
-            // Step 16: Replace BLACK with GRAY for iPhone 14 Pro and iPhone 14 Pro Max models
-            if (/IPHONE 14 PRO|IPHONE 14 PRO MAX/i.test(result)) {
-                result = result.replace(/\bBLACK\b/g, 'GRAY');
-            }
-
-            return result;
-        }
-    </script>
 </body>
+
 </html>
