@@ -85,7 +85,7 @@
     <div class="button-group">
         <button onclick="redirectToWebsite('https://eunicemak626.github.io/EuniceTools.github.io/UnlockedTable.html')">Unlocked Table</button>
         <button onclick="redirectToWebsite('https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html')">Locked Table</button>
-        <button id="switchButton" onclick="switchMode()">Switch to Markdown to Excel</button>
+        <button id="switchButton" onclick="toggleMode()">Switch to Markdown to Excel</button>
     </div>
 </div>
 
@@ -93,6 +93,19 @@
 <script>
     let isExcelToMarkdown = true; // Flag to keep track of the current mode
     let hot; // Handsontable instance
+
+    // Auto-focus on the textarea when the page loads
+    window.onload = function() {
+        document.getElementById('tableInput').focus();
+    };
+
+    // Add event listener for Enter key to switch mode
+    document.getElementById('tableInput').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent newlines in the textarea
+            toggleMode(); // Automatically switch to Markdown to Excel mode
+        }
+    });
 
     document.getElementById('tableInput').addEventListener('input', handleConversion);
 
@@ -110,20 +123,16 @@
         let markdownTable = '';
 
         rows.forEach((row, index) => {
-            // Split by the first space/tab as the delimiter (first part: ID, second part: description)
-            const cells = row.split(/\t| +/);
-            
-            // Combine all parts after the first cell into one description
-            const id = cells[0].trim();
-            const description = cells.slice(1).join(' ').trim();
+            // Split by tab or multiple spaces to extract columns
+            const cells = row.split(/\t+/).map(cell => cell.trim()).filter(cell => cell);
 
-            if (id && description) {
+            if (cells.length > 0) {
                 // Create the markdown row
-                markdownTable += `| ${id} | ${description} |\n`;
+                markdownTable += `| ${cells.join(' | ')} |\n`;
 
                 // Add the header separator after the first row
                 if (index === 0) {
-                    markdownTable += '| --- | --- |\n';
+                    markdownTable += `| ${cells.map(() => '---').join(' | ')} |\n`;
                 }
             }
         });
@@ -169,7 +178,7 @@
         }, 100); // Small delay to ensure Handsontable is rendered before selecting
     }
 
-    function switchMode() {
+    function toggleMode() {
         isExcelToMarkdown = !isExcelToMarkdown;
 
         const tableInput = document.getElementById('tableInput');
@@ -210,7 +219,7 @@
     function copyToClipboard() {
         // Programmatically copy the Handsontable data to the clipboard
         const plugin = hot.getPlugin('copyPaste');
-        plugin.copy(true); // `true` indicates copying all data (including headers)
+        plugin.copy(false); // `false` indicates copying only the selected data (not just A1)
     }
 
     function redirectToWebsite(url) {
