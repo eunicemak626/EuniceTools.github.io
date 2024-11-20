@@ -212,7 +212,7 @@
         // Initialize the Handsontable with responsive settings
         function getTableHeight() {
             if (window.innerWidth <= 768) {
-                return Math.max(300, window.innerHeight - 200);
+                return 400;
             }
             return 500;
         }
@@ -459,12 +459,6 @@
                     }
                 });
             }
-        });
-
-        window.addEventListener('resize', () => {
-            hot.updateSettings({
-                height: getTableHeight()
-            });
         });
 
         document.addEventListener('touchmove', function (e) {
