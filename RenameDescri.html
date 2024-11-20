@@ -1,361 +1,222 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<title>IMEIMATE 重新命名</title>
-
-<script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
-
-<link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
-
-<style>
-
-/* Your original styles */
-
-body {
-
-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-
-margin: 0;
-
-padding: 0;
-
-background-color: #f5f5f7;
-
-min-height: 100vh;
-
-}
-
-.container {
-
-padding: 24px;
-
-max-width: 1200px;
-
-margin: 0 auto;
-
-background-color: white;
-
-border-radius: 12px;
-
-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-
-box-sizing: border-box;
-
-height: 100%;
-
-}
-
-h1 {
-
-font-size: 24px;
-
-margin-bottom: 20px;
-
-color: #1d1d1f;
-
-text-align: center;
-
-}
-
-#hot-table {
-
-margin-bottom: 20px;
-
-height: 500px;
-
-border: 1px solid #e5e5e5;
-
-border-radius: 8px;
-
-overflow: hidden;
-
-width: 100%;
-
-}
-
-.handsontable .ht_master .wtHolder {
-
-overflow: hidden !important;
-
-}
-
-.button-group {
-
-display: flex;
-
-gap: 10px;
-
-margin-bottom: 20px;
-
-flex-wrap: wrap;
-
-}
-
-.copy-button {
-
-padding: 12px 20px;
-
-background-color: white;
-
-color: #333;
-
-border: 1px solid #ccc;
-
-border-radius: 8px;
-
-cursor: pointer;
-
-font-size: 16px;
-
-font-weight: normal;
-
-transition: all 0.2s;
-
-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-
-text-decoration: none;
-
-flex: 1;
-
-text-align: center;
-
-min-width: 120px;
-
--webkit-tap-highlight-color: transparent;
-
-}
-
-.copy-button:hover {
-
-background-color: #f5f5f5;
-
-border-color: #999;
-
-}
-
-.copy-button:active {
-
-background-color: #e5e5e5;
-
-transform: scale(0.98);
-
-}
-
-@media (max-width: 768px) {
-
-body {
-
-background-color: white;
-
-}
-
-.container {
-
-padding: 12px;
-
-border-radius: 0;
-
-box-shadow: none;
-
-}
-
-h1 {
-
-font-size: 20px;
-
-margin: 10px 0;
-
-}
-
-#hot-table {
-
-height: calc(100vh - 200px);
-
-min-height: 300px;
-
-margin-bottom: 15px;
-
-}
-
-.button-group {
-
-gap: 8px;
-
-flex-direction: column;
-
-}
-
-.copy-button {
-
-padding: 14px 20px;
-
-font-size: 16px;
-
-width: 100%;
-
-margin: 0;
-
-}
-
-.handsontable {
-
-font-size: 14px;
-
-}
-
-.handsontable td {
-
-padding: 8px 4px;
-
-}
-
-.handsontable .htSelectEditor {
-
-max-width: 90vw;
-
-}
-
-.handsontable .wtHolder {
-
--webkit-overflow-scrolling: touch;
-
-}
-
-}
-
-@media (max-width: 375px) {
-
-.container {
-
-padding: 8px;
-
-}
-
-h1 {
-
-font-size: 18px;
-
-}
-
-.copy-button {
-
-padding: 12px 16px;
-
-font-size: 14px;
-
-}
-
-#hot-table {
-
-height: calc(100vh - 180px);
-
-}
-
-}
-
-@media (max-height: 600px) and (orientation: landscape) {
-
-.container {
-
-padding: 10px;
-
-}
-
-h1 {
-
-font-size: 18px;
-
-margin: 5px 0;
-
-}
-
-#hot-table {
-
-height: calc(100vh - 140px);
-
-}
-
-.button-group {
-
-flex-direction: row;
-
-}
-
-}
-
-html, body {
-
-position: fixed;
-
-width: 100%;
-
-height: 100%;
-
-overflow: hidden;
-
-}
-
-.container {
-
-height: 100%;
-
-overflow-y: auto;
-
--webkit-overflow-scrolling: touch;
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IMEIMATE 重新命名</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
+
+    <style>
+        /* Basic reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #1d1d1f;
+            text-align: center;
+        }
+
+        #hot-table {
+            margin-bottom: 20px;
+            height: 500px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .handsontable .ht_master .wtHolder {
+            overflow: hidden !important;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .copy-button {
+            padding: 12px 20px;
+            background-color: white;
+            color: #333;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: normal;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            flex: 1;
+            text-align: center;
+            min-width: 120px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .copy-button:hover {
+            background-color: #f5f5f5;
+            border-color: #999;
+        }
+
+        .copy-button:active {
+            background-color: #e5e5e5;
+            transform: scale(0.98);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            h1 {
+                font-size: 20px;
+                margin: 10px 0;
+            }
+
+            #hot-table {
+                height: calc(100vh - 200px);
+                min-height: 300px;
+                margin-bottom: 15px;
+            }
+
+            .button-group {
+                gap: 8px;
+                flex-direction: column;
+            }
+
+            .copy-button {
+                padding: 14px 20px;
+                font-size: 16px;
+                width: 100%;
+                margin: 0;
+            }
+
+            .handsontable {
+                font-size: 14px;
+            }
+
+            .handsontable td {
+                padding: 8px 4px;
+            }
+
+            .handsontable .htSelectEditor {
+                max-width: 90vw;
+            }
+
+            .handsontable .wtHolder {
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .container {
+                padding: 8px;
+            }
+
+            h1 {
+                font-size: 18px;
+            }
+
+            .copy-button {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            #hot-table {
+                height: calc(100vh - 180px);
+            }
+        }
+
+        @media (max-height: 600px) and (orientation: landscape) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 18px;
+                margin: 5px 0;
+            }
+
+            #hot-table {
+                height: calc(100vh - 140px);
+            }
+
+            .button-group {
+                flex-direction: row;
+            }
+        }
+
+        html, body {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .container {
+            height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
 </head>
 
 <body>
+    <div class="container">
+        <h1>Model Description Rename for Imeimate&365</h1>
+        <div id="hot-table"></div>
+        <div class="button-group">
+            <button class="copy-button" onclick="copyData()">Copy Data</button>
+            <button class="copy-button" onclick="clearTable()">Clear Table</button>
+            <a href="https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html" class="copy-button">Locked Or Unlocked Generator</a>
+        </div>
+    </div>
 
-<div class="container">
+    <script>
+        // Initialize the Handsontable with responsive settings
+        function getTableHeight() {
+            if (window.innerWidth <= 768) {
+                return Math.max(300, window.innerHeight - 200);
+            }
+            return 500;
+        }
 
-<h1>Model Description Rename for Imeimate&365</h1>
-
-<div id="hot-table"></div>
-
-<div class="button-group">
-
-<button class="copy-button" onclick="copyData()">Copy Data</button>
-
-<button class="copy-button" onclick="clearTable()">Clear Table</button>
-
-<a href="https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html" class="copy-button">Locked Or Unlocked Generator</a>
-
-</div>
-
-</div>
-
-<script>
-
-// Initialize the Handsontable with responsive settings
-
-function getTableHeight() {
-
-if (window.innerWidth <= 768) {
-
-return Math.max(300, window.innerHeight - 200);
-
-}
-
-return 500;
-
-}
-
-// Serial number to model name mapping
-
-const serialToModelMap = {
-
+        // Serial number to model name mapping
+        const serialToModelMap = {
 'MLXW3LL':'MACBOOK AIR 13.6" 2022 M2 256GB GRAY',
 
 'MLXY3LL':'MACBOOK AIR 13.6" 2022 M2 256GB SILVER',
@@ -558,168 +419,87 @@ const serialToModelMap = {
 
 'MREY3LW':'APPLE WATCH ULTRA 2 49MM OLIVE M',
 
-// Continue adding the rest of your data...
-
-};
-
-const container = document.getElementById('hot-table');
-
-const hot = new Handsontable(container, {
-
-data: [['2', '', 'IPHONE 13 PRO MAX ALP GRN ATT-USA 128GB']],
-
-width: '100%',
-
-height: getTableHeight(),
-
-colHeaders: ['A', 'B', 'C'],
-
-columns: [
-
-{ width: 150 },
-
-{ width: 100 },
-
-{ width: 200 }
-
-],
-
-rowHeaders: true,
-
-stretchH: 'all',
-
-licenseKey: 'non-commercial-and-evaluation',
-
-contextMenu: true,
-
-minSpareRows: 1,
-
-outsideClickDeselects: false,
-
-manualColumnResize: true,
-
-manualRowResize: true,
-
-allowInvalid: false,
-
-wordWrap: true,
-
-autoColumnSize: true,
-
-afterChange: function(changes) {
-
-if (!changes) return;
-
-changes.forEach(([row, prop, oldValue, newValue]) => {
-
-// If column B (serial number column) is modified
-
-if (prop === 1 && newValue) {
-
-const modelName = serialToModelMap[newValue.trim().toUpperCase()];
-
-if (modelName) {
-
-this.setDataAtCell(row, 2, modelName); // Set the model name in column C
-
-}
-
-}
-
-// Original renaming logic for column C (kept unchanged for iPhone/iPad)
-
-if (prop === 2) {
-
-const renamedValue = processRename(newValue); // Call the processRename function
-
-if (renamedValue !== newValue) {
-
-this.setDataAtCell(row, 2, renamedValue);
-
-}
-
-}
-
-});
-
-}
-
-});
-
-window.addEventListener('resize', () => {
-
-hot.updateSettings({
-
-height: getTableHeight()
-
-});
-
-});
-
-document.addEventListener('touchmove', function(e) {
-
-if (e.target.closest('#hot-table')) {
-
-e.stopPropagation();
-
-}
-
-}, { passive: false });
-
-async function copyData() {
-
-const data = hot.getData();
-
-const results = data
-
-.filter(row => row[2])
-
-.map(row => row[2])
-
-.join('\n');
-
-try {
-
-await navigator.clipboard.writeText(results);
-
-const button = document.querySelector('.copy-button');
-
-const originalText = button.textContent;
-
-button.textContent = 'Copied!';
-
-setTimeout(() => {
-
-button.textContent = originalText;
-
-}, 2000);
-
-} catch (err) {
-
-console.error('Failed to copy:', err);
-
-alert('Failed to copy data');
-
-}
-
-}
-
-function clearTable() {
-
-const rowCount = hot.countRows();
-
-hot.clear();
-
-hot.alter('remove_row', 1, rowCount - 1);
-
-hot.setDataAtCell(0, 0, '');
-
-hot.setDataAtCell(0, 1, '');
-
-hot.setDataAtCell(0, 2, '');
-
-}
-
+            // Add more mappings as necessary...
+        };
+
+        const container = document.getElementById('hot-table');
+        const hot = new Handsontable(container, {
+            data: [['2', '', 'IPHONE 13 PRO MAX ALP GRN ATT-USA 128GB']],
+            width: '100%',
+            height: getTableHeight(),
+            colHeaders: ['A', 'B', 'C'],
+            columns: [
+                { width: 150 },
+                { width: 100 },
+                { width: 200 }
+            ],
+            rowHeaders: true,
+            stretchH: 'all',
+            licenseKey: 'non-commercial-and-evaluation',
+            contextMenu: true,
+            minSpareRows: 1,
+            outsideClickDeselects: false,
+            manualColumnResize: true,
+            manualRowResize: true,
+            allowInvalid: false,
+            wordWrap: true,
+            autoColumnSize: true,
+            afterChange: function (changes) {
+                if (!changes) return;
+
+                changes.forEach(([row, prop, oldValue, newValue]) => {
+                    // If column B (serial number column) is modified
+                    if (prop === 1 && newValue) {
+                        const modelName = serialToModelMap[newValue.trim().toUpperCase()];
+                        if (modelName) {
+                            this.setDataAtCell(row, 2, modelName); // Set the model name in column C
+                        }
+                    }
+                });
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            hot.updateSettings({
+                height: getTableHeight()
+            });
+        });
+
+        document.addEventListener('touchmove', function (e) {
+            if (e.target.closest('#hot-table')) {
+                e.stopPropagation();
+            }
+        }, { passive: false });
+
+        async function copyData() {
+            const data = hot.getData();
+            const results = data
+                .filter(row => row[2])
+                .map(row => row[2])
+                .join('\n');
+
+            try {
+                await navigator.clipboard.writeText(results);
+                const button = document.querySelector('.copy-button');
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy data');
+            }
+        }
+
+        function clearTable() {
+            const rowCount = hot.countRows();
+            hot.clear();
+            hot.alter('remove_row', 1, rowCount - 1);
+            hot.setDataAtCell(0, 0, '');
+            hot.setDataAtCell(0, 1, '');
+            hot.setDataAtCell(0, 2, '');
+        }
 // Reintroduce the processRename function (kept as it is)
 
 function processRename(input) {
@@ -889,9 +669,7 @@ result = result.replace(/\bBLACK\b/g, 'GRAY');
 return result;
 
 }
-
-</script>
-
+    </script>
 </body>
 
 </html>
