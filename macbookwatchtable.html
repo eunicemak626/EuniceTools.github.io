@@ -129,7 +129,7 @@
         }
         .home-button {
             text-decoration: none;
-            color: #000; /* 文字顏色改為黑色 */
+            color: #000;
             font-size: 14px;
         }
         .home-button:hover {
@@ -172,7 +172,7 @@
             <thead>
                 <tr>
                     <th>Model</th>
-                    <th>Capacity or Serial</th>
+                    <th>Serial</th>
                     <th>Quantity</th>
                 </tr>
             </thead>
@@ -194,18 +194,120 @@
         </div>
 
         <div class="home-button-container">
-            <a href="https://eunicemak626.github.io/EuniceTools.github.io/markdonwtablev2.html" class="home-button">HOME</a> <!-- 字體顏色已改為黑色 -->
+            <a href="https://eunicemak626.github.io/EuniceTools.github.io/markdonwtablev2.html" class="home-button">HOME</a>
         </div>
     </div>
 
     <script>
         const container = document.getElementById('hot-table');
+        
+        // Serial-to-Description mapping
+        const serialToDescriptionMap = {
+'MLXW3LL':'MACBOOK AIR 13.6" 2022 M2 256GB GRAY',
+'MLXY3LL':'MACBOOK AIR 13.6" 2022 M2 256GB SILVER',
+'MLY23LL':'MACBOOK AIR 13.6" 2022 M2 512GB STARLIGHT',
+'MLY33LL':'MACBOOK AIR 13.6" 2022 M2 256GB MIDNIGHT 8/8/8',
+'MLY43LL':'MACBOOK AIR 13.6" 2022 M2 512GB MIDNIGHT',
+'MNEH3LL':'MACBOOK PRO 13" 2022 M2 256GB GRAY 8/10/8',
+'MQKU3LL':'MACBOOK AIR 15" 2023 M2 256GB WHITE 8/10/8',
+'MR7J3LL':'MACBOOK PRO 14" 2023 M3 512GB SILVER 8/10/8',
+'MR7K3LL':'MACBOOK PRO 14" 2023 M3 1TB SILVER 8/10/8',
+'MRW13LL':'MACBOOK PRO 16" 2023 M3 PRO 512GB BLACK 12/18/18',
+'MRW23LL':'MACBOOK PRO 16" 2023 M3 PRO 512GB BLACK 12/18/36',
+'MRW33LL':'MACBOOK PRO 16" 2023 M3 MAX 1TB BLACK 14/30/36',
+'MRW43LL':'MACBOOK PRO 16" 2023 M3 PRO 512GB SILVER 12/18/18',
+'MRW63LL':'MACBOOK PRO 16" 2023 M3 PRO 512GB SILVER 12/18/36',
+'MRX33LL':'MACBOOK PRO 14" 2023 M3 PRO 512GB BLACK 11/14/18',
+'MRX43LL':'MACBOOK PRO 14" 2023 M3 PRO 1TB BLACK 12/18/18',
+'MRX53LL':'MACBOOK PRO 14" 2023 M3 MAX 1TB BLACK 14/30/36',
+'MRX63LL':'MACBOOK PRO 14" 2023 M3 PRO 512GB SILVER 11/14/18',
+'MRX73LL':'MACBOOK PRO 14" 2023 M3 PRO 1TB SILVER 12/18/18',
+'MRX83LL':'MACBOOK PRO 14" 2023 M3 MAX 1TB SILVER 14/30/36',
+'MRXN3LL':'MACBOOK AIR 13" 2024 M3 256GB GRAY 8/8/8',
+'MRXU3LL':'MACBOOK AIR 13" 2024 M3 512GB WHITE 8/10/8',
+'MRXV3LL':'MACBOOK AIR 13" 2024 M3 256GB MIDNIGHT 8/8/8',
+'MRXW3LL':'MACBOOK AIR 13" 2024 M3 512GB MIDNIGHT 8/10/8',
+'MRYN3LL':'MACBOOK AIR 15" 2024 M3 512GB GRAY 8/10/8',
+'MRYQ3LL':'MACBOOK AIR 15" 2024 M3 512GB SILVER 8/10/8',
+'MRYR3LL':'MACBOOK AIR 15" 2024 M3 256GB WHITE 8/10/8',
+'MRYT3LL':'MACBOOK AIR 15" 2024 M3 512GB WHITE 8/10/8',
+'MRYU3LL':'MACBOOK AIR 15" 2024 M3 256GB MIDNIGHT 8/10/8',
+'MRYV3LL':'MACBOOK AIR 15" 2024 M3 512GB MIDNIGHT 8/10/8',
+'MTL73LL':'MACBOOK PRO 14" 2023 M3 512GB GRAY 8/10/8',
+'MTL83LL':'MACBOOK PRO 14" 2023 M3 1TB GRAY 8/10/8',
+'MUW63LL':'MACBOOK PRO 16" 2023 M3 MAX 1TB BLACK 16/40/48',
+'MUW73LL':'MACBOOK PRO 16" 2023 M3 MAX 1TB SILVER 16/40/48',
+'MXCR3LL':'MACBOOK AIR 13" 2024 M3 512GB GRAY 8/10/16',
+'MXCV3LL':'MACBOOK AIR 13" 2024 M3 512GB MIDNIGHT 8/10/16',
+'MXD33LL':'MACBOOK AIR 15" 2024 M3 512GB WHITE 8/10/16',
+'MXD43LL':'MACBOOK AIR 15" 2024 M3 512GB MIDNIGHT 8/10/16',
+'MXE03LL':'MACBOOK PRO 14" 2023 M3 1TB GRAY 8/10/16',
+'MXE13LL':'MACBOOK PRO 14" 2023 M3 1TB SILVER 8/10/16',
+'Z1AW001C7':'MACBOOK PRO 14" 2023 M3 MAX 8TB BLACK 16/40/128',
+'MXFR3LL':'APPLE WATCH SE2 2023 CEL 40MM MIDNIGHT SB SM',
+'MX063LW':'APPLE WATCH S10 CEL 42MM GOLD SB SM TT',
+'MWX63LW':'APPLE WATCH S10 CEL 42MM JET BLACK SB SM',
+'MWX93LW':'APPLE WATCH S10 CEL 42MM ROSE GOLD SB SM',
+'MWXH3LW':'APPLE WATCH S10 CEL 42MM SLATE SB ML TT',
+'MWY43LW':'APPLE WATCH S10 CEL 46MM JET BLACK SB ML',
+'MWY33LW':'APPLE WATCH S10 CEL 46MM JET BLACK SB SM',
+'MC7Q4LW':'APPLE WATCH S10 CEL 46MM NATURAL MILANESE LOOP S/M TT',
+'MWY93LW':'APPLE WATCH S10 CEL 46MM NATURAL TITANIUM SB SM TI',
+'MWY73LW':'APPLE WATCH S10 CEL 46MM ROSE GOLD SB ML',
+'MWY83LW':'APPLE WATCH S10 CEL 46MM ROSE GOLD SL',
+'MWWE3LW':'APPLE WATCH S10 GPS 42MM JET BLACK SB SM',
+'MWWG3LW':'APPLE WATCH S10 GPS 42MM JET BLACK SL',
+'MWWR3LW':'APPLE WATCH S10 GPS 46MM JET BLACK INK SL',
+'MWWQ3LW':'APPLE WATCH S10 GPS 46MM JET BLACK SB ML',
+'MWWM3LW':'APPLE WATCH S10 GPS 46MM SILVER SB ML',
+'MKJE3LL':'APPLE WATCH S7 CEL 45MM SILVER STAINLESS MIL LOOP',
+'MRHR3LW':'APPLE WATCH S9 CEL 41MM MIDNIGHT SB SM',
+'MRHX3LW':'APPLE WATCH S9 CEL 41MM SILVER WB SL',
+'MRHN3LL':'APPLE WATCH S9 CEL 41MM STARLIGHT SB SM',
+'MRMT3LL':'APPLE WATCH S9 CEL 45MM GOLD SB ML SS CL',
+'MRMD3LW':'APPLE WATCH S9 CEL 45MM MIDNIGHT SB ML',
+'MR993LW':'APPLE WATCH S9 GPS 45MM MIDNIGHT SB SM',
+'MR963LW':'APPLE WATCH S9 GPS 45MM STARLIGHT SB SM',
+'MRG33LL':'APPLE WATCH SE2 2023 CEL 40MM STARLIGHT SL',
+'MXFQ3LL':'APPLE WATCH SE2 2023 CEL 44MM MIDNIGHT INK SL',
+'MA9L4LL':'APPLE WATCH SE2 2023 CEL 44MM MIDNIGHT SB ML',
+'MRH73LL':'APPLE WATCH SE2 2023 CEL 44MM MIDNIGHT SB ML',
+'MRWQ3LL':'APPLE WATCH SE2 2023 CEL 44MM STARLIGHT SB ML',
+'MXEA3LL':'APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT INK SL',
+'MR9Y3LL':'APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT SB ML',
+'MXE73LL':'APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT SB SM',
+'MRE03LL':'APPLE WATCH SE2 2023 GPS 40MM MIDNIGHT SL',
+'MRE13LL':'APPLE WATCH SE2 2023 GPS 40MM SILVER SB SM',
+'MRE33LL':'APPLE WATCH SE2 2023 GPS 40MM SILVER WB SL',
+'MR9V3LL':'APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SB ML',
+'MR9U3LL':'APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SB SM',
+'MXEF3LL':'APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SB SM',
+'MR9W3LL':'APPLE WATCH SE2 2023 GPS 40MM STARLIGHT SL',
+'MA7W4LL':'APPLE WATCH SE2 2023 GPS 44MM MIDNIGHT SL',
+'MX4V3LW':'APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK M/L',
+'MX4P3LW':'APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK OB',
+'MX4U3LW':'APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH BLACK S/M',
+'MX4R3LW':'APPLE WATCH ULTRA 2 49MM 2024 BLACK WITH DARK GREEN M',
+'MYT03LW':'APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH BLACK OB',
+'MX4L3LW':'APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH BLUE M/L',
+'MX5R3LW':'APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH NATURAL TML M',
+'MX4D3LW':'APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH NAVY OB',
+'MX4E3LW':'APPLE WATCH ULTRA 2 49MM 2024 NATURAL WITH TAN S',
+'MREP3LL':'APPLE WATCH ULTRA 2 49MM BLUE M',
+'MREP3LW':'APPLE WATCH ULTRA 2 49MM BLUE M',
+'MREG3LW':'APPLE WATCH ULTRA 2 49MM BLUE OB',
+'MREK3LW':'APPLE WATCH ULTRA 2 49MM BLUE S',
+'MRF63LW':'APPLE WATCH ULTRA 2 49MM BLUE/BLACK ML',
+'MRF53LW':'APPLE WATCH ULTRA 2 49MM BLUE/BLACK SM',
+'MREW3LW':'APPLE WATCH ULTRA 2 49MM INDIGO L',
+'MRET3LL':'APPLE WATCH ULTRA 2 49MM INDIGO M',
+'MRET3LW':'APPLE WATCH ULTRA 2 49MM INDIGO M',
+'MREY3LL':'APPLE WATCH ULTRA 2 49MM OLIVE M',
+'MREY3LW':'APPLE WATCH ULTRA 2 49MM OLIVE M',
+        };
 
         const hot = new Handsontable(container, {
-            data: [
-              
-                ['', '', '', '', '']  // Empty row for new entries
-            ],
+            data: [['', '', '', '', '']],  // Empty row for new entries
             width: '100%',
             height: 500,
             colHeaders: ['A', 'B', 'Description', 'Status', 'Serial'],
@@ -214,76 +316,58 @@
             licenseKey: 'non-commercial-and-evaluation',
             contextMenu: true,
             minSpareRows: 1,
-            afterChange: function (changes) {
-                if (changes) {
-                    updateSummaryTable();
+            afterChange: function(changes, source) {
+                if (changes && source !== 'loadData') {
+                    changes.forEach(([row, col, oldValue, newValue]) => {
+                        // Check if the change occurred in column E (index 4 = Serial)
+                        if (col === 4 && newValue) {
+                            const serial = newValue.trim();
+                            const description = serialToDescriptionMap[serial];
+                            if (description) {
+                                hot.setDataAtCell(row, 2, description);  // Update column C (Description)
+                            }
+                        }
+                    });
+                    updateSummaryTable();  // Update the summary table after changes
                 }
             }
         });
 
-        // Parsing function for iPhone, iPad, Apple Watch, and MacBook
-        function parseModelInfo(description, serial) {
-            if (!description) return null;
-
-            const parts = description.split(' ');
-            if (parts.length < 3) return null;
-
-            let model, capacity;
-            if (description.includes('WATCH') || description.includes('MACBOOK')) {
-                // Apple Watch 和 MacBook 使用序列號
-                model = parts.join(' ');
-                capacity = serial;
-            } else {
-                // iPhone 和 iPad 使用容量和顏色
-                const capacityIndex = parts.findIndex(part => part.includes('GB') || part.includes('TB'));
-                if (capacityIndex === -1) return null;
-
-                model = parts.slice(0, capacityIndex).join(' '); // 型號
-                const color = parts.slice(capacityIndex + 1).join(' '); // 顏色
-                capacity = parts[capacityIndex];  // 容量
-                return { model, capacity: `${capacity} ${color}` };  // 返回分開的容量和顏色
-            }
-
-            return { model, capacity };
-        }
-
-        // 更新 Summary Table
+        // Update Summary Table
         function updateSummaryTable() {
             const data = hot.getData();
-            const modelCounts = {};
+            const modelSerialCounts = {};
             let total = 0;
 
             data.forEach(row => {
-                if (row[2]) {  // 檢查描述欄位
-                    const info = parseModelInfo(row[2], row[4]);
-                    if (info) {
-                        const key = `${info.model}|${info.capacity}`;
-                        modelCounts[key] = (modelCounts[key] || 0) + 1;
-                    }
+                const model = row[2];  // Description (Model) column (C)
+                const serial = row[4];  // Serial column (E)
+
+                if (model && serial) {
+                    const key = `${model}|${serial}`;  // Combine Model and Serial as a unique key
+                    modelSerialCounts[key] = (modelSerialCounts[key] || 0) + 1;
                 }
             });
 
             const summaryBody = document.getElementById('summary-body');
-            summaryBody.innerHTML = '';
+            summaryBody.innerHTML = '';  // Clear previous content
 
-            Object.entries(modelCounts).forEach(([key, count]) => {
-                const [model, capacity] = key.split('|');
-                if (model && capacity) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${model}</td>
-                        <td>${capacity}</td>
-                        <td>${count}</td>
-                    `;
-                    summaryBody.appendChild(tr);
-                    total += count;
-                }
+            Object.entries(modelSerialCounts).forEach(([key, count]) => {
+                const [model, serial] = key.split('|');  // Split the key to get model and serial
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${model}</td>
+                    <td>${serial}</td>
+                    <td>${count}</td>
+                `;
+                summaryBody.appendChild(tr);
+                total += count;
             });
 
             document.getElementById('total-quantity').textContent = total;
         }
 
-        // 複製表格至剪貼板
+        // Copy table content to clipboard
         function copyTable() {
             const summaryBody = document.querySelector('#summary-body');
             let textToCopy = '';
@@ -302,20 +386,20 @@
             });
         }
 
-        // 清空表格
+        // Clear table data
         function clearTable() {
-            hot.loadData([['', '', '', '', '']]);  // 清空表格數據
-            updateSummaryTable();  // 清空 Summary Table
+            hot.loadData([['', '', '', '', '']]);  // Clear table data
+            updateSummaryTable();  // Clear Summary Table
         }
 
-        // 點擊「→ Switch Mode」顯示選項
+        // Handle switching mode
         const switchModeButton = document.getElementById('switchModeButton');
         const contextMenu = document.getElementById('contextMenu');
 
         switchModeButton.addEventListener('click', function(event) {
-            event.preventDefault(); // 阻止默認行為
+            event.preventDefault(); // Prevent default behavior
 
-            // 顯示自定義的選項對話框
+            // Show custom context menu
             const contextMenuX = event.pageX;
             const contextMenuY = event.pageY;
             contextMenu.style.display = 'block';
@@ -323,14 +407,14 @@
             contextMenu.style.top = `${contextMenuY}px`;
         });
 
-        // 當點擊其他地方時，關閉選項彈窗
+        // Hide context menu when clicking outside
         document.addEventListener('click', function(event) {
             if (!contextMenu.contains(event.target) && event.target !== switchModeButton) {
                 contextMenu.style.display = 'none';
             }
         });
 
-        // 跳轉到指定頁面
+        // Navigate to specific page
         function navigateTo(page) {
             if (page === 'unlocked') {
                 window.location.href = 'https://eunicemak626.github.io/EuniceTools.github.io/UnlockedTable.html';
