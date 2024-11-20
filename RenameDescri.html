@@ -63,7 +63,8 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
+    flex-wrap: nowrap; /* Ensure buttons stay in a row */
+    justify-content: center; /* Center the buttons */
         }
 
         .copy-button {
@@ -109,7 +110,8 @@
 
             #hot-table {
                 height: 500px;
-                min-height: 300px;
+            min-height: 400px;
+            max-height: 400px;
                 margin-bottom: 15px;
             }
 
