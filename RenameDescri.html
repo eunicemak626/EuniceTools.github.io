@@ -465,6 +465,7 @@ function formatProduct(input) {
     if (nt) result += ` ${nt}`;
 
     result = result
+        .replace(/\bYLW\b/g, 'YELLOW')
         .replace(/\bGREY\b/g, 'GRAY')
         .replace(/\bSP BLK\b/g, 'BLACK')
         .replace(/\bSPG\b/g, 'GRAY')
@@ -490,8 +491,7 @@ function formatProduct(input) {
         .replace(/\bSBLACK\b/g, 'GRAY')
         .replace(/\bMIDNIGHT\b/g, 'BLACK')
         .replace(/\bSTARLIGHT\b/g, 'WHITE')
-        .replace(/\bBLU\b/g, 'BLUE')
-        .replace(/\bYLW\b/g, 'YELLOW');
+        .replace(/\bBLU\b/g, 'BLUE');
 
     result = result.replace(/\s+/g, ' ').trim();
     result = result.replace(/\(\s*\)/g, '').trim();
