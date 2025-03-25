@@ -413,7 +413,8 @@ function formatProduct(input) {
         .replace(/PRO 11-INCH \(M4\)/i, 'PRO 11" 5TH GEN 2024 M4')
         .replace(/PRO \(12.9-INCH\) \(6TH GENERATION\)/i, 'PRO 12.9" 6TH GEN 2022')
         .replace(/PRO 13-INCH \(M4\) 13/i, 'PRO 13" 7TH GEN 2024 M4')
-        .replace(/SE \(3RD GENERATION\)/i, 'SE 3RD GEN');
+        .replace(/SE \(3RD GENERATION\)/i, 'SE 3RD GEN')
+        .replace(/IPAD \(A16\) WIFI/i, 'IPAD 11TH GEN WI-FI');
 
     // Step 2: Remove any occurrence of "-XXX" (e.g., -USA, ATT-USA, VER-USA, PPD-USA)
     input = input.replace(/-\w{3}/g, '');  
