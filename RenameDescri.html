@@ -490,7 +490,8 @@ function formatProduct(input) {
         .replace(/\bSBLACK\b/g, 'GRAY')
         .replace(/\bMIDNIGHT\b/g, 'BLACK')
         .replace(/\bSTARLIGHT\b/g, 'WHITE')
-        .replace(/\bBLU\b/g, 'BLUE');
+        .replace(/\bBLU\b/g, 'BLUE')
+        .replace(/\bYLW\b/g, 'YELLOW');
 
     result = result.replace(/\s+/g, ' ').trim();
     result = result.replace(/\(\s*\)/g, '').trim();
