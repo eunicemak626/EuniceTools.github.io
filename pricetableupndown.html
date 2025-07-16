@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.css">
   <script src="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.js"></script>
   <style>
+    /* ...你原有的CSS全部保留... */
     body {
       font-family: 'Segoe UI', 'SF Pro Display', Arial, sans-serif;
       background: #f6f7f9;
@@ -221,6 +222,20 @@
       padding: 12px 0;
       text-align: center;
     }
+    /* 新增 for sort arrow */
+    .sort-arrow {
+      font-size: 12px;
+      margin-left: 2px;
+      color: #1856b8;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+    }
+    .sortable-th {
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
     @media (max-width:1200px) {
       .container { max-width: 99vw; }
     }
@@ -248,6 +263,8 @@
     const data = [
       ['iPhone 16 Pro Max 256GB', 982, 932, 990, 940],
       ['iPhone 16 Plus 512GB', 920, 870, 925, 875],
+      ['iPhone 16 Mini 256GB', 900, 850, 910, 860],
+      ['iPhone 16 Ultra 1TB', 1200, 1150, 1180, 1140]
     ];
 
     const container = document.getElementById('hot');
@@ -278,6 +295,12 @@
       autoWrapRow: true
     });
 
+    // 排序狀態（desc:大到細, asc:細到大）
+    let naDiffSortOrder = {
+      "Price Increase": "desc",
+      "Price Decrease": "desc"
+    };
+
     function genDiffHtml(oldVal, newVal) {
       oldVal = Number(oldVal);
       newVal = Number(newVal);
@@ -292,8 +315,36 @@
       return '';
     }
 
-    function getTableHtml(arr, color, showDiff) {
+    function getNaDiff(row) {
+      let oldNa = Number(row[1]);
+      let newNa = Number(row[3]);
+      if (!isNaN(oldNa) && !isNaN(newNa)) {
+        return newNa - oldNa;
+      }
+      return -Infinity;
+    }
+
+    function sortByNaDiff(arr, order) {
+      return [...arr].sort((a, b) => {
+        let aDiff = getNaDiff(a);
+        let bDiff = getNaDiff(b);
+        if (aDiff !== bDiff) {
+          return order === 'desc' ? bDiff - aDiff : aDiff - bDiff;
+        }
+        // 差價一樣時以新N/A再排
+        let aVal = Number(a[3]);
+        let bVal = Number(b[3]);
+        return order === 'desc' ? bVal - aVal : aVal - bVal;
+      });
+    }
+
+    function getTableHtml(arr, category, showDiff, sortOrder) {
       if (!arr.length) return '';
+      // 只在升/降價分類加sortable
+      const showNaSort = (category === "Price Increase" || category === "Price Decrease");
+      const arrow = sortOrder === "asc" ? "▲" : "▼";
+      const naThClass = showNaSort ? 'sortable-th' : '';
+      const naThId = showNaSort ? `na-sort-${category.replace(/\s/g, '')}` : '';
       let html = `<table class="square-table">
         <thead>
           <tr>
@@ -304,7 +355,7 @@
           <tr>
             <th class="col-na">N/A</th>
             <th class="col-act">ACT</th>
-            <th class="col-na">N/A</th>
+            <th class="col-na ${naThClass}" id="${naThId}">N/A${showNaSort ? `<span class="sort-arrow">${arrow}</span>` : ''}</th>
             <th class="col-act">ACT</th>
           </tr>
         </thead>
@@ -385,10 +436,14 @@
         // 其他都不顯示
       }
 
+      // 排序
+      let sortedIncrease = sortByNaDiff(priceIncrease, naDiffSortOrder["Price Increase"]);
+      let sortedDecrease = sortByNaDiff(priceDecrease, naDiffSortOrder["Price Decrease"]);
+
       // 類別標題
       const tableTitles = [
-        { title: "Price Increase", arr: priceIncrease, className: "price-title-increase", showDiff: true },
-        { title: "Price Decrease", arr: priceDecrease, className: "price-title-decrease", showDiff: true },
+        { title: "Price Increase", arr: sortedIncrease, className: "price-title-increase", showDiff: true, sortOrder: naDiffSortOrder["Price Increase"] },
+        { title: "Price Decrease", arr: sortedDecrease, className: "price-title-decrease", showDiff: true, sortOrder: naDiffSortOrder["Price Decrease"] },
         { title: "Suspended", arr: priceSuspended, className: "price-title-suspended", showDiff: false },
         { title: "Newly Add", arr: priceAdded, className: "price-title-added", showDiff: false }
       ];
@@ -399,7 +454,7 @@
       for (let t of tableTitles) {
         if (t.arr.length) {
           allHtml += `<div class="${t.className}">${t.title}</div>`;
-          allHtml += getTableHtml(t.arr, null, t.showDiff);
+          allHtml += getTableHtml(t.arr, t.title, t.showDiff, t.sortOrder);
           tableCount++;
         }
       }
@@ -407,6 +462,18 @@
         allHtml = '<div class="note" style="color:#b91c1c">沒有可分類的數據！</div>';
       }
       document.getElementById('resultDiv').innerHTML = allHtml;
+
+      // 綁定 N/A 表頭排序點擊事件
+      ["Price Increase", "Price Decrease"].forEach(category => {
+        const th = document.getElementById(`na-sort-${category.replace(/\s/g, '')}`);
+        if (th) {
+          th.onclick = function () {
+            // 反轉排序方向
+            naDiffSortOrder[category] = naDiffSortOrder[category] === "desc" ? "asc" : "desc";
+            generateTable();
+          }
+        }
+      });
     }
   </script>
 </body>
