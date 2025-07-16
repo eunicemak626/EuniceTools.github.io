@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>Price Change Checking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Handsontable CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/handsontable@14.3.0/dist/handsontable.full.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', 'SF Pro Display', Arial, sans-serif;
+      background: #f6f7f9;
+      margin: 0;
+      padding: 0;
+      font-size: 12px;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 48px auto;
+      background: #fff;
+      box-shadow: 0 2px 18px #0001;
+      padding: 32px 24px 36px 24px;
+    }
+    .site-title {
+      margin-top: 0;
+      margin-bottom: 18px;
+      text-align: center;
+      letter-spacing: 0.5px;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #1856b8;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    .hot-container {
+      margin: 20px 0 10px 0;
+    }
+    .btn {
+      display: block;
+      margin: 0 auto 16px auto;
+      padding: 7px 28px;
+      border: none;
+      border-radius: 6px;
+      background: #f3f4f6;
+      color: #222;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 1.5px 6px #0001;
+      transition: background 0.16s, color 0.16s;
+    }
+    .btn:hover, .btn:focus {
+      background: #e5e7eb;
+      color: #111;
+    }
+    .square-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin-top: 10px;
+      margin-bottom: 22px;
+      table-layout: auto;
+      font-size: 13px;
+    }
+    .square-table thead th {
+      background: #f5f6fa;
+      color: #222;
+      font-weight: 400;
+      font-size: 13px;
+      border: 1px solid #d1d5db;
+      border-bottom: 2px solid #bfc6d1;
+      padding: 0;
+      text-align: center;
+      height: 30px;
+      min-height: 30px;
+      line-height: 30px;
+    }
+    .square-table thead tr:nth-child(2) th {
+      background: #f7f8fa;
+      color: #555;
+      font-size: 13px;
+      font-weight: 400;
+      border: 1px solid #d1d5db;
+      border-bottom: 1px solid #bfc6d1;
+      padding: 0;
+      height: 30px;
+      min-height: 30px;
+      line-height: 30px;
+    }
+    .square-table th, .square-table td {
+      border: 1px solid #d1d5db;
+      text-align: center;
+      padding: 0;
+      background: none;
+      font-size: 13px;
+      font-weight: 400;
+      height: 12px;
+      min-height: 12px;
+      line-height: 12px;
+      transition: background 0.18s;
+      box-sizing: border-box;
+    }
+    .square-table th.col-model, .square-table td.col-model {
+      text-align: left;
+      padding-left: 10px;
+      font-weight: 400;
+    }
+    .square-table th.col-na, .square-table td.col-na,
+    .square-table th.col-act, .square-table td.col-act {
+      width: 10em;
+      min-width: 10em;
+      max-width: 10em;
+      box-sizing: border-box;
+      font-weight: 400;
+    }
+    .square-table td.col-model {
+      color: #232323;
+      background: inherit;
+      height: 30px !important;
+      min-height: 30px !important;
+      line-height: 30px !important;
+      font-weight: 400;
+    }
+    .square-table tbody tr {
+      height: 12px;
+      min-height: 12px;
+    }
+    .square-table tbody tr td.col-model {
+      height: 30px;
+      min-height: 30px;
+      line-height: 30px;
+      font-weight: 400;
+    }
+    .square-table tbody tr:nth-child(even) td {
+      background: #f6f7fa;
+    }
+    .square-table tbody tr:nth-child(odd) td {
+      background: #fff;
+    }
+    .square-table tbody tr:hover td {
+      background: #f0f3f8 !important;
+    }
+    .diff-up {
+      color: #16a34a;
+      font-weight: 400;
+      margin-left: 4px;
+      display: inline-block;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+    }
+    .diff-down {
+      color: #b91c1c;
+      font-weight: 400;
+      margin-left: 4px;
+      display: inline-block;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+    }
+    .arrow {
+      font-size: 1em;
+      vertical-align: middle;
+      margin-right: 2px;
+    }
+    .bold {
+      font-weight: 400;
+      color: #222;
+    }
+    /* 分類標題 style (14px, inline-block, 只包住字) */
+    .price-title-increase {
+      display: inline-block;
+      color: #16a34a;
+      background: #e8f6ee;
+      border-left: 6px solid #16a34a;
+      font-size: 14px;
+      font-weight: bold;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 8px 28px;
+      margin: 30px 0 10px 0;
+      min-width: 140px;
+    }
+    .price-title-decrease {
+      display: inline-block;
+      color: #b91c1c;
+      background: #fbeaea;
+      border-left: 6px solid #b91c1c;
+      font-size: 14px;
+      font-weight: bold;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 8px 28px;
+      margin: 30px 0 10px 0;
+      min-width: 140px;
+    }
+    .price-title-suspended {
+      display: inline-block;
+      color: #555;
+      background: #f3f3f3;
+      border-left: 6px solid #bdbdbd;
+      font-size: 14px;
+      font-weight: bold;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 8px 28px;
+      margin: 30px 0 10px 0;
+      min-width: 140px;
+    }
+    .price-title-added {
+      display: inline-block;
+      color: #1856b8;
+      background: #e6f0fd;
+      border-left: 6px solid #1856b8;
+      font-size: 14px;
+      font-weight: bold;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      padding: 8px 28px;
+      margin: 30px 0 10px 0;
+      min-width: 140px;
+    }
+    .no-data {
+      color: #888;
+      font-size: 13px;
+      padding: 12px 0;
+      text-align: center;
+    }
+    @media (max-width:1200px) {
+      .container { max-width: 99vw; }
+    }
+    @media (max-width:900px) {
+      .container { padding: 6px 1vw; }
+      .site-title { font-size: 1.2rem; }
+      .square-table th.col-na, .square-table td.col-na,
+      .square-table th.col-act, .square-table td.col-act { width:6em; min-width:6em;}
+    }
+    @media (max-width:600px) {
+      .container { padding: 1vw 0vw; }
+      .site-title { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="site-title">Mobile Price Dashboard</div>
+    <div id="hot" class="hot-container"></div>
+    <button class="btn" onclick="generateTable()">生成表格</button>
+    <div id="resultDiv"></div>
+  </div>
+  <script>
+    // 初始數據例子
+    const data = [
+      ['iPhone 16 Pro Max 256GB', 982, 932, 990, 940],
+      ['iPhone 16 Plus 512GB', 920, 870, 925, 875],
+    ];
+
+    const container = document.getElementById('hot');
+    const hot = new Handsontable(container, {
+      data: data,
+      colHeaders: [
+        '型號',
+        'OLD PRICE N/A',
+        'OLD PRICE ACT',
+        'NEW PRICE N/A',
+        'NEW PRICE ACT'
+      ],
+      columns: [
+        { data: 0, type: 'text' },
+        { data: 1, type: 'numeric', numericFormat: { pattern: '0' }, width: 120, renderer: 'numeric' },
+        { data: 2, type: 'numeric', numericFormat: { pattern: '0' }, width: 120, renderer: 'numeric' },
+        { data: 3, type: 'numeric', numericFormat: { pattern: '0' }, width: 120, renderer: 'numeric' },
+        { data: 4, type: 'numeric', numericFormat: { pattern: '0' }, width: 120, renderer: 'numeric' }
+      ],
+      stretchH: 'all',
+      width: '100%',
+      height: 340,
+      rowHeaders: true,
+      manualRowMove: true,
+      manualColumnMove: true,
+      contextMenu: true,
+      licenseKey: 'non-commercial-and-evaluation',
+      autoWrapRow: true
+    });
+
+    function genDiffHtml(oldVal, newVal) {
+      oldVal = Number(oldVal);
+      newVal = Number(newVal);
+      if (!isNaN(oldVal) && !isNaN(newVal)) {
+        const change = newVal - oldVal;
+        if (change > 0) {
+          return `<span class="diff-up"><span class="arrow">▲</span>${change}</span>`;
+        } else if (change < 0) {
+          return `<span class="diff-down"><span class="arrow">▼</span>${-change}</span>`;
+        }
+      }
+      return '';
+    }
+
+    function getTableHtml(arr, color, showDiff) {
+      if (!arr.length) return '';
+      let html = `<table class="square-table">
+        <thead>
+          <tr>
+            <th class="col-model" rowspan="2" style="vertical-align:middle;height:30px;min-height:30px;line-height:30px;">型號</th>
+            <th class="col-na" colspan="2">OLD PRICE</th>
+            <th class="col-na" colspan="2">NEW PRICE</th>
+          </tr>
+          <tr>
+            <th class="col-na">N/A</th>
+            <th class="col-act">ACT</th>
+            <th class="col-na">N/A</th>
+            <th class="col-act">ACT</th>
+          </tr>
+        </thead>
+        <tbody>`;
+      for (let row of arr) {
+        let oldNa = row[1];
+        let oldAct = row[2];
+        let newNa = row[3];
+        let newAct = row[4];
+        let naDiff = showDiff ? genDiffHtml(oldNa, newNa) : '';
+        let actDiff = showDiff ? genDiffHtml(oldAct, newAct) : '';
+        let displayNewNa = (newNa !== null && newNa !== undefined && newNa !== '') ?
+          `<span class="bold">${newNa}</span>${naDiff}` : '';
+        let displayNewAct = (newAct !== null && newAct !== undefined && newAct !== '') ?
+          `<span class="bold">${newAct}</span>${actDiff}` : '';
+        html += `<tr>
+          <td class="col-model" style="height:30px;min-height:30px;line-height:30px;">${row[0] ?? ''}</td>
+          <td class="col-na">${oldNa ?? ''}</td>
+          <td class="col-act">${oldAct ?? ''}</td>
+          <td class="col-na">${displayNewNa}</td>
+          <td class="col-act">${displayNewAct}</td>
+        </tr>`;
+      }
+      html += `</tbody></table>`;
+      return html;
+    }
+
+    function generateTable() {
+      const hotData = hot.getData();
+      let validRows = hotData.filter(row =>
+        row[0] && (row[1] !== null || row[2] !== null || row[3] !== null || row[4] !== null)
+      );
+      if (!validRows.length) {
+        document.getElementById('resultDiv').innerHTML = '<div class="note" style="color:#b91c1c">請先輸入數據！</div>';
+        return;
+      }
+
+      // 分類
+      const priceIncrease = [];
+      const priceDecrease = [];
+      const priceSuspended = [];
+      const priceAdded = [];
+
+      for (let row of validRows) {
+        const [model, oldNa, oldAct, newNa, newAct] = row.map(x => (x === undefined ? null : x));
+        // 新增（只新價有，舊價全部空）
+        if (
+          (oldNa === null && oldAct === null) &&
+          ((newNa !== null && newNa !== '') || (newAct !== null && newAct !== ''))
+        ) {
+          priceAdded.push(row);
+          continue;
+        }
+        // Suspended（新價兩欄都無）
+        if (
+          (newNa === null || newNa === '') &&
+          (newAct === null || newAct === '')
+        ) {
+          priceSuspended.push(row);
+          continue;
+        }
+        // 升價：N/A 或 ACT 任一新價 > 舊價
+        if (
+          (oldNa !== null && oldNa !== '' && newNa !== null && newNa !== '' && Number(newNa) > Number(oldNa)) ||
+          (oldAct !== null && oldAct !== '' && newAct !== null && newAct !== '' && Number(newAct) > Number(oldAct))
+        ) {
+          priceIncrease.push(row);
+          continue;
+        }
+        // 降價：N/A 或 ACT 任一新價 < 舊價
+        if (
+          (oldNa !== null && oldNa !== '' && newNa !== null && newNa !== '' && Number(newNa) < Number(oldNa)) ||
+          (oldAct !== null && oldAct !== '' && newAct !== null && newAct !== '' && Number(newAct) < Number(oldAct))
+        ) {
+          priceDecrease.push(row);
+          continue;
+        }
+        // 其他都不顯示
+      }
+
+      // 類別標題
+      const tableTitles = [
+        { title: "Price Increase", arr: priceIncrease, className: "price-title-increase", showDiff: true },
+        { title: "Price Decrease", arr: priceDecrease, className: "price-title-decrease", showDiff: true },
+        { title: "Suspended", arr: priceSuspended, className: "price-title-suspended", showDiff: false },
+        { title: "Newly Add", arr: priceAdded, className: "price-title-added", showDiff: false }
+      ];
+
+      // 組合HTML
+      let allHtml = '';
+      let tableCount = 0;
+      for (let t of tableTitles) {
+        if (t.arr.length) {
+          allHtml += `<div class="${t.className}">${t.title}</div>`;
+          allHtml += getTableHtml(t.arr, null, t.showDiff);
+          tableCount++;
+        }
+      }
+      if (!tableCount) {
+        allHtml = '<div class="note" style="color:#b91c1c">沒有可分類的數據！</div>';
+      }
+      document.getElementById('resultDiv').innerHTML = allHtml;
+    }
+  </script>
+</body>
+</html>
