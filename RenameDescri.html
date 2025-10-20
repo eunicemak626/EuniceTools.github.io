@@ -625,8 +625,8 @@ function formatProduct(input) {
 
     let result = `${categories} ${model}`.trim();
 
-    if (color) result += ` ${color}`;
     if (capacity) result += ` ${capacity}`;
+    if (color) result += ` ${color}`;
     if (nt) result += ` ${nt}`;
 
     result = result
