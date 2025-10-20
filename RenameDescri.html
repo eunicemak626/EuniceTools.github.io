@@ -557,6 +557,11 @@ function formatProduct(input) {
     // Original iPhone/iPad renaming logic remains unchanged
     if (!input) return '';
 
+    // Custom color replacements
+    input = input.replace(/COSMIC ORANGE/gi, 'ORANGE')
+                 .replace(/DEEP BLUE/gi, 'BLUE')
+                 .replace(/DBLUE/gi, 'BLUE');
+
     // Step 1: Apply predefined model replacements (highest priority)
     input = input
         .replace(/AIR 11-INCH \(M2\) 11/i, 'AIR 6TH GEN M2 11"')
@@ -603,7 +608,7 @@ function formatProduct(input) {
     cleanedInput = cleanedInput.replace(capacity, '').trim();
 
     // Step 8: Extract color (assumed to be the last word before capacity)
-    const colorMatch = cleanedInput.match(/\b(RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SPG|SILVER|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|GREEN|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU|TEAL|ULTRAMARINE)\b/i);
+    const colorMatch = cleanedInput.match(/\b(RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SPG|SILVER|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|GREEN|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU|TEAL|ULTRAMARINE|ORANGE)\b/i);
     let color = colorMatch ? colorMatch[0].toUpperCase() : '';
 
     cleanedInput = cleanedInput.replace(color, '').trim();
@@ -620,8 +625,8 @@ function formatProduct(input) {
 
     let result = `${categories} ${model}`.trim();
 
-    if (capacity) result += ` ${capacity}`;
     if (color) result += ` ${color}`;
+    if (capacity) result += ` ${capacity}`;
     if (nt) result += ` ${nt}`;
 
     result = result
