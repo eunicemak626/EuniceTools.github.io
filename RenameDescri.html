@@ -601,17 +601,17 @@ function formatProduct(input) {
 
     let cleanedInput = input.replace(categories, '').trim();
 
-    // Step 7: Extract the capacity (e.g., 128GB, 512GB, 1TB)
-    const capacityMatch = cleanedInput.match(/\d{2,}GB|\d{1}TB/i);
-    const capacity = capacityMatch ? capacityMatch[0].toUpperCase() : '';
-
-    cleanedInput = cleanedInput.replace(capacity, '').trim();
-
-    // Step 8: Extract color (assumed to be the last word before capacity)
+    // Step 7: Extract color first
     const colorMatch = cleanedInput.match(/\b(RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SPG|SILVER|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|GREEN|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU|TEAL|ULTRAMARINE|ORANGE)\b/i);
     let color = colorMatch ? colorMatch[0].toUpperCase() : '';
 
     cleanedInput = cleanedInput.replace(color, '').trim();
+
+    // Step 8: Extract the capacity (e.g., 128GB, 512GB, 1TB)
+    const capacityMatch = cleanedInput.match(/\d{2,}GB|\d{1}TB/i);
+    const capacity = capacityMatch ? capacityMatch[0].toUpperCase() : '';
+
+    cleanedInput = cleanedInput.replace(capacity, '').trim();
 
     let nt = '';
     if (cleanedInput.match(/\bNT\b/i)) {
