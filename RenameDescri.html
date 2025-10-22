@@ -1,19 +1,11 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
 <title>IMEIMATE 重新命名</title>
-
 <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
-
 <link href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
-
 <style>
 /* Your original styles */
 body {
@@ -104,7 +96,7 @@ h1 {
     margin: 10px 0;
   }
   #hot-table {
-    height: 500px(100vh - 200px);
+    height: calc(100vh - 200px);
     margin-bottom: 15px;
   }
   .button-group {
@@ -143,7 +135,7 @@ h1 {
     font-size: 14px;
   }
   #hot-table {
-    height: 400px(100vh - 180px);
+    height: calc(100vh - 180px);
   }
 }
 
@@ -156,7 +148,7 @@ h1 {
     margin: 5px 0;
   }
   #hot-table {
-    height: 500px(100vh - 140px);
+    height: calc(100vh - 140px);
   }
   .button-group {
     flex-direction: row;
@@ -176,27 +168,16 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 </style>
-
 </head>
-
 <body>
-
 <div class="container">
-
 <h1>Model Description Rename for Imeimate&365</h1>
-
 <div id="hot-table"></div>
-
 <div class="button-group">
-
 <button class="copy-button" onclick="copyData()">Copy Data</button>
-
 <button class="copy-button" onclick="clearTable()">Clear Table</button>
-
 <a href="https://eunicemak626.github.io/EuniceTools.github.io/LockedTable.html" class="copy-button">Locked Or Unlocked Generator</a>
-
 </div>
-
 </div>
 
 <script>
@@ -311,8 +292,8 @@ const serialToModelMap = {
 'MRET3LW':'APPLE WATCH ULTRA 2 49MM INDIGO M',
 'MREY3LL':'APPLE WATCH ULTRA 2 49MM OLIVE M',
 'MREY3LW':'APPLE WATCH ULTRA 2 49MM OLIVE M',
-    // Continue adding the rest of your data...
 };
+
 const ultra2Mapping = [
   // Black
   [/BK TI TL ML/i, 'BLACK WITH BLACK ML'],
@@ -372,7 +353,7 @@ function convertUltra2(str) {
   for (const [reg, rep] of ultra2Mapping) {
     if (reg.test(s)) {
       s = s.replace(reg, rep);
-      break; // 只需匹配一個
+      break;
     }
   }
   // 去除重覆空格
@@ -494,13 +475,13 @@ const hot = new Handsontable(container, {
             if (prop === 1 && newValue) {
                 const modelName = serialToModelMap[newValue.trim().toUpperCase()];
                 if (modelName) {
-                    this.setDataAtCell(row, 2, modelName); // Set the model name in column C
+                    this.setDataAtCell(row, 2, modelName);
                 }
             }
 
-            // Original renaming logic for column C (kept unchanged for iPhone/iPad)
+            // Original renaming logic for column C
             if (prop === 2) {
-                const renamedValue = processRename(newValue); // Call the processRename function
+                const renamedValue = processRename(newValue);
                 if (renamedValue !== newValue) {
                     this.setDataAtCell(row, 2, renamedValue);
                 }
@@ -545,17 +526,29 @@ function clearTable() {
     hot.setDataAtCell(0, 2, '');
 }
 
-// Reintroduce the processRename function (kept as it is)
 function processRename(input) {
     const watchResult = convertModel(input);
     if (watchResult && watchResult !== input) return watchResult;
     return formatProduct(input);
 }
 
-// Other utility functions...
 function formatProduct(input) {
-    // Original iPhone/iPad renaming logic remains unchanged
     if (!input) return '';
+
+    // ===== 新增：iPhone 17 系列處理 (最優先) =====
+    // 1. iPhone AIR 改名為 iPhone 17 AIR
+    input = input.replace(/\bIPHONE AIR\b/gi, 'IPHONE 17 AIR');
+    
+    // 2. iPhone 17 AIR 顏色處理
+    input = input.replace(/\bLIGHT GOLD\b/gi, 'GOLD');
+    input = input.replace(/\bSKY BLUE\b/gi, 'BLUE');
+    input = input.replace(/\bCLOUD WHITE\b/gi, 'WHITE');
+    
+    // 3. iPhone 17 系列顏色處理
+    input = input.replace(/\bMIST BLUE\b/gi, 'BLUE');
+    input = input.replace(/\bCORANGE\b/gi, 'ORANGE');
+    // SAGE 和 LAVENDER 保持原樣
+    // ===== iPhone 17 處理結束 =====
 
     // Custom color replacements
     input = input.replace(/COSMIC ORANGE/gi, 'ORANGE')
@@ -571,7 +564,7 @@ function formatProduct(input) {
         .replace(/PRO \(12.9-INCH\) \(6TH GENERATION\)/i, 'PRO 12.9" 6TH GEN 2022')
         .replace(/PRO 13-INCH \(M4\) 13/i, 'PRO 13" 7TH GEN 2024 M4')
         .replace(/SE \(3RD GENERATION\)/i, 'SE 3RD GEN')
-       .replace(/IPAD \(A16\)\s*WIFI\s*\+\s*CELLULAR/i, 'IPAD 11TH GEN 5G')
+        .replace(/IPAD \(A16\)\s*WIFI\s*\+\s*CELLULAR/i, 'IPAD 11TH GEN 5G')
         .replace(/IPAD \(A16\) WIFI/i, 'IPAD 11TH GEN WI-FI')
         .replace(/IPAD AIR 11-INCH \(M3\) 11 WIFI/i, 'IPAD AIR 7TH GEN M3 11" WI-FI')
         .replace(/IPAD AIR 13-INCH \(M3\) 13 WIFI/i, 'IPAD AIR 7TH GEN M3 13" WI-FI')
@@ -593,25 +586,30 @@ function formatProduct(input) {
     // Step 4: Remove carriers (VER, ATT, PPD)
     input = input.replace(/\b(VER|ATT|PPD)\b/gi, '');
 
-    // Step 5: Keep "SP" as part of the color term
-
     // Step 6: Extract the categories (e.g., IPHONE, IPAD)
     const categoriesMatch = input.match(/^(IPHONE|IPAD|MACBOOK|APPLE WATCH|AIRPODS)/i);
     const categories = categoriesMatch ? categoriesMatch[0].toUpperCase() : '';
 
     let cleanedInput = input.replace(categories, '').trim();
 
-    // Step 7: Extract color first
-    const colorMatch = cleanedInput.match(/\b(RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SPG|SILVER|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|GREEN|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU|TEAL|ULTRAMARINE|ORANGE)\b/i);
+    // Step 7: Extract color first (新增 iPhone 17 新色)
+    const colorMatch = cleanedInput.match(/\b(SAGE|LAVENDER|RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SPG|SILVER|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU|TEAL|ULTRAMARINE|ORANGE)\b/i);
     let color = colorMatch ? colorMatch[0].toUpperCase() : '';
 
     cleanedInput = cleanedInput.replace(color, '').trim();
 
-    // Step 8: Extract the capacity (e.g., 128GB, 512GB, 1TB)
-    const capacityMatch = cleanedInput.match(/\d{2,}GB|\d{1}TB/i);
+    // Step 8: Extract the capacity (e.g., 128GB, 512GB, 1TB, 2TB)
+    const capacityMatch = cleanedInput.match(/\d{2,}GB|\d{1,2}TB/i);
     const capacity = capacityMatch ? capacityMatch[0].toUpperCase() : '';
 
     cleanedInput = cleanedInput.replace(capacity, '').trim();
+
+    // Extract DEMO if exists
+    let demo = '';
+    if (cleanedInput.match(/\bDEMO\b/i)) {
+        demo = 'DEMO';
+        cleanedInput = cleanedInput.replace(/\bDEMO\b/i, '').trim();
+    }
 
     let nt = '';
     if (cleanedInput.match(/\bNT\b/i)) {
@@ -627,6 +625,7 @@ function formatProduct(input) {
 
     if (capacity) result += ` ${capacity}`;
     if (color) result += ` ${color}`;
+    if (demo) result += ` ${demo}`;
     if (nt) result += ` ${nt}`;
 
     result = result
@@ -669,7 +668,5 @@ function formatProduct(input) {
     return result;
 }
 </script>
-
 </body>
-
 </html>
