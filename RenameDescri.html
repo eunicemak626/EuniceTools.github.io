@@ -341,31 +341,24 @@ const ultra2Mapping = [
 
 function convertUltra2(str) {
   let s = str.trim();
-  // 統一開頭
   s = s.replace(
     /APPLE WATCH ULTRA 2 \(GPS \+ CELLULAR\) 49MM (ULTRA2 49 )?/i,
     'APPLE WATCH ULTRA 2 49MM 2024 '
   );
-  // 去除結尾
   s = s.replace(/-USA/i, '').trim();
 
-  // mapping
   for (const [reg, rep] of ultra2Mapping) {
     if (reg.test(s)) {
       s = s.replace(reg, rep);
       break;
     }
   }
-  // 去除重覆空格
   s = s.replace(/\s+/g, ' ').trim();
-  // 如果係 Ultra 2 就返回結果，否則返回空字串
   if (/^APPLE WATCH ULTRA 2 49MM 2024/i.test(s)) return s;
   return '';
 }
 
-// --- SE2/S9/S10 Mapping ---
 const mapping = [
-  // --- SE2 2024 ---
   // MIDNIGHT
   [/MI AL SL/i, 'MIDNIGHT SL'],
   [/MI AL SB ML/i, 'MIDNIGHT SB ML'],
@@ -382,9 +375,8 @@ const mapping = [
   [/ST AL SB SM/i, 'STARLIGHT SB SM'],
   [/ST AL SL/i, 'STARLIGHT SL'],
   [/STARLIGHT AL/i, 'STARLIGHT'],
-  // 例外
   [/INK SL/i, 'MIDNIGHT SL'],
-  // --- S10 ---
+  // S10
   [/JB AL BK SB ML/i, 'JET BLACK SB ML'],
   [/JB AL BK SB SM/i, 'JET BLACK SB SM'],
   [/JB AL INK SL/i, 'JET BLACK SL'],
@@ -392,7 +384,7 @@ const mapping = [
   [/RG AL LB SB ML/i, 'ROSE GOLD SB ML'],
   [/RG AL LB SB SM/i, 'ROSE GOLD SB SM'],
   [/RG AL PLUM SL/i, 'ROSE GOLD SL'],
-  // --- S9 ---
+  // S9
   [/PI AL LP SL/i, 'PINK SL'],
   [/PI AL LP SB ML/i, 'PINK SB ML'],
   [/PI AL LP SB SM/i, 'PINK SB SM'],
@@ -403,45 +395,32 @@ const mapping = [
 function convertWatch(str) {
   let s = str.trim();
 
-  // --- 統一開頭 ---
   s = s
-    // S10
     .replace(/APPLE WATCH SERIES 10 \(GPS \+ CELLULAR\)\s*(\d{2})MM(?: \d{2})?/i, 'APPLE WATCH S10 CEL $1MM')
     .replace(/APPLE WATCH SERIES 10 \(GPS\)\s*(\d{2})MM(?: \d{2})?/i, 'APPLE WATCH S10 GPS $1MM')
-    // S9
     .replace(/APPLE WATCH SERIES 9 \(GPS \+ CELLULAR\)\s*(\d{2})MM(?: S9 \d{2})?/i, 'APPLE WATCH S9 CEL $1MM')
     .replace(/APPLE WATCH SERIES 9 \(GPS\)\s*(\d{2})MM(?: S9 \d{2})?/i, 'APPLE WATCH S9 GPS $1MM')
-    // SE2 CELL
     .replace(/APPLE WATCH SE \(GPS \+ CELLULAR\)\s*(\d{2})\s*([A-Z]{2}) AL (.*) CEL-USA/i, 'APPLE WATCH SE2 2024 CEL $1MM $2 AL $3')
     .replace(/APPLE WATCH SE \(GPS \+ CELLULAR\)\s*(\d{2})MM\s*([A-Z]{2}) AL (.*) CEL-USA/i, 'APPLE WATCH SE2 2024 CEL $1MM $2 AL $3')
-    // SE2 GPS
     .replace(/APPLE WATCH SE \(GPS\)\s*(\d{2})MM\s*\d{2}\s*([A-Z]{2}) AL (.*) GPS-USA/i, 'APPLE WATCH SE2 2024 GPS $1MM $2 AL $3')
     .replace(/APPLE WATCH SE \(GPS\)\s*(\d{2}) ([A-Z]{2}) AL (.*) GPS-USA/i, 'APPLE WATCH SE2 2024 GPS $1MM $2 AL $3')
-    // --- 去除結尾 ---
     .replace(/\s*(CEL|GPS)-USA/i, '')
-    // --- 多餘型號數字 ---
     .replace(/\b(?:S9|42|46|41|45|40|44)\b/g, '')
-    // --- 多餘空格 ---
     .replace(/\s+/g, ' ')
     .trim();
 
-  // --- mapping 對照 ---
   for (const [reg, rep] of mapping) {
     s = s.replace(reg, rep);
   }
 
-  // 去除中間多餘 AL
   s = s.replace(/\b(AL)\b/g, '').replace(/\s+/g, ' ').trim();
 
   return s.trim();
 }
 
-// --- 統一入口函數 ---
 function convertModel(str) {
-  // Ultra 2 先處理
   const ultra = convertUltra2(str);
   if (ultra) return ultra;
-  // 其他型號
   return convertWatch(str);
 }
 
@@ -471,7 +450,6 @@ const hot = new Handsontable(container, {
         if (!changes) return;
 
         changes.forEach(([row, prop, oldValue, newValue]) => {
-            // If column B (serial number column) is modified
             if (prop === 1 && newValue) {
                 const modelName = serialToModelMap[newValue.trim().toUpperCase()];
                 if (modelName) {
@@ -479,7 +457,6 @@ const hot = new Handsontable(container, {
                 }
             }
 
-            // Original renaming logic for column C
             if (prop === 2) {
                 const renamedValue = processRename(newValue);
                 if (renamedValue !== newValue) {
@@ -535,9 +512,9 @@ function processRename(input) {
 function formatProduct(input) {
     if (!input) return '';
 
-    // ===== 新增：iPhone 17 系列處理 (最優先) =====
-    // 1. iPhone AIR 改名為 iPhone 17 AIR
-    input = input.replace(/\bIPHONE AIR\b/gi, 'IPHONE 17 AIR');
+    // ===== iPhone 17 系列處理 (最優先) =====
+    // 1. iPhone AIR 改名為 iPhone 17 AIR (增強空白相容)
+    input = input.replace(/\bIPHONE\s+AIR\b/gi, 'IPHONE 17 AIR');
     
     // 2. iPhone 17 AIR 顏色處理
     input = input.replace(/\bLIGHT GOLD\b/gi, 'GOLD');
@@ -555,7 +532,7 @@ function formatProduct(input) {
                  .replace(/DEEP BLUE/gi, 'BLUE')
                  .replace(/DBLUE/gi, 'BLUE');
 
-    // Step 1: Apply predefined model replacements (highest priority)
+    // Step 1: Apply predefined model replacements
     input = input
         .replace(/AIR 11-INCH \(M2\) 11/i, 'AIR 6TH GEN M2 11"')
         .replace(/AIR 13-INCH \(M2\) 13/i, 'AIR 6TH GEN M2 13"')
@@ -574,45 +551,46 @@ function formatProduct(input) {
         .replace(/IPAD MINI \(A17 PRO\) WI-FI/i, 'IPAD MINI 7TH GEN WI-FI')
         .replace(/WI-FI \+ CELLULAR/i, '5G');
   
-    // Step 2: Remove any occurrence of "-XXX" (e.g., -USA, ATT-USA, VER-USA, PPD-USA)
+    // Step 2: Remove carriers and -USA (增強清理)
     input = input.replace(/-\w{3}/g, '');  
     input = input.replace(/\b(ATT|VER|PPD)-USA\b/gi, '');
+    input = input.replace(/-\s*USA\b/gi, ''); // 新增：確保 -USA 被清除
 
     // Step 3: Apply network and connection type replacements
     input = input.replace(/WIFI \+ CELLULAR/i, '5G');
     input = input.replace(/\bWIFI\b/i, 'WI-FI');
     input = input.replace(/\bWI-FI CL\b/i, '4G');
 
-    // Step 4: Remove carriers (VER, ATT, PPD)
+    // Step 4: Remove carriers
     input = input.replace(/\b(VER|ATT|PPD)\b/gi, '');
 
-    // Step 6: Extract the categories (e.g., IPHONE, IPAD)
+    // Step 6: Extract categories
     const categoriesMatch = input.match(/^(IPHONE|IPAD|MACBOOK|APPLE WATCH|AIRPODS)/i);
     const categories = categoriesMatch ? categoriesMatch[0].toUpperCase() : '';
 
     let cleanedInput = input.replace(categories, '').trim();
 
-    // Step 7: Extract color first (新增 iPhone 17 新色)
+    // Extract DEMO if exists (增強大小寫相容)
+    let demo = '';
+    if (/\bDEMO\b/i.test(cleanedInput)) {
+        demo = 'DEMO';
+        cleanedInput = cleanedInput.replace(/\bDEMO\b/gi, '').trim();
+    }
+
+    // Step 7: Extract color (新增 iPhone 17 新色)
     const colorMatch = cleanedInput.match(/\b(SAGE|LAVENDER|RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SPG|SILVER|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU|TEAL|ULTRAMARINE|ORANGE)\b/i);
     let color = colorMatch ? colorMatch[0].toUpperCase() : '';
 
     cleanedInput = cleanedInput.replace(color, '').trim();
 
-    // Step 8: Extract the capacity (e.g., 128GB, 512GB, 1TB, 2TB)
+    // Step 8: Extract capacity (支援 2TB)
     const capacityMatch = cleanedInput.match(/\d{2,}GB|\d{1,2}TB/i);
     const capacity = capacityMatch ? capacityMatch[0].toUpperCase() : '';
 
     cleanedInput = cleanedInput.replace(capacity, '').trim();
 
-    // Extract DEMO if exists
-    let demo = '';
-    if (cleanedInput.match(/\bDEMO\b/i)) {
-        demo = 'DEMO';
-        cleanedInput = cleanedInput.replace(/\bDEMO\b/i, '').trim();
-    }
-
     let nt = '';
-    if (cleanedInput.match(/\bNT\b/i)) {
+    if (/\bNT\b/i.test(cleanedInput)) {
         nt = 'NT';
         cleanedInput = cleanedInput.replace(/\bNT\b/i, '').trim();
     }
