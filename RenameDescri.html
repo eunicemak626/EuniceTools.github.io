@@ -426,7 +426,7 @@ function convertModel(str) {
 
 const container = document.getElementById('hot-table');
 const hot = new Handsontable(container, {
-    data: [['2', '', 'IPHONE 13 PRO MAX ALP GRN ATT-USA 128GB']],
+    data: [['2', '', 'IPAD PRO 13-INCH (M5) 13 WIFI + CELLULAR SBLK-USA 256GB']],
     width: '100%',
     height: getTableHeight(),
     colHeaders: ['A', 'B', 'C'],
@@ -513,19 +513,12 @@ function formatProduct(input) {
     if (!input) return '';
 
     // ===== iPhone 17 系列處理 (最優先) =====
-    // 1. iPhone AIR 改名為 iPhone 17 AIR (增強空白相容)
     input = input.replace(/\bIPHONE\s+AIR\b/gi, 'IPHONE 17 AIR');
-    
-    // 2. iPhone 17 AIR 顏色處理
     input = input.replace(/\bLIGHT GOLD\b/gi, 'GOLD');
     input = input.replace(/\bSKY BLUE\b/gi, 'BLUE');
     input = input.replace(/\bCLOUD WHITE\b/gi, 'WHITE');
-    
-    // 3. iPhone 17 系列顏色處理
     input = input.replace(/\bMIST BLUE\b/gi, 'BLUE');
     input = input.replace(/\bCORANGE\b/gi, 'ORANGE');
-    // SAGE 和 LAVENDER 保持原樣
-    // ===== iPhone 17 處理結束 =====
 
     // Custom color replacements
     input = input.replace(/COSMIC ORANGE/gi, 'ORANGE')
@@ -540,6 +533,10 @@ function formatProduct(input) {
         .replace(/PRO 11-INCH \(M4\)/i, 'PRO 11" 5TH GEN 2024 M4')
         .replace(/PRO \(12.9-INCH\) \(6TH GENERATION\)/i, 'PRO 12.9" 6TH GEN 2022')
         .replace(/PRO 13-INCH \(M4\) 13/i, 'PRO 13" 7TH GEN 2024 M4')
+        // --- NEW M5 RULES ---
+        .replace(/PRO 11-INCH \(M5\)/i, 'PRO 11" 6TH GEN 2025 M5')
+        .replace(/PRO 13-INCH \(M5\) 13/i, 'PRO 13" 8TH GEN 2025 M5')
+        // --------------------
         .replace(/SE \(3RD GENERATION\)/i, 'SE 3RD GEN')
         .replace(/IPAD \(A16\)\s*WIFI\s*\+\s*CELLULAR/i, 'IPAD 11TH GEN 5G')
         .replace(/IPAD \(A16\) WIFI/i, 'IPAD 11TH GEN WI-FI')
@@ -551,10 +548,10 @@ function formatProduct(input) {
         .replace(/IPAD MINI \(A17 PRO\) WI-FI/i, 'IPAD MINI 7TH GEN WI-FI')
         .replace(/WI-FI \+ CELLULAR/i, '5G');
   
-    // Step 2: Remove carriers and -USA (增強清理)
+    // Step 2: Remove carriers and -USA
     input = input.replace(/-\w{3}/g, '');  
     input = input.replace(/\b(ATT|VER|PPD)-USA\b/gi, '');
-    input = input.replace(/-\s*USA\b/gi, ''); // 新增：確保 -USA 被清除
+    input = input.replace(/-\s*USA\b/gi, '');
 
     // Step 3: Apply network and connection type replacements
     input = input.replace(/WIFI \+ CELLULAR/i, '5G');
@@ -570,20 +567,20 @@ function formatProduct(input) {
 
     let cleanedInput = input.replace(categories, '').trim();
 
-    // Extract DEMO if exists (增強大小寫相容)
+    // Extract DEMO if exists
     let demo = '';
     if (/\bDEMO\b/i.test(cleanedInput)) {
         demo = 'DEMO';
         cleanedInput = cleanedInput.replace(/\bDEMO\b/gi, '').trim();
     }
 
-    // Step 7: Extract color (新增 iPhone 17 新色)
-    const colorMatch = cleanedInput.match(/\b(SAGE|LAVENDER|RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SPG|SILVER|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU|TEAL|ULTRAMARINE|ORANGE)\b/i);
+    // Step 7: Extract color
+    const colorMatch = cleanedInput.match(/\b(SAGE|LAVENDER|RED|BLUE|GREEN|PINK|BLACK|WHITE|GRAY|GREY|SP BLK|SBLK|SPG|SILVER|SLVR|ALPINE GREEN|SIERRA BLUE|GOLD|GRAPHITE|SPACE BLACK|SPACE GRAY|NATURAL|DESERT|DEEP PURPLE|PUR|PURPLE|SLV|GRY|STL|TL|BLK|WHT|UMR|PNK|YELLOW|GLD|GPH|SR BLUE|ALP GRN|SBLACK|MIDNIGHT|STARLIGHT|BLU|TEAL|ULTRAMARINE|ORANGE)\b/i);
     let color = colorMatch ? colorMatch[0].toUpperCase() : '';
 
     cleanedInput = cleanedInput.replace(color, '').trim();
 
-    // Step 8: Extract capacity (支援 2TB)
+    // Step 8: Extract capacity
     const capacityMatch = cleanedInput.match(/\d{2,}GB|\d{1,2}TB/i);
     const capacity = capacityMatch ? capacityMatch[0].toUpperCase() : '';
 
@@ -610,6 +607,7 @@ function formatProduct(input) {
         .replace(/\bYLW\b/g, 'YELLOW')
         .replace(/\bGREY\b/g, 'GRAY')
         .replace(/\bSP BLK\b/g, 'BLACK')
+        .replace(/\bSBLK\b/g, 'BLACK')
         .replace(/\bSPG\b/g, 'GRAY')
         .replace(/\bALPINE GREEN\b/g, 'GREEN')
         .replace(/\bSIERRA BLUE\b/g, 'BLUE')
@@ -619,6 +617,7 @@ function formatProduct(input) {
         .replace(/\bDEEP PURPLE\b/g, 'PURPLE')
         .replace(/\bPUR\b/g, 'PURPLE')
         .replace(/\bSLV\b/g, 'SILVER')
+        .replace(/\bSLVR\b/g, 'SILVER')
         .replace(/\bGRY\b/g, 'GRAY')
         .replace(/\bSTL\b/g, 'STARLIGHT')
         .replace(/\bTL\b/g, 'TEAL')
